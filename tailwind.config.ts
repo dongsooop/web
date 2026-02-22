@@ -42,19 +42,19 @@ const config: Config = {
           10: '#F3DADA',
           DEFAULT: '#C70000',
         },
+      },
 
-        fontSize: {
-          title: ['22px', { lineHeight: '30px' }],
-          large: ['17px', { lineHeight: '24px' }],
-          normal: ['15px', { lineHeight: '22px' }],
-          small: ['12px', { lineHeight: '18px' }],
-        },
+      fontSize: {
+        title: ['22px', { lineHeight: '30px' }],
+        large: ['17px', { lineHeight: '24px' }],
+        normal: ['15px', { lineHeight: '22px' }],
+        small: ['12px', { lineHeight: '18px' }],
+      },
 
-        fontWeight: {
-          regular: '400',
-          semibold: '600',
-          bold: '700',
-        },
+      fontWeight: {
+        regular: '400',
+        semibold: '600',
+        bold: '700',
       },
     },
   },
