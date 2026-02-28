@@ -21,14 +21,13 @@ const FOOTER_LINKS = [
     label: '오픈소스 라이선스',
     external: true,
   },
-  // 추후에 추가
   { href: '/contact', label: '문의하기', external: false },
 ] as const;
 
 export default function Footer() {
   return (
-    <footer className="border-gray1 border-t bg-white">
-      <div className="mx-auto w-full max-w-screen-xl px-4 py-8">
+    <footer className="border-gray1 w-full border-t bg-white">
+      <div className="w-full px-4 py-8">
         <div className="mb-6">
           <p className="text-normal font-semibold text-black">동양미래대숲</p>
           <p className="text-small text-gray4 mt-1">

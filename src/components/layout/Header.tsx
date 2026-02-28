@@ -61,12 +61,12 @@ export default function Header() {
 
   return (
     <>
-      <header className="border-gray1 sticky top-0 z-40 border-b bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-screen-xl items-center justify-between px-4">
+      <header className="border-gray2 sticky top-0 z-40 w-full border-b bg-white">
+        <div className="flex h-14 w-full items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="hover:bg-gray1 inline-flex h-10 w-10 items-center justify-center rounded-full active:scale-[0.98] md:hidden"
+              className="hover:bg-gray1 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full active:scale-[0.98] md:hidden"
               aria-label={open ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={open}
               onClick={() => setOpen(true)}
@@ -80,7 +80,7 @@ export default function Header() {
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-8 md:flex lg:hidden">
             {NAV.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
@@ -90,7 +90,7 @@ export default function Header() {
                   className={cx(
                     'text-normal font-regular border-b-2 pb-1 transition-colors duration-200',
                     active
-                      ? 'text-primary border-primary'
+                      ? 'border-primary text-primary'
                       : 'hover:text-primary border-transparent text-black',
                   )}
                 >
@@ -99,6 +99,24 @@ export default function Header() {
               );
             })}
           </nav>
+
+          <div className="flex items-center">
+            <Link
+              href="/my-page"
+              className="hover:bg-gray1 inline-flex h-10 w-10 items-center justify-center rounded-full"
+              aria-label="마이페이지"
+            >
+              <div className="border-gray2 flex h-9 w-9 items-center justify-center rounded-full border bg-white">
+                <Image
+                  src="/img/profile.png"
+                  alt="프로필"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              </div>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -110,7 +128,7 @@ export default function Header() {
             ref={drawerRef}
             className="absolute top-0 left-0 h-full w-[280px] bg-white shadow-xl"
           >
-            <div className="border-gray1 flex h-14 items-center justify-between border-b px-4">
+            <div className="border-gray2 flex h-14 items-center justify-between border-b px-4">
               <div className="flex items-center gap-2">
                 <Image src="/img/logo.svg" alt="Dongsoop" width={24} height={24} />
                 <span className="text-normal font-semibold text-black">Dongsoop</span>
@@ -118,7 +136,7 @@ export default function Header() {
 
               <button
                 type="button"
-                className="hover:bg-gray1 inline-flex h-10 w-10 items-center justify-center rounded-full active:scale-[0.98]"
+                className="hover:bg-gray1 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full active:scale-[0.98]"
                 aria-label="메뉴 닫기"
                 onClick={() => setOpen(false)}
               >
@@ -148,6 +166,30 @@ export default function Header() {
                   );
                 })}
               </ul>
+
+              <div className="border-gray2 mt-4 border-t pt-4">
+                <Link
+                  href="/my-page"
+                  onClick={() => setOpen(false)}
+                  className="hover:bg-gray1 flex items-center gap-3 rounded-xl px-3 py-3"
+                >
+                  <div className="border-gray2 flex h-10 w-10 items-center justify-center rounded-full border bg-white">
+                    <Image
+                      src="/img/profile.png"
+                      alt="프로필"
+                      width={36}
+                      height={36}
+                      unoptimized
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="text-normal font-semibold text-black">마이페이지</div>
+                    <div className="text-small text-gray6">프로필 보기</div>
+                  </div>
+                </Link>
+              </div>
             </nav>
           </div>
         </div>
