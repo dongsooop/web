@@ -11,6 +11,8 @@ type ListItemProps = {
   title: string;
   tags: ListItemTag[];
   minHeightClassName?: string;
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
 };
 
 export default function ListItem({
@@ -18,9 +20,16 @@ export default function ListItem({
   title,
   tags,
   minHeightClassName = 'min-h-[96px]',
+  target,
+  rel,
 }: ListItemProps) {
   return (
-    <Link href={href} className={`group block ${minHeightClassName} py-4`}>
+    <Link
+      href={href}
+      target={target}
+      rel={rel}
+      className={`group block ${minHeightClassName} py-4`}
+    >
       <div className="text-normal line-clamp-2 font-semibold text-black underline-offset-2 group-hover:underline">
         {title}
       </div>
