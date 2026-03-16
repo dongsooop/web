@@ -2,31 +2,31 @@ language: ko-KR
 
 reviews:
   profile: 'chill' # 부드러운 톤 유지
-  high_level_summary: true  # PR 상단에 요약 제공
-  request_changes_confirm: true # 중요한 리뷰 위주
 
+  high_level_summary: true  # PR 상단에 요약 제공
+
+  request_changes_confirm: true # 중요한 리뷰 위주
   auto_review:
     enabled: true
     drafts: false
     base_branches:
       - .*
 
-instructions: >
-  1. **BFF 및 보안**:
-    - 모든 API 호출은 `src/app/api` 내부의 BFF Route를 거쳐야 함.
-    - 클라이언트 컴포넌트에서 외부 백엔드 도메인으로 직접 `fetch`하는 로직이 발견되면 즉시 경고할 것.
-    - AppCheck 토큰 검증 로직(`proxyRequest`)이 누락되었는지 확인
+  instructions: |
+    1. BFF 및 보안
+      - 모든 API 호출은 src/app/api BFF Route를 거쳐야 함
+      - 클라이언트에서 외부 백엔드 직접 fetch 금지
+      - AppCheck proxyRequest 확인
 
-  2. **UI/UX 표준 (Mobile-First)**:
-    - 클릭 가능한 모든 요소의 터치 영역이 최소 44px을 확보했는지 확인
+    2. UI/UX Mobile-First
+      - 터치 영역 최소 44px 확인
 
-  3. **코드 일관성 및 구조**:
-    - HTTP 상태 코드(502, 503 등) 사용 및 영문 컨벤션 체크.
+    3. 코드 일관성
+      - HTTP 상태 코드 사용 및 영문 컨벤션 체크
 
-  4. **Next.js App Router 규칙**:
-    - 서버 컴포넌트에서 불필요한 `"use client"` 사용 여부 확인
-    - 클라이언트 컴포넌트에서 서버 전용 모듈(import fs 등) 사용 여부 체크
-    - `fetch` 사용 시 cache 옵션 또는 revalidate 전략 확인
+    4. Next.js 규칙
+      - 불필요한 "use client" 사용 여부 확인
+      - fetch cache 전략 확인
 
-chat: 
+chat:
   auto_reply: true
