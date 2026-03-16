@@ -5,10 +5,14 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 export const fetcher = async (url: string, options: RequestInit = {}) => {
   const token = useAppCheckStore.getState().token;
 
+  if (!token) {
+    throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'APP_CHECK_TOKEN_MISSING');
+  }
+
   const headers = {
     ...options.headers,
     'Content-Type': 'application/json',
-    'X-Firebase-AppCheck': token || '',
+    'X-Firebase-AppCheck': token,
   };
 
   try {
