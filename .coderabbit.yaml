@@ -5,7 +5,8 @@ reviews:
 
   high_level_summary: true  # PR 상단에 요약 제공
 
-  request_changes_confirm: true # 중요한 리뷰 위주
+  request_changes_workflow: true
+  
   auto_review:
     enabled: true
     drafts: false
