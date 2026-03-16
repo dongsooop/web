@@ -1,6 +1,6 @@
+import { ApiError } from '@/app/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { getAppCheckToken } from '@/lib/firebase';
-import { ApiError } from 'next/dist/server/api-utils';
 
 export const request = async (url: string, options: RequestInit = {}) => {
   const token = await getAppCheckToken();
