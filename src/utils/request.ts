@@ -1,10 +1,14 @@
 import { ApiError } from '@/app/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { getAppCheckToken } from '@/lib/firebase';
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 
 export const request = async (url: string, options: RequestInit = {}) => {
-  const token = await getAppCheckToken();
+  const { token, isInitialized } = useAppCheckStore.getState();
   const baseURL = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!isInitialized) {
+    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, 'APP_CHECK_NOT_INITIALIZED');
+  }
 
   const headers = {
     'Content-Type': 'application/json',
@@ -19,15 +23,11 @@ export const request = async (url: string, options: RequestInit = {}) => {
     });
 
     if (!response.ok) {
-      if (response.status === HttpStatusCode.FORBIDDEN) {
-        console.error('App Check 검증에 실패했습니다. (403)');
-      }
       throw new ApiError(response.status, 'API_ERROR');
     }
 
     return response;
   } catch (error) {
-    console.error('API Network Error:', error);
     throw error;
   }
 };
