@@ -1,35 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ListItem from '@/components/ui/ListItem';
+import { useHomeQuery } from '@/features/home/hooks/useHomeQuery';
 
 export default function NewNotices() {
-  const items = [
-    {
-      href: '/board/notices/1',
-      title: '[선관위] 2025학년도 학과대표 보궐선거 선거 일정 공고',
-      tags: [
-        { label: '동양공지', tone: 'blue' as const },
-        { label: '학교생활', tone: 'red' as const },
-      ],
-    },
-    {
-      href: '/board/notices/2',
-      title: '2025학년도 신입생 캠퍼스커넥트 프로그램 토크콘서트 안내',
-      tags: [
-        { label: '동양공지', tone: 'blue' as const },
-        { label: '학교생활', tone: 'red' as const },
-      ],
-    },
-    {
-      href: '/board/notices/3',
-      title: '[학부] 2025학년도 1학기 학습공동체(전공 튜터링) 프로그램 시행 안내',
-      tags: [
-        { label: '학과공지', tone: 'blue' as const },
-        { label: '학부', tone: 'red' as const },
-      ],
-    },
-  ];
+  const { data, isLoading, isError, displayErrorMessage } = useHomeQuery();
+
+  if (isLoading) return <div>공지사항 로딩 중...</div>;
+  if (isError) return <div>{displayErrorMessage}</div>;
+
+  const items = data?.notices ?? [];
 
   return (
     <Card
@@ -37,6 +20,8 @@ export default function NewNotices() {
       right={
         <Link
           href="/board/notices"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-normal text-gray5 inline-flex items-center gap-2 font-semibold hover:text-black"
         >
           더보기
@@ -46,8 +31,14 @@ export default function NewNotices() {
     >
       <div className="border-gray2 rounded-2xl bg-white px-2">
         {items.map((it, idx) => (
-          <div key={it.href} className={idx === 0 ? '' : 'border-gray2 border-t'}>
-            <ListItem href={it.href} title={it.title} tags={it.tags} />
+          <div key={it.link} className={idx === 0 ? '' : 'border-gray2 border-t'}>
+            <ListItem
+              href={it.link}
+              title={it.title}
+              tags={it.tags}
+              target="_blank"
+              rel="noopener noreferrer"
+            />
           </div>
         ))}
       </div>
