@@ -1,4 +1,4 @@
-import { HttpStatusCode } from '@/constants/httpStatus';
+import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from './apiError';
 
 async function safeReadJson(res: Response): Promise<unknown | null> {
