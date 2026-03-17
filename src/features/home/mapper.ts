@@ -1,5 +1,5 @@
 import { HomeResponse } from './types';
-import { HomeUiModel } from './ui-model';
+import { HomeUiModel, TagTone } from './ui-model';
 
 const SCHEDULE_LABELS = {
   MEMBER: '멤버',
@@ -17,20 +17,16 @@ const NOTICE_LABELS = {
   },
 } as const;
 
-const RECRUITMENT_LABELS = {
-  STUDY: '스터디',
-  PROJECT: '프로젝트',
-  TUTORING: '튜터링',
-} as const;
+const RECRUIT_TAG_TONES: TagTone[] = ['blue', 'red', 'yellow'];
 
 export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
   return {
-    timetable: dto.timetable.map((item) => ({
+    timetable: (dto.timetable ?? []).map((item) => ({
       ...item,
       timeRange: `${item.startAt} - ${item.endAt}`,
     })),
 
-    schedules: dto.schedules.map((item) => ({
+    schedules: (dto.schedules ?? []).map((item) => ({
       ...item,
       timeRange: `${item.startAt} - ${item.endAt}`,
       typeLabel: SCHEDULE_LABELS[item.type],
@@ -53,8 +49,12 @@ export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
       title: item.title,
       content: item.content,
       type: item.type,
-      tags: item.tags ? item.tags.split(',').map((tag) => tag.trim()) : [],
-      typeLabel: RECRUITMENT_LABELS[item.type],
+      tags: item.tags
+        ? item.tags.split(',').map((tag, idx) => ({
+            label: tag.trim(),
+            tone: RECRUIT_TAG_TONES[idx] ?? 'gray',
+          }))
+        : [],
     })),
   };
 }

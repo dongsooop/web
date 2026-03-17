@@ -1,41 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ListItem from '@/components/ui/ListItem';
+import { useHomeQuery } from '@/features/home/hooks/useHomeQuery';
 
 export default function PopularRecruits() {
-  const items = [
-    {
-      href: '/board/recruits/11',
-      title: 'DB 프로그래밍',
-      description: '[DB 프로그래밍 튜터링 모집합니다] 교내 튜터링 인원 모집합니다.',
-      tags: [
-        { label: '컴퓨터소프트웨어공학과', tone: 'blue' as const },
-        { label: 'DB', tone: 'red' as const },
-        { label: '김희석교수님', tone: 'yellow' as const },
-      ],
-    },
-    {
-      href: '/board/recruits/12',
-      title: '웹 프로젝트 실습',
-      description: '팀원 잘 만나는 게 A+ 받는 방법이다',
-      tags: [
-        { label: '컴퓨터소프트웨어공학과', tone: 'blue' as const },
-        { label: 'JAVA', tone: 'red' as const },
-        { label: '장윤희교수님', tone: 'yellow' as const },
-      ],
-    },
-    {
-      href: '/board/recruits/13',
-      title: '운영체제 실습',
-      description: '리눅스를 배워보아요',
-      tags: [
-        { label: '컴퓨터소프트웨어공학과', tone: 'blue' as const },
-        { label: 'Linux', tone: 'red' as const },
-        { label: '전홍준교수님', tone: 'yellow' as const },
-      ],
-    },
-  ];
+  const { data, isLoading, isError, displayErrorMessage } = useHomeQuery();
+
+  if (isLoading) return <div>게시글 로딩 중...</div>;
+  if (isError) return <div>{displayErrorMessage}</div>;
+
+  const items = data?.popularRecruitments ?? [];
 
   return (
     <Card
@@ -51,11 +28,18 @@ export default function PopularRecruits() {
       }
     >
       <div className="border-gray2 rounded-2xl bg-white px-2">
-        {items.map((it, idx) => (
-          <div key={it.href} className={idx === 0 ? '' : 'border-gray2 border-t'}>
-            <ListItem href={it.href} title={it.title} tags={it.tags} />
+        {items.length > 0 ? (
+          items.map((it, idx) => (
+            <div key={it.id} className={idx === 0 ? '' : 'border-gray2 border-t'}>
+              // 게시판 기능 추가되면 경로 변경
+              <ListItem href={`${it.id}`} title={it.title} tags={it.tags} />
+            </div>
+          ))
+        ) : (
+          <div className="text-gray4 flex h-[200px] flex-col items-center justify-center gap-2">
+            <p className="text-normal font-medium">지금은 인기 모집 게시글이 없어요!</p>
           </div>
-        ))}
+        )}
       </div>
     </Card>
   );
