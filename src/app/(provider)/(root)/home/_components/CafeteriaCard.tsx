@@ -29,7 +29,8 @@ export default function CafeteriaCard() {
         <button
           onClick={handlePrev}
           disabled={isLoading || !!errorText}
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90 disabled:invisible"
+          className="flex h-10 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90 disabled:invisible"
+          aria-label="이전 식단"
         >
           <ChevronLeft size={20} />
         </button>
@@ -39,7 +40,8 @@ export default function CafeteriaCard() {
         <button
           onClick={handleNext}
           disabled={isLoading || !!errorText}
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90 disabled:invisible"
+          className="flex h-10 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90 disabled:invisible"
+          aria-label="이후 식단"
         >
           <ChevronRight size={20} />
         </button>
