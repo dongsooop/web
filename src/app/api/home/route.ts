@@ -3,9 +3,23 @@ import { serverRequest } from '@/utils/serverRequest';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  const endpoint = process.env.HOME_ENDPOINT || '/home';
+  const endpoint = process.env.HOME_ENDPOINT;
   const schoolUrl = process.env.SCHOOL_URL!;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
+
+  if (!appCheckToken) {
+    return NextResponse.json(
+      { message: 'Unauthorized: App Check token is missing' },
+      { status: HttpStatusCode.UNAUTHORIZED },
+    );
+  }
+
+  if (!endpoint) {
+    return NextResponse.json(
+      { message: 'Internal Server Error: API URL is missing' },
+      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    );
+  }
 
   try {
     const res = await serverRequest(endpoint, appCheckToken, {

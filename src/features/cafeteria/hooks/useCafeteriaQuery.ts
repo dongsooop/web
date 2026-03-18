@@ -5,8 +5,10 @@ import { errorMessage } from '@/lib/errors/messages';
 import { mapCafeteriaResponseToUi } from '../mapper';
 import { fetcher } from '@/utils/request';
 import { getWeekKey } from '@/utils/date/date';
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 
 export const useCafeteriaQuery = () => {
+  const { isInitialized } = useAppCheckStore();
   const weekKey = getWeekKey();
 
   const query = useQuery({
@@ -15,6 +17,7 @@ export const useCafeteriaQuery = () => {
     select: (data) => mapCafeteriaResponseToUi(data),
     staleTime: 1000 * 60 * 60 * 24 * 7,
     gcTime: 1000 * 60 * 60 * 24 * 7,
+    enabled: isInitialized,
   });
 
   return {
