@@ -1,33 +1,35 @@
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { ApiError } from '@/app/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { useAppCheckStore } from '@/store/useAppCheckStore';
 
-export const request = async (url: string, options: RequestInit = {}) => {
-  const { token, isInitialized } = useAppCheckStore.getState();
-  const baseURL = process.env.NEXT_PUBLIC_API_URL;
+export const fetcher = async (url: string, options: RequestInit = {}) => {
+  const token = useAppCheckStore.getState().token;
 
-  if (!isInitialized) {
-    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, 'APP_CHECK_NOT_INITIALIZED');
+  if (!token) {
+    throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'APP_CHECK_TOKEN_MISSING');
   }
 
   const headers = {
-    'Content-Type': 'application/json',
     ...options.headers,
-    'X-Firebase-AppCheck': token || '',
+    'Content-Type': 'application/json',
+    'X-Firebase-AppCheck': token,
   };
 
   try {
-    const response = await fetch(`${baseURL}${url}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
       ...options,
       headers,
     });
 
-    if (!response.ok) {
-      throw new ApiError(response.status, 'API_ERROR');
+    if (res.status === HttpStatusCode.NO_CONTENT) return null;
+
+    if (!res.ok) {
+      throw new ApiError(res.status, 'API_ERROR');
     }
 
-    return response;
+    return res.json();
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'NETWORK_ERROR');
   }
 };
