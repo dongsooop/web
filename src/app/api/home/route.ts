@@ -14,8 +14,6 @@ export async function GET(request: Request) {
     });
 
     const data = await res.json();
-
-    console.log('[Home API] Raw Data:', JSON.stringify(data, null, 2));
     if (!res.ok) {
       return NextResponse.json(
         { message: data?.message || 'Backend Error' },
@@ -31,11 +29,8 @@ export async function GET(request: Request) {
       }));
     }
 
-    console.log('[Home API] Formatted Data:', data);
-
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error('[Home Route Error]:', error);
     return NextResponse.json(
       {
         message: error.message || 'Network Connection Failed',

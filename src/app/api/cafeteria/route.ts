@@ -14,9 +14,6 @@ export async function GET(request: Request) {
 
   try {
     const data = await getCafeteriaData(appCheckToken);
-
-    console.log('[BFF Result Success]:', data);
-
     return NextResponse.json(data);
   } catch (error: any) {
     const status = error.status || HttpStatusCode.INTERNAL_SERVER_ERROR;
