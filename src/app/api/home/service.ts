@@ -1,12 +1,14 @@
 import { HomeResponse } from '@/features/home/types';
-import { request } from '@/utils/request';
+import { serverRequest } from '@/utils/serverRequest';
 
-export const getHomeData = async (): Promise<HomeResponse> => {
-  const HOME_PATH = '/home';
+export const getHomeData = async (token: string): Promise<HomeResponse> => {
+  const HOME_PATH = process.env.HOME_ENDPOINT;
 
-  const response = await request(HOME_PATH, { method: 'GET' });
+  if (!HOME_PATH) {
+    throw new Error('환경 변수 HOME_ENDPOINT가 설정되지 않았습니다.');
+  }
 
-  const data = await response.json();
+  const response = await serverRequest(HOME_PATH, token, { method: 'GET' });
 
-  return data;
+  return response.json();
 };

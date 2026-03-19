@@ -1,7 +1,7 @@
 import { ApiError } from '@/app/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 
-type Scope = 'home' | 'common';
+type Scope = 'home' | 'cafeteria' | 'common';
 
 function common(err: unknown): string | null {
   if (!(err instanceof ApiError)) return '알 수 없는 오류가 발생했어요.';
@@ -26,6 +26,11 @@ const scopeMessages: Record<Exclude<Scope, 'common'>, (err: unknown) => string> 
   home: (err) => {
     return (
       common(err) ?? '홈 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    );
+  },
+  cafeteria: (err) => {
+    return (
+      common(err) ?? '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
 };
