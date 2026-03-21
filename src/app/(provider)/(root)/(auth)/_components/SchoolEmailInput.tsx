@@ -36,7 +36,7 @@ export default function SchoolEmailInput({
         placeholder={placeholder}
         disabled={disabled}
         autoComplete={autoComplete}
-        className="text-normal font-regular placeholder:text-gray4 disabled:text-gray4 max-w-[65%] min-w-0 flex-1 bg-transparent text-black outline-none disabled:cursor-not-allowed"
+        className="text-normal font-regular placeholder:text-gray4 disabled:text-gray4 max-w-full min-w-0 flex-1 bg-transparent text-black outline-none disabled:cursor-not-allowed"
       />
 
       <span className="text-normal font-regular text-gray4 shrink-0">{domain}</span>
