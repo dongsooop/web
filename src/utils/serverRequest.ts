@@ -1,5 +1,5 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { ApiError } from 'next/dist/server/api-utils';
+import { ApiError } from '@/lib/api/apiError';
 
 export const serverRequest = async (url: string, token: string, options: RequestInit = {}) => {
   const baseURL = process.env.BASE_URL;
