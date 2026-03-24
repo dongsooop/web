@@ -1,3 +1,4 @@
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from './apiError';
 
@@ -23,19 +24,36 @@ async function safeReadText(res: Response): Promise<string | null> {
 
 async function readServerMessage(res: Response): Promise<string | null> {
   const json = await safeReadJson(res);
-  if (json && typeof (json as any).message === 'string') return (json as any).message;
+  if (
+    json &&
+    typeof json === 'object' &&
+    'message' in json &&
+    typeof (json as any).message === 'string'
+  ) {
+    return (json as any).message;
+  }
+
   return await safeReadText(res);
 }
 
 export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
+  const token = useAppCheckStore.getState().token;
+
+  if (!token) {
+    throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'APP_CHECK_TOKEN_MISSING');
+  }
+
   let res: Response;
 
   try {
+    const headers = new Headers(init?.headers);
+    headers.set('X-Firebase-AppCheck', token);
+
     res = await fetch(url, {
       ...init,
-      headers: { ...(init?.headers ?? {}) },
+      headers,
     });
-  } catch (error) {
+  } catch {
     throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'Network Failure');
   }
 
