@@ -1,6 +1,6 @@
 import { useAppCheckStore } from '@/store/useAppCheckStore';
-import { ApiError } from '@/app/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
+import { ApiError } from '@/lib/api/apiError';
 
 export const fetcher = async (url: string, options: RequestInit = {}) => {
   const token = useAppCheckStore.getState().token;
