@@ -8,8 +8,14 @@ import Image from 'next/image';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
 
+import { saveAuthUser } from '@/features/auth/authSessionStorage';
+import { useAuthStore } from '@/store/useAuthStore';
+import { registerWebDevice, signIn } from '@/features/auth/api/client';
+import { getErrorMessage } from '@/lib/errors/messages';
+
 export default function SignInForm() {
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,12 +27,15 @@ export default function SignInForm() {
   const handleLogin = async () => {
     setErrorMessage(null);
 
-    if (!email.trim()) {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail) {
       setErrorMessage('학교 Gmail을 입력해 주세요.');
       return;
     }
 
-    if (!password.trim()) {
+    if (!trimmedPassword) {
       setErrorMessage('비밀번호를 입력해 주세요.');
       return;
     }
@@ -34,12 +43,19 @@ export default function SignInForm() {
     try {
       setIsLoading(true);
 
+      await registerWebDevice();
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const result = await signIn({
+        email: `${trimmedEmail}@dongyang.ac.kr`,
+        password: trimmedPassword,
+      });
 
-      router.push('/mypage');
-    } catch {
-      setErrorMessage('로그인에 실패했습니다. 다시 시도해 주세요.');
+      setUser(result.user);
+      saveAuthUser(result.user);
+
+      router.push('/my-page');
+    } catch (error) {
+      setErrorMessage(getErrorMessage('auth', error));
     } finally {
       setIsLoading(false);
     }
@@ -48,6 +64,7 @@ export default function SignInForm() {
   const handleSocialLogin = async (platform: 'kakao' | 'google' | 'apple') => {
     try {
       setErrorMessage(null);
+      setDialogMessage(null);
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -56,7 +73,7 @@ export default function SignInForm() {
         return;
       }
 
-      router.push('/mypage');
+      router.push('/my-page');
     } catch {
       setDialogMessage('소셜 로그인 중 오류가 발생했습니다.');
     }
@@ -103,6 +120,12 @@ export default function SignInForm() {
           />
         </div>
 
+        {errorMessage ? (
+          <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+            {errorMessage}
+          </p>
+        ) : null}
+
         <Button fullWidth variant="primary" onClick={handleLogin} disabled={isLoading}>
           {isLoading ? '로그인 중...' : '로그인'}
         </Button>
@@ -120,6 +143,12 @@ export default function SignInForm() {
         </button>
 
         <SocialLoginButtons onLogin={handleSocialLogin} />
+
+        {dialogMessage ? (
+          <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+            {dialogMessage}
+          </p>
+        ) : null}
       </section>
     </>
   );

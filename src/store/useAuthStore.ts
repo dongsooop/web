@@ -1,11 +1,28 @@
+'use client';
+
+import { AuthUser } from '@/features/auth/types';
 import { create } from 'zustand';
 
 interface AuthState {
-  accessToken: string | null;
-  setAccessToken: (token: string | null) => void;
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+  setUser: (user: AuthUser | null) => void;
+  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  accessToken: null,
-  setAccessToken: (token) => set({ accessToken: token }),
+  user: null,
+  isAuthenticated: false,
+
+  setUser: (user) =>
+    set({
+      user,
+      isAuthenticated: !!user,
+    }),
+
+  clearAuth: () =>
+    set({
+      user: null,
+      isAuthenticated: false,
+    }),
 }));
