@@ -1,11 +1,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { errorMessage } from '@/lib/errors/messages';
 import { mapCafeteriaResponseToUi } from '../mapper';
 import { fetcher } from '@/utils/request';
 import { getWeekKey } from '@/utils/date/date';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
+import { getErrorMessage } from '@/lib/errors/messages';
 
 export const useCafeteriaQuery = () => {
   const { isInitialized } = useAppCheckStore();
@@ -22,6 +22,6 @@ export const useCafeteriaQuery = () => {
 
   return {
     ...query,
-    displayErrorMessage: query.error ? errorMessage('cafeteria', query.error) : null,
+    displayErrorMessage: query.error ? getErrorMessage('cafeteria', query.error) : null,
   };
 };
