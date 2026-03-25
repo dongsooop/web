@@ -19,5 +19,9 @@ export function validateNickname(value: string) {
 }
 
 export function validateEmail(value: string) {
-  return /^[a-zA-Z0-9._%+-]+@dongyang\.ac\.kr$/.test(value);
+  const trimmed = value.trim();
+
+  return (
+    /^[a-zA-Z0-9._%+-]+$/.test(trimmed)
+  );
 }
