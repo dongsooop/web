@@ -43,3 +43,7 @@ export interface BackendRefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface EmailDuplicateCheckRequest {
+  email: string;
+}
