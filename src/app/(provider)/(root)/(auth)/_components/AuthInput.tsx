@@ -3,6 +3,7 @@ interface InputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  hasError?: boolean;
 }
 
 export default function AuthInput({
@@ -10,16 +11,19 @@ export default function AuthInput({
   value,
   onChange,
   placeholder,
+  hasError = false,
 }: InputProps) {
+  const borderClass = hasError
+    ? 'border-red-500 focus:border-red-500'
+    : 'border-gray-300 focus:border-primary';
+
   return (
-    <div className="flex h-[44px] w-full items-center rounded-[8px] border border-gray2 px-4">
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full bg-transparent text-normal font-regular text-black outline-none placeholder:text-gray4"
-      />
-    </div>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={`text-normal placeholder:text-gray4 font-regular h-[44px] w-full rounded-[8px] border bg-white px-4 transition outline-none ${borderClass}`}
+    />
   );
 }
