@@ -1,5 +1,11 @@
 import { apiFetch } from '@/lib/api/apiFetch';
-import type { SignInResponse, SignOutResponse, SignUpRequest, SignUpResponse } from '../types';
+import type {
+  EmailDuplicateCheckRequest,
+  SignInResponse,
+  SignOutResponse,
+  SignUpRequest,
+  SignUpResponse,
+} from '../types';
 
 interface SignInClientPayload {
   email: string;
@@ -9,18 +15,12 @@ interface SignInClientPayload {
 export async function registerWebDevice() {
   return apiFetch<{ success: boolean }>('/api/auth/device', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
 }
 
 export async function signIn(payload: SignInClientPayload) {
   return apiFetch<SignInResponse>('/api/auth/sign-in', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({
       email: payload.email,
       password: payload.password,
@@ -31,9 +31,6 @@ export async function signIn(payload: SignInClientPayload) {
 export async function signUp(payload: SignUpRequest) {
   return apiFetch<SignUpResponse>('/api/auth/sign-up', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(payload),
   });
 }
@@ -41,5 +38,12 @@ export async function signUp(payload: SignUpRequest) {
 export async function signOut() {
   return apiFetch<SignOutResponse>('/api/auth/sign-out', {
     method: 'POST',
+  });
+}
+
+export async function checkEmailDuplicate(payload: EmailDuplicateCheckRequest) {
+  return apiFetch('/api/auth/check/email', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   });
 }
