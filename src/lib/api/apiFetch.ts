@@ -49,6 +49,13 @@ export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
     const headers = new Headers(init?.headers);
     headers.set('X-Firebase-AppCheck', token);
 
+    const isFormData =
+      typeof FormData !== 'undefined' && init?.body instanceof FormData;
+
+    if (!isFormData && !headers.has('Content-Type') && typeof init?.body === 'string') {
+      headers.set('Content-Type', 'application/json');
+    }
+
     res = await fetch(url, {
       ...init,
       headers,

@@ -11,11 +11,13 @@ export const serverRequest = async (url: string, token: string, options: Request
     );
   }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Firebase-AppCheck': token,
-    ...options.headers,
-  };
+  const headers = new Headers(options.headers);
+
+  headers.set('X-Firebase-AppCheck', token);
+  
+  if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
 
   try {
     const response = await fetch(`${baseURL}${url}`, {
