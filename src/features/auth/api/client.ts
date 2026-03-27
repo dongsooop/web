@@ -5,7 +5,7 @@ import type {
   SignOutResponse,
   SignUpRequest,
   SignUpResponse,
-} from '../types';
+} from '../types/authTypes';
 
 interface SignInClientPayload {
   email: string;

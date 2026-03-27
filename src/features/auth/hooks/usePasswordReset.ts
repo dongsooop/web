@@ -6,7 +6,7 @@ import {
   sendPasswordResetCode,
   verifyPasswordResetCode,
 } from '../api/passwordReset';
-import { usePasswordResetStore } from '../store/passwordResetStore';
+import { usePasswordResetStore } from '../stores/passwordResetStore';
 
 export const usePasswordReset = () => {
   const { inputs, status, step, actions } = usePasswordResetStore();
