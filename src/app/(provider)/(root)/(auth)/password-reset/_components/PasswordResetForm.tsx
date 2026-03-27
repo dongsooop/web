@@ -1,218 +1,70 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
-import { validatePassword } from '@/features/auth/validators/authValidators';
-
-type Step = 'email' | 'password';
+import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
+import { analyzePassword, validatePassword } from '@/features/auth/validators/authValidators';
+import { getErrorMessage } from '@/lib/errors/messages';
 
 export default function PasswordResetForm() {
   const router = useRouter();
+  const {
+    inputs,
+    status,
+    step,
+    actions,
+    isLoading,
+    handleCheckEmail,
+    handleSendCode,
+    handleVerifyCode,
+    handleReset,
+  } = usePasswordReset();
 
-  const [step, setStep] = useState<Step>('email');
+  useEffect(() => {
+    if (
+      !status.isCodeSent ||
+      status.isCodeVerified ||
+      status.remainingSeconds <= 0 ||
+      status.error === 'CODE_LIMIT_EXCEEDED'
+    )
+      return;
+    const timer = setInterval(() => actions.tick(), 1000);
+    return () => clearInterval(timer);
+  }, [status.isCodeSent, status.isCodeVerified, status.remainingSeconds, status.error, actions]);
 
-  const [email, setEmail] = useState('');
-  const [emailCode, setEmailCode] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
+  const onResetSubmit = async () => {
+    const analysis = analyzePassword(inputs.pass);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
-  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-
-  const [isEmailChecked, setIsEmailChecked] = useState(false);
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [isCodeVerified, setIsCodeVerified] = useState(false);
-
-  const [emailError, setEmailError] = useState(false);
-  const [emailCodeError, setEmailCodeError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordCheckError, setPasswordCheckError] = useState(false);
-
-  const isEmailValid = useMemo(() => {
-    return email.trim().length > 0 && emailCode.trim().length > 0 && isCodeVerified;
-  }, [email, emailCode, isCodeVerified]);
-
-  const isPasswordValid = useMemo(() => {
-    return (
-      password.trim().length > 0 &&
-      passwordCheck.trim().length > 0 &&
-      validatePassword(password) &&
-      password === passwordCheck
-    );
-  }, [password, passwordCheck]);
-
-  const emailButtonVariant = !email.trim() || isEmailChecked ? 'gray' : 'primary';
-  const emailButtonDisabled = !email.trim() || isEmailChecked;
-
-  const sendCodeButtonVariant = !isEmailChecked || isCodeSent ? 'gray' : 'primary';
-  const sendCodeButtonDisabled = !isEmailChecked || isCodeSent;
-
-  const verifyCodeButtonVariant =
-    !isEmailChecked || !emailCode.trim() || isCodeVerified ? 'gray' : 'primary';
-  const verifyCodeButtonDisabled = !isEmailChecked || !emailCode.trim() || isCodeVerified;
-
-  const handleChangeEmail = (value: string) => {
-    setEmail(value);
-
-    setEmailError(false);
-    setEmailCodeError(false);
-    setPasswordError(false);
-    setPasswordCheckError(false);
-
-    setIsEmailChecked(false);
-    setIsCodeSent(false);
-    setIsCodeVerified(false);
-    setEmailCode('');
-  };
-
-  const handleChangeEmailCode = (value: string) => {
-    setEmailCode(value);
-    setEmailCodeError(false);
-    setIsCodeVerified(false);
-  };
-
-  const handleChangePassword = (value: string) => {
-    setPassword(value);
-    setPasswordError(false);
-    setPasswordCheckError(false);
-  };
-
-  const handleChangePasswordCheck = (value: string) => {
-    setPasswordCheck(value);
-    setPasswordCheckError(false);
-  };
-
-  const handleCheckEmail = async () => {
-    if (!email.trim()) {
-      setEmailError(true);
+    if (!analysis.isValid) {
+      actions.setStatus({ error: 'INVALID_PASSWORD_FORMAT' });
       return;
     }
 
-    setEmailError(false);
-
-    try {
-      setIsCheckingEmail(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setIsEmailChecked(true);
-    } finally {
-      setIsCheckingEmail(false);
-    }
-  };
-
-  const handleSendCode = async () => {
-    if (!isEmailChecked) {
+    if (inputs.pass !== inputs.passCheck) {
+      actions.setStatus({ error: 'PASSWORD_MISMATCH' });
       return;
     }
 
-    setEmailError(false);
-
-    try {
-      setIsSendingCode(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setIsCodeSent(true);
-    } finally {
-      setIsSendingCode(false);
+    const isSuccess = await handleReset();
+    if (isSuccess) {
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+      router.push('/sign-in');
     }
   };
 
-  const handleVerifyCode = async () => {
-    if (!emailCode.trim()) {
-      setEmailCodeError(true);
-      return;
-    }
-
-    setEmailCodeError(false);
-
-    try {
-      setIsVerifyingCode(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setIsCodeVerified(true);
-    } finally {
-      setIsVerifyingCode(false);
-    }
-  };
-
-  const handleNext = () => {
-    let hasError = false;
-
-    if (!email.trim()) {
-      setEmailError(true);
-      hasError = true;
-    }
-
-    if (!emailCode.trim()) {
-      setEmailCodeError(true);
-      hasError = true;
-    }
-
-    if (!isEmailChecked || !isCodeSent || !isCodeVerified) {
-      if (!email.trim()) {
-        setEmailError(true);
-      }
-      if (!emailCode.trim()) {
-        setEmailCodeError(true);
-      }
-      hasError = true;
-    }
-
-    if (hasError) {
-      return;
-    }
-
-    setStep('password');
-  };
-
-  const handlePasswordReset = async () => {
-    let hasError = false;
-
-    if (!password.trim()) {
-      setPasswordError(true);
-      hasError = true;
-    }
-
-    if (!passwordCheck.trim()) {
-      setPasswordCheckError(true);
-      hasError = true;
-    }
-
-    if (password.trim() && !validatePassword(password)) {
-      setPasswordError(true);
-      hasError = true;
-    }
-
-    if (passwordCheck.trim() && password !== passwordCheck) {
-      setPasswordCheckError(true);
-      hasError = true;
-    }
-
-    if (hasError) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      await new Promise((resolve) => setTimeout(resolve, 700));
-      router.back();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const errorMessage = status.error
+    ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
+    : '';
 
   return (
-    <>
-      <section className="flex w-full max-w-[480px] flex-col gap-8 px-5 py-12">
+    <div className="flex w-full max-w-[480px] flex-col gap-12">
+      <section className="flex flex-col gap-8">
         <header className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold text-black">비밀번호 재설정</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-title font-bold text-black">비밀번호 재설정</h1>
+          <p className="text-normal text-gray-500">
             {step === 'email'
               ? '학교 이메일과 인증 코드를 입력해 주세요.'
               : '새로운 비밀번호를 입력해 주세요.'}
@@ -224,108 +76,146 @@ export default function PasswordResetForm() {
             <div className="flex gap-2">
               <div className="min-w-0 flex-1">
                 <SchoolEmailInput
-                  value={email}
-                  onChange={handleChangeEmail}
+                  value={inputs.email}
+                  onChange={(v) => actions.setField('email', v)}
                   placeholder="학교 Gmail 입력"
-                  hasError={emailError}
+                  disabled={status.isEmailChecked}
                 />
               </div>
-
               <Button
-                variant={emailButtonVariant}
-                height="default"
+                variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
                 onClick={handleCheckEmail}
-                disabled={emailButtonDisabled}
-                isLoading={isCheckingEmail}
-                className="shrink-0 whitespace-nowrap"
+                disabled={!inputs.email.trim() || status.isEmailChecked}
+                isLoading={isLoading && !status.isCodeSent}
               >
-                확인
+                {status.isEmailChecked ? '확인 완료' : '확인'}
               </Button>
             </div>
 
-            <div className="flex gap-2">
-              <div className="min-w-0 flex-1">
-                <AuthInput
-                  type="text"
-                  value={emailCode}
-                  onChange={handleChangeEmailCode}
-                  placeholder="인증 코드 입력"
-                  hasError={emailCodeError}
-                />
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <div className="min-w-0 flex-1">
+                  <AuthInput
+                    value={inputs.code}
+                    onChange={(v) => actions.setField('code', v)}
+                    placeholder="인증 코드 입력"
+                    disabled={!status.isCodeSent || status.isCodeVerified}
+                  />
+                </div>
+                <Button
+                  variant={
+                    status.isEmailChecked &&
+                    !status.isCodeVerified &&
+                    (status.error === 'CODE_LIMIT_EXCEEDED' ||
+                      !(status.isCodeSent && status.remainingSeconds > 0))
+                      ? 'primary'
+                      : 'gray'
+                  }
+                  onClick={handleSendCode}
+                  disabled={
+                    !status.isEmailChecked ||
+                    status.isCodeVerified ||
+                    (status.isCodeSent &&
+                      status.remainingSeconds > 0 &&
+                      status.error !== 'CODE_LIMIT_EXCEEDED')
+                  }
+                >
+                  {(() => {
+                    if (status.error === 'CODE_LIMIT_EXCEEDED') return '재전송';
+                    if (!status.isCodeSent) return '인증 요청';
+                    if (status.isCodeVerified) return '인증 완료';
+                    if (status.remainingSeconds > 0) {
+                      const m = Math.floor(status.remainingSeconds / 60);
+                      const s = String(status.remainingSeconds % 60).padStart(2, '0');
+                      return `${m}:${s}`;
+                    }
+                    return '재전송';
+                  })()}
+                </Button>
+                <Button
+                  variant={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
+                  onClick={handleVerifyCode}
+                  disabled={!status.isCodeSent || status.isCodeVerified || !inputs.code}
+                  isLoading={isLoading && status.isCodeSent && !status.isCodeVerified}
+                >
+                  {status.isCodeVerified ? '완료' : '확인'}
+                </Button>
               </div>
-
-              <Button
-                variant={sendCodeButtonVariant}
-                height="default"
-                onClick={handleSendCode}
-                disabled={sendCodeButtonDisabled}
-                isLoading={isSendingCode}
-                className="shrink-0 whitespace-nowrap"
-              >
-                인증 요청
-              </Button>
-
-              <Button
-                variant={verifyCodeButtonVariant}
-                height="default"
-                onClick={handleVerifyCode}
-                disabled={verifyCodeButtonDisabled}
-                isLoading={isVerifyingCode}
-                className="shrink-0 whitespace-nowrap"
-              >
-                확인
-              </Button>
+              {errorMessage && <p className="text-warning text-normal pt-2">{errorMessage}</p>}
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <AuthInput
-              type="password"
-              value={password}
-              onChange={handleChangePassword}
-              placeholder="새 비밀번호를 입력해 주세요"
-              hasError={passwordError}
-            />
+            <div className="flex flex-col gap-2">
+              <AuthInput
+                type="password"
+                value={inputs.pass}
+                onChange={(v) => actions.setField('pass', v)}
+                placeholder="새 비밀번호"
+              />
+              {(() => {
+                const analysis = analyzePassword(inputs.pass);
+                const isPassEmpty = inputs.pass.length === 0;
 
-            <AuthInput
-              type="password"
-              value={passwordCheck}
-              onChange={handleChangePasswordCheck}
-              placeholder="비밀번호를 다시 입력해 주세요"
-              hasError={passwordCheckError}
-            />
+                return (
+                  <p
+                    className={`text-small text-regular ${!analysis.isValid && !isPassEmpty ? 'text-warning' : 'text-gray4'}`}
+                  >
+                    {isPassEmpty
+                      ? '8자 이상, 영문/숫자/특수문자 포함'
+                      : analysis.message || '사용 가능한 비밀번호입니다.'}
+                  </p>
+                );
+              })()}
+            </div>
 
-            <p className="text-xs text-gray-500">
-              비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 포함해야 해요.
-            </p>
+            <div className="flex flex-col gap-2">
+              <AuthInput
+                type="password"
+                value={inputs.passCheck}
+                onChange={(v) => actions.setField('passCheck', v)}
+                placeholder="비밀번호 확인"
+              />
+              {inputs.passCheck.length > 0 && inputs.pass !== inputs.passCheck && (
+                <p className="text-warning text-xs font-medium">비밀번호가 일치하지 않아요.</p>
+              )}
+            </div>
           </div>
         )}
       </section>
 
-      <div className="sticky bottom-0 w-full border-t border-gray-100 bg-white px-5 py-4">
+      <footer className="flex flex-col gap-2">
         {step === 'email' ? (
           <Button
             fullWidth
             variant="primary"
             height="cta"
-            onClick={handleNext}
-            disabled={!isEmailValid}
+            onClick={() => actions.setStep('password')}
+            disabled={!status.isCodeVerified}
           >
             다음
           </Button>
         ) : (
-          <Button
-            fullWidth
-            variant="primary"
-            height="cta"
-            onClick={handlePasswordReset}
-            disabled={!isPasswordValid}
-            isLoading={isLoading}
-          >
-            비밀번호 변경하기
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="gray" className="flex-1" onClick={() => actions.setStep('email')}>
+              이전
+            </Button>
+            <Button
+              className="flex-[2]"
+              height="cta"
+              variant={
+                validatePassword(inputs.pass) && inputs.pass === inputs.passCheck
+                  ? 'primary'
+                  : 'gray'
+              }
+              onClick={onResetSubmit}
+              isLoading={isLoading}
+            >
+              비밀번호 변경하기
+            </Button>
+          </div>
         )}
-      </div>
-    </>
+      </footer>
+    </div>
   );
 }

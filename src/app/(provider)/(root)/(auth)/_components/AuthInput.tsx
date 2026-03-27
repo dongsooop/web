@@ -4,6 +4,7 @@ interface InputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   hasError?: boolean;
+  disabled?: boolean;
 }
 
 export default function AuthInput({
@@ -12,10 +13,11 @@ export default function AuthInput({
   onChange,
   placeholder,
   hasError = false,
+  disabled,
 }: InputProps) {
   const borderClass = hasError
     ? 'border-red-500 focus:border-red-500'
-    : 'border-gray-300 focus:border-primary';
+    : 'border-gray2 focus:border-primary';
 
   return (
     <input
@@ -23,7 +25,8 @@ export default function AuthInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`text-normal placeholder:text-gray4 font-regular h-[44px] w-full rounded-[8px] border bg-white px-4 transition outline-none ${borderClass}`}
+      disabled={disabled}
+      className={`text-normal placeholder:text-gray4 font-regular h-[44px] w-full rounded-[8px] border bg-white px-4 text-black transition outline-none ${borderClass}`}
     />
   );
 }
