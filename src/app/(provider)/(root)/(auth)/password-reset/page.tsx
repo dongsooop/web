@@ -2,7 +2,7 @@ import PasswordResetForm from './_components/PasswordResetForm';
 
 export default function PasswordResetPage() {
   return (
-    <main className="mx-auto flex min-h-dvh w-full flex-col bg-white">
+    <main className="flex min-h-screen w-full flex-col items-center px-5 pt-20">
       <PasswordResetForm />
     </main>
   );
