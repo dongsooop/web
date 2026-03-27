@@ -29,7 +29,10 @@ function common(err: unknown): string | null {
   return '알 수 없는 오류가 발생했어요.';
 }
 
-const scopeMessages: Record<Exclude<Scope, 'common'>, (err: unknown) => string> = {
+const scopeMessages: Record<
+  Exclude<Scope, 'common'>,
+  (err: unknown, context?: string) => string
+> = {
   home: (err) => {
     return (
       common(err) ?? '홈 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
@@ -41,25 +44,39 @@ const scopeMessages: Record<Exclude<Scope, 'common'>, (err: unknown) => string> 
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
-  auth: (err) => {
+  auth: (err, context) => {
+    if (context) {
+      if (typeof err === 'string') {
+        switch (err) {
+          case 'EMAIL_NOT_FOUND':
+            return '가입되지 않은 학교 이메일이에요.';
+          case 'INVALID_INPUT':
+            return '이메일 형식이 올바르지 않아요.';
+          case 'PASSWORD_MISMATCH':
+            return '비밀번호가 일치하지 않아요. 다시 확인해 주세요.';
+          case 'CODE_LIMIT_EXCEEDED':
+            return '인증 시도 횟수를 초과했어요. 다시 시도해주세요';
+          default:
+            break;
+        }
+      }
+      if (err instanceof ApiError) {
+        if (context === 'verifyCode' && err.status === HttpStatusCode.BAD_REQUEST) {
+          return '인증 코드가 일치하지 않아요.';
+        }
+      }
+    }
     if (err instanceof ApiError) {
-      if (err.status === HttpStatusCode.BAD_REQUEST) {
+      if (err.status === HttpStatusCode.BAD_REQUEST)
         return '아이디 또는 비밀번호가 잘못되었습니다.';
-      }
-
-      if (err.status === HttpStatusCode.FORBIDDEN) {
-        return '현재 제재 중인 계정입니다. 고객센터에 문의해주세요.';
-      }
-
-      if (err.status === HttpStatusCode.NOT_FOUND) {
-        return '등록된 회원 정보를 찾을 수 없습니다.';
-      }
+      if (err.status === HttpStatusCode.FORBIDDEN) return '현재 제재 중인 계정입니다.';
+      if (err.status === HttpStatusCode.NOT_FOUND) return '등록된 회원 정보를 찾을 수 없습니다.';
     }
 
     return common(err) ?? '로그인 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
   },
 };
 
-export function getErrorMessage(scope: Scope, err: unknown) {
-  return scopeMessages[scope](err);
+export function getErrorMessage(scope: Scope, err: unknown, context?: string | null) {
+  return scopeMessages[scope](err, context ?? undefined);
 }
