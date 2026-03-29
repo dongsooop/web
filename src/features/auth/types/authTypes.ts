@@ -44,6 +44,10 @@ export interface BackendRefreshResponse {
   refreshToken: string;
 }
 
-export interface EmailDuplicateCheckRequest {
+export interface EmailValidateRequest {
   email: string;
+}
+
+export interface NicknameValidateRequest {
+  nickname: string;
 }
