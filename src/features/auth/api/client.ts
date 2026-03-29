@@ -45,9 +45,11 @@ export async function signOut() {
 
 // 이메일 중복체크
 export async function checkEmailDuplicate(payload: EmailValidateRequest) {
+  const fullEmail = payload.email.includes('@') ? payload.email : `${payload.email}@dongyang.ac.kr`;
+
   return apiFetch('/api/auth/check/email', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ email: fullEmail }),
   });
 }
 
