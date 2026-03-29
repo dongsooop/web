@@ -2,10 +2,7 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { serverRequest } from '@/utils/serverRequest';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiError } from '@/lib/api/apiError';
-
-interface EmailValidateRequest {
-  email: string;
-}
+import { EmailValidateRequest } from '@/features/auth/types/authTypes';
 
 export async function POST(request: NextRequest) {
   const endpoint = process.env.EMAIL_VALIDATE_ENDPOINT;
