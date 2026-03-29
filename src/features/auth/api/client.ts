@@ -1,11 +1,13 @@
 import { apiFetch } from '@/lib/api/apiFetch';
 import type {
-  EmailDuplicateCheckRequest,
+  EmailValidateRequest,
+  NicknameValidateRequest,
   SignInResponse,
   SignOutResponse,
   SignUpRequest,
   SignUpResponse,
 } from '../types/authTypes';
+import { SendCodeRequest, VerifyCodeRequest } from '../types/passwordResetTypes';
 
 interface SignInClientPayload {
   email: string;
@@ -41,8 +43,33 @@ export async function signOut() {
   });
 }
 
-export async function checkEmailDuplicate(payload: EmailDuplicateCheckRequest) {
+// 이메일 중복체크
+export async function checkEmailDuplicate(payload: EmailValidateRequest) {
   return apiFetch('/api/auth/check/email', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+// 닉네임 중복체크
+export async function checkNicknameDuplicate(payload: NicknameValidateRequest) {
+  return apiFetch('/api/auth/check/nickname', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+// 인증코드 전송
+export async function sendCode(payload: SendCodeRequest) {
+  return apiFetch('/api/auth/sign-up/email/send-code', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+// 인증 코드 확인
+export async function verifyCode(payload: VerifyCodeRequest) {
+  return apiFetch<void>('/api/auth/sign-up/email/verify-code', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
