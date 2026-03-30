@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useSignUpStore } from '../stores/signUpStore';
-import { validatePassword, validateNickname } from '../validators/authValidators';
+import { validatePassword, validateNickname, buildSchoolEmail } from '../validators/authValidators';
 import {
   checkEmailDuplicate,
   checkNicknameDuplicate,
@@ -39,7 +39,7 @@ export const useSignUp = () => {
   const sendCodeMutation = useMutation({
     mutationFn: () =>
       sendCode({
-        userEmail: `${inputs.email}@dongyang.ac.kr`,
+        userEmail: buildSchoolEmail(inputs.email),
       }),
     onSuccess: () => {
       actions.setStatus({
@@ -55,7 +55,7 @@ export const useSignUp = () => {
   const verifyCodeMutation = useMutation({
     mutationFn: () =>
       verifyCode({
-        userEmail: `${inputs.email}@dongyang.ac.kr`,
+        userEmail: buildSchoolEmail(inputs.email),
         code: status.emailCode,
       }),
     onSuccess: () => {
@@ -89,7 +89,6 @@ export const useSignUp = () => {
       actions.setStatus({ dialogMessage: '회원가입에 성공했습니다.' });
     },
     onError: (error) => {
-      handleError(error, 'signUp');
       const message = getErrorMessage('signup', error, 'signUp');
       actions.setStatus({ dialogMessage: message });
     },
@@ -153,7 +152,7 @@ export const useSignUp = () => {
       const { email, password, nickname, departmentType } = inputs;
 
       const finalPayload = {
-        email: `${email}@dongyang.ac.kr`,
+        email: buildSchoolEmail(email),
         password: password,
         nickname: nickname,
         departmentType: departmentType as DepartmentType,
