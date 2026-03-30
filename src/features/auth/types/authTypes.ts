@@ -18,7 +18,7 @@ export interface SignUpRequest {
   email: string;
   password: string;
   nickname: string;
-  department: string;
+  departmentType: string;
 }
 
 export interface SignInResponse {
