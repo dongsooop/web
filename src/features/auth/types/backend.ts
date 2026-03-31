@@ -9,12 +9,25 @@ export interface BackendUser {
 }
 
 export interface BackendSignInResponse {
+  id: number;
+  email: string;
+  nickname: string;
+  departmentType: string;
+  role: string[];
   accessToken: string;
   refreshToken: string;
-  user: BackendUser;
 }
 
 export interface BackendRefreshResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface JwtAccessPayload {
+  sub: string;
+  role: string[];
+  type: 'ACCESS';
+  iat: number;
+  exp: number;
+  did?: number;
 }

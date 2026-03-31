@@ -1,8 +1,8 @@
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { ApiError } from './apiError';
+import { ApiError } from '@/lib/api/apiError';
 
-// TODO: 점진적으로 clientRequest.ts로 이전 예정
+// Browser -> Next API 요청
 async function safeReadJson(res: Response): Promise<unknown | null> {
   const contentType = res.headers.get('content-type') ?? '';
   if (!contentType.includes('application/json')) return null;
@@ -25,19 +25,24 @@ async function safeReadText(res: Response): Promise<string | null> {
 
 async function readServerMessage(res: Response): Promise<string | null> {
   const json = await safeReadJson(res);
+
   if (
     json &&
     typeof json === 'object' &&
     'message' in json &&
-    typeof (json as any).message === 'string'
+    typeof (json as { message?: unknown }).message === 'string'
   ) {
-    return (json as any).message;
+    return (json as { message: string }).message;
   }
 
   return await safeReadText(res);
 }
 
-export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
+// auth 기능부터 우선 적용
+export async function clientRequest<T>(
+  url: string,
+  init?: RequestInit,
+): Promise<T> {
   const token = useAppCheckStore.getState().token;
 
   if (!token) {
@@ -60,6 +65,7 @@ export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
     res = await fetch(url, {
       ...init,
       headers,
+      credentials: 'include',
     });
   } catch {
     throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'Network Failure');

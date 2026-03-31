@@ -1,6 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
+// TODO: 점진적으로 serverFetch.ts로 이전 예정
 export const serverRequest = async (url: string, token: string, options: RequestInit = {}) => {
   const baseURL = process.env.BASE_URL;
 

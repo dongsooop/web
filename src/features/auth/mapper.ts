@@ -1,8 +1,8 @@
-import { BackendSignInResponse, BackendUser } from "./types/backend";
-import { SessionResponse, SignInResponse, UserResponse } from "./types/response";
-import { User } from "./types/ui-model";
+import { BackendSignInResponse, BackendUser } from './types/backend';
+import { SessionResponse, SignInResponse, UserResponse } from './types/response';
+import { User } from './types/ui-model';
 
-export function toUserResponse(user: BackendUser): UserResponse{
+export function toUserResponse(user: BackendUser): UserResponse {
   return {
     id: user.id,
     email: user.email,
@@ -14,7 +14,13 @@ export function toUserResponse(user: BackendUser): UserResponse{
 
 export function toSignInResponse(data: BackendSignInResponse): SignInResponse {
   return {
-    user: toUserResponse(data.user),
+    user: {
+      id: data.id,
+      email: data.email,
+      nickname: data.nickname,
+      departmentType: data.departmentType,
+      role: data.role,
+    },
   };
 }
 
