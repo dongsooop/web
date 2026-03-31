@@ -8,7 +8,7 @@ import {
   sendCode,
   verifyCode,
   signUp,
-} from '../api/client';
+} from '../api/authApi';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { DepartmentType } from '@/constants/department';
 

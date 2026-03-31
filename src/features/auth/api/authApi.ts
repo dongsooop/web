@@ -1,9 +1,9 @@
 import { apiFetch } from '@/lib/api/apiFetch';
 import type {
   EmailValidateRequest,
+  LogoutResponse,
   NicknameValidateRequest,
   SignInResponse,
-  SignOutResponse,
   SignUpRequest,
   SignUpResponse,
 } from '../types/authTypes';
@@ -37,8 +37,8 @@ export async function signUp(payload: SignUpRequest) {
   });
 }
 
-export async function signOut() {
-  return apiFetch<SignOutResponse>('/api/auth/sign-out', {
+export async function logout() {
+  return apiFetch<LogoutResponse>('/api/auth/logout', {
     method: 'POST',
   });
 }
