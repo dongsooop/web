@@ -2,9 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
+
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 const NAV = [
   { href: '/home', label: '홈' },
@@ -23,19 +25,23 @@ function isActivePath(pathname: string, href: string) {
 
 export default function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { isLoggedIn, logout, isLoading } = useAuth();
 
+  const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
+
     window.addEventListener('keydown', onKeyDown);
 
     if (open) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+
       return () => {
         document.body.style.overflow = prev;
         window.removeEventListener('keydown', onKeyDown);
@@ -50,14 +56,25 @@ export default function Header() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (!open) return;
+
       const target = e.target as Node;
       if (drawerRef.current && !drawerRef.current.contains(target)) {
         setOpen(false);
       }
     };
+
     window.addEventListener('mousedown', onClick);
     return () => window.removeEventListener('mousedown', onClick);
   }, [open]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/sign-in');
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <>
@@ -83,6 +100,7 @@ export default function Header() {
           <nav className="hidden items-center gap-8 md:flex lg:hidden">
             {NAV.map((item) => {
               const active = isActivePath(pathname, item.href);
+
               return (
                 <Link
                   key={item.href}
@@ -101,21 +119,23 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center">
-            <Link
-              href="/my-page"
-              className="hover:bg-gray1 inline-flex h-10 w-10 items-center justify-center rounded-full"
-              aria-label="마이페이지"
-            >
-              <div className="border-gray2 flex h-9 w-9 items-center justify-center rounded-full border bg-white">
-                <Image
-                  src="/img/profile.png"
-                  alt="프로필"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              </div>
-            </Link>
+            {isLoggedIn ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoading}
+                className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+              >
+                {isLoading ? '처리 중...' : '로그아웃'}
+              </button>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+              >
+                로그인
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -168,27 +188,24 @@ export default function Header() {
               </ul>
 
               <div className="border-gray2 mt-4 border-t pt-4">
-                <Link
-                  href="/my-page"
-                  onClick={() => setOpen(false)}
-                  className="hover:bg-gray1 flex items-center gap-3 rounded-xl px-3 py-3"
-                >
-                  <div className="border-gray2 flex h-10 w-10 items-center justify-center rounded-full border bg-white">
-                    <Image
-                      src="/img/profile.png"
-                      alt="프로필"
-                      width={36}
-                      height={36}
-                      unoptimized
-                      className="h-9 w-9 rounded-full object-cover"
-                    />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="text-normal font-semibold text-black">마이페이지</div>
-                    <div className="text-small text-gray6">프로필 보기</div>
-                  </div>
-                </Link>
+                {isLoggedIn ? (
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={isLoading}
+                    className="hover:bg-gray1 text-normal flex w-full items-center rounded-xl px-3 py-3 text-left font-semibold text-black"
+                  >
+                    {isLoading ? '처리 중...' : '로그아웃'}
+                  </button>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setOpen(false)}
+                    className="hover:bg-gray1 text-normal flex items-center rounded-xl px-3 py-3 font-semibold text-black"
+                  >
+                    로그인
+                  </Link>
+                )}
               </div>
             </nav>
           </div>
