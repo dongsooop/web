@@ -45,21 +45,6 @@ function getRequiredEndpoint(name: string): string {
 }
 
 // Next -> Spring auth API
-export async function registerWebDeviceWithSpring(
-  payload: { deviceToken: string; type: 'WEB' },
-  options: ServerAuthRequestOptions = {},
-): Promise<Response> {
-  const endpoint = getRequiredEndpoint('DEVICE_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
-
-  return serverFetch(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers,
-    appCheckToken: options.appCheckToken,
-  });
-}
-
 export async function signInWithSpring(
   payload: SignInRequest,
   options: SignInWithSpringOptions,
@@ -99,9 +84,23 @@ export async function signUpWithSpring(
   });
 }
 
-export async function logoutWithSpring(options: ServerAuthRequestOptions = {}): Promise<Response> {
+// 로그아웃
+interface LogoutWithSpringOptions extends ServerAuthRequestOptions {
+  accessToken?: string;
+  deviceToken?: string;
+}
+
+export async function logoutWithSpring(options: LogoutWithSpringOptions = {}): Promise<Response> {
   const endpoint = getRequiredEndpoint('LOGOUT_ENDPOINT');
   const headers = createHeaders(options.cookieHeader);
+
+  if (options.accessToken) {
+    headers.set('Authorization', `Bearer ${options.accessToken}`);
+  }
+
+  if (options.deviceToken) {
+    headers.set('Device-Token', options.deviceToken);
+  }
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -214,4 +213,3 @@ export async function resetPasswordWithSpring(
     appCheckToken: options.appCheckToken,
   });
 }
-
