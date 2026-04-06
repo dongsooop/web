@@ -1,46 +1,28 @@
-import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { serverRequest } from '@/utils/serverRequest';
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
+
+import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
-import type { BackendSignInResponse, SignInRequest } from '@/features/auth/types';
 
-function setAuthCookies(response: NextResponse, accessToken: string, refreshToken: string) {
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
-    path: '/',
-  };
-
-  response.cookies.set('access_token', accessToken, cookieOptions);
-  response.cookies.set('refresh_token', refreshToken, cookieOptions);
-}
+import type { SignInRequest } from '@/features/auth/types/request';
+import type { BackendSignInResponse } from '@/features/auth/types/backend';
+import { signInWithSpring } from '@/features/auth/server/auth.api';
+import { setAuthCookies, setDeviceCookies } from '@/features/auth/server/auth.cookies';
+import { toSignInResponse } from '@/features/auth/mapper';
 
 export async function POST(request: NextRequest) {
-  const endpoint = process.env.LOGIN_ENDPOINT;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
-  const deviceToken = request.cookies.get('device_token')?.value || '';
-  const deviceType = request.cookies.get('device_type')?.value || 'WEB';
+  const existingDeviceToken = request.cookies.get('device_token')?.value;
+  const existingDeviceType = request.cookies.get('device_type')?.value || 'WEB';
+
+  const deviceToken = existingDeviceToken || randomUUID();
+  const deviceType = existingDeviceType || 'WEB';
 
   if (!appCheckToken) {
     return NextResponse.json(
       { message: 'Unauthorized: App Check token is missing' },
       { status: HttpStatusCode.UNAUTHORIZED },
-    );
-  }
-
-  if (!deviceToken) {
-    return NextResponse.json(
-      { message: '등록되지 않은 기기입니다.' },
-      { status: HttpStatusCode.BAD_REQUEST },
-    );
-  }
-
-  if (!endpoint) {
-    return NextResponse.json(
-      { message: '로그인 서비스를 현재 사용할 수 없습니다.' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
     );
   }
 
@@ -54,38 +36,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payload = {
-      email: body.email,
-      password: body.password,
-      fcmToken: deviceToken,
+    const data: BackendSignInResponse = await signInWithSpring(body, {
+      appCheckToken,
+      deviceToken,
       deviceType,
-    };
-
-    console.log('[SIGN_IN_ROUTE] payload:', {
-      email: payload.email,
-      password: '******',
-      fcmToken: payload.fcmToken,
-      deviceType: payload.deviceType,
     });
 
-    const response = await serverRequest(endpoint, appCheckToken, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = NextResponse.json(toSignInResponse(data), { status: HttpStatusCode.OK });
 
-    const data = (await response.json()) as BackendSignInResponse;
+    setAuthCookies(response, data.accessToken, data.refreshToken);
+    setDeviceCookies(response, deviceToken, deviceType);
 
-    const nextResponse = NextResponse.json({ user: data.user }, { status: HttpStatusCode.OK });
-
-    setAuthCookies(nextResponse, data.accessToken, data.refreshToken);
-
-    return nextResponse;
+    return response;
   } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json({ message: error.message }, { status: error.status });
+    }
+
+    if (error instanceof Error && error.message.endsWith('is missing')) {
+      return NextResponse.json(
+        { message: '로그인 서비스를 현재 사용할 수 없습니다.' },
+        { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      );
     }
 
     return NextResponse.json(
