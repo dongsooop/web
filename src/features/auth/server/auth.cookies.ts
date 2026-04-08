@@ -25,7 +25,7 @@ const DEVICE_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
   path: '/',
-  maxAge: 60 * 60 * 24 * 7, // 7일
+  maxAge: 60 * 60 * 24 * 30, // 30일
 };
 
 // ===== auth cookies =====
