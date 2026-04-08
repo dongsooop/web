@@ -2,25 +2,23 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
 import Button from '@/components/ui/Button';
 import SocialLoginButtons from './SocialButtons';
-import Image from 'next/image';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
 
-import { saveAuthUser } from '@/features/auth/authSessionStorage';
-import { useAuthStore } from '@/store/useAuthStore';
-import { registerWebDevice, signIn } from '@/features/auth/api/client';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { getErrorMessage } from '@/lib/errors/messages';
 
 export default function SignInForm() {
   const router = useRouter();
-  const setUser = useAuthStore((state) => state.setUser);
+  const { signIn, isLoading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
 
@@ -41,23 +39,14 @@ export default function SignInForm() {
     }
 
     try {
-      setIsLoading(true);
-
-      await registerWebDevice();
-
-      const result = await signIn({
+      await signIn({
         email: `${trimmedEmail}@dongyang.ac.kr`,
         password: trimmedPassword,
       });
 
-      setUser(result.user);
-      saveAuthUser(result.user);
-
-      router.push('/my-page');
+      router.push('/home');
     } catch (error) {
       setErrorMessage(getErrorMessage('auth', error));
-    } finally {
-      setIsLoading(false);
     }
   };
 
