@@ -6,8 +6,6 @@ export type DeviceType = 'WEB' | 'ANDROID' | 'IOS';
 export interface SignInRequest {
   email: string;
   password: string;
-  fcmToken: string;
-  deviceType: DeviceType;
 }
 
 // 회원가입
