@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { Menu, X } from 'lucide-react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -26,191 +24,68 @@ function isActivePath(pathname: string, href: string) {
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isLoggedIn, logout, isLoading } = useAuth();
+  const { isLoggedIn, logout, loading } = useAuth();
 
-  const [open, setOpen] = useState(false);
-  const drawerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-
-    if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-
-      return () => {
-        document.body.style.overflow = prev;
-        window.removeEventListener('keydown', onKeyDown);
-      };
-    }
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open]);
-
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (!open) return;
-
-      const target = e.target as Node;
-      if (drawerRef.current && !drawerRef.current.contains(target)) {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener('mousedown', onClick);
-    return () => window.removeEventListener('mousedown', onClick);
-  }, [open]);
+  const isLoggingOut = loading.loggingOut;
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+
     try {
       await logout();
-      router.push('/sign-in');
-    } finally {
-      setOpen(false);
-    }
+      router.replace('/sign-in');
+    } catch {}
   };
 
   return (
-    <>
-      <header className="border-gray2 sticky top-0 z-40 w-full border-b bg-white">
-        <div className="flex h-14 w-full items-center justify-between px-4">
-          <div className="flex items-center gap-2">
+    <header className="border-gray2 sticky top-0 z-40 w-full border-b bg-white">
+      <div className="flex h-14 w-full items-center justify-between px-4">
+        <Link href="/home" className="flex items-center gap-2">
+          <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
+          <span className="text-large font-semibold text-black">Dongsoop</span>
+        </Link>
+
+        <nav className="hidden items-center gap-8 md:flex lg:hidden">
+          {NAV.map((item) => {
+            const active = isActivePath(pathname, item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cx(
+                  'text-normal font-regular border-b-2 pb-1 transition-colors duration-200',
+                  active
+                    ? 'border-primary text-primary'
+                    : 'hover:text-primary border-transparent text-black',
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="flex items-center">
+          {isLoggedIn ? (
             <button
               type="button"
-              className="hover:bg-gray1 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full active:scale-[0.98] md:hidden"
-              aria-label={open ? '메뉴 닫기' : '메뉴 열기'}
-              aria-expanded={open}
-              onClick={() => setOpen(true)}
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Menu className="h-5 w-5 text-black" aria-hidden />
+              {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
             </button>
-
-            <Link href="/home" className="flex items-center gap-2">
-              <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
-              <span className="text-large font-semibold text-black">Dongsoop</span>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+            >
+              로그인
             </Link>
-          </div>
-
-          <nav className="hidden items-center gap-8 md:flex lg:hidden">
-            {NAV.map((item) => {
-              const active = isActivePath(pathname, item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cx(
-                    'text-normal font-regular border-b-2 pb-1 transition-colors duration-200',
-                    active
-                      ? 'border-primary text-primary'
-                      : 'hover:text-primary border-transparent text-black',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center">
-            {isLoggedIn ? (
-              <button
-                type="button"
-                onClick={handleLogout}
-                disabled={isLoading}
-                className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
-              >
-                {isLoading ? '처리 중...' : '로그아웃'}
-              </button>
-            ) : (
-              <Link
-                href="/sign-in"
-                className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
-              >
-                로그인
-              </Link>
-            )}
-          </div>
+          )}
         </div>
-      </header>
-
-      {open && (
-        <div className="fixed inset-0 z-50 md:hidden" aria-modal="true" role="dialog">
-          <div className="absolute inset-0 bg-black/40" />
-
-          <div
-            ref={drawerRef}
-            className="absolute top-0 left-0 h-full w-[280px] bg-white shadow-xl"
-          >
-            <div className="border-gray2 flex h-14 items-center justify-between border-b px-4">
-              <div className="flex items-center gap-2">
-                <Image src="/img/logo.svg" alt="Dongsoop" width={24} height={24} />
-                <span className="text-normal font-semibold text-black">Dongsoop</span>
-              </div>
-
-              <button
-                type="button"
-                className="hover:bg-gray1 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full active:scale-[0.98]"
-                aria-label="메뉴 닫기"
-                onClick={() => setOpen(false)}
-              >
-                <X className="h-5 w-5 text-black" aria-hidden />
-              </button>
-            </div>
-
-            <nav className="px-3 py-3">
-              <ul className="grid gap-1">
-                {NAV.map((item) => {
-                  const active = isActivePath(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        className={cx(
-                          'text-normal font-regular flex items-center rounded-xl px-3 py-3 transition-colors duration-200',
-                          active
-                            ? 'bg-primary-5 text-primary'
-                            : 'hover:bg-gray1 hover:text-primary text-black',
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <div className="border-gray2 mt-4 border-t pt-4">
-                {isLoggedIn ? (
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    disabled={isLoading}
-                    className="hover:bg-gray1 text-normal flex w-full items-center rounded-xl px-3 py-3 text-left font-semibold text-black"
-                  >
-                    {isLoading ? '처리 중...' : '로그아웃'}
-                  </button>
-                ) : (
-                  <Link
-                    href="/sign-in"
-                    onClick={() => setOpen(false)}
-                    className="hover:bg-gray1 text-normal flex items-center rounded-xl px-3 py-3 font-semibold text-black"
-                  >
-                    로그인
-                  </Link>
-                )}
-              </div>
-            </nav>
-          </div>
-        </div>
-      )}
-    </>
+      </div>
+    </header>
   );
 }

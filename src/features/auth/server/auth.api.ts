@@ -13,6 +13,7 @@ import type {
 } from '../types/request';
 
 import type { BackendSignInResponse } from '../types/backend';
+import { authorizationHeader, deviceTokenHeader } from './auth.header';
 
 interface ServerAuthRequestOptions {
   appCheckToken?: string;
@@ -94,19 +95,17 @@ export async function logoutWithSpring(options: LogoutWithSpringOptions = {}): P
   const endpoint = getRequiredEndpoint('LOGOUT_ENDPOINT');
   const headers = createHeaders(options.cookieHeader);
 
-  if (options.accessToken) {
-    headers.set('Authorization', `Bearer ${options.accessToken}`);
-  }
+  authorizationHeader(headers, options.accessToken);
+  deviceTokenHeader(headers, options.deviceToken);
 
-  if (options.deviceToken) {
-    headers.set('Device-Token', options.deviceToken);
-  }
-
-  return serverFetch(endpoint, {
+  const response = await serverFetch(endpoint, {
     method: 'POST',
     headers,
     appCheckToken: options.appCheckToken,
+    acceptRedirect: true,
   });
+
+  return response;
 }
 
 export async function checkEmailDuplicateWithSpring(

@@ -6,6 +6,7 @@ import { ApiError } from '@/lib/api/apiError';
 // Next -> Spring
 interface ServerFetchOptions extends RequestInit {
   appCheckToken?: string;
+  acceptRedirect?: boolean;
 }
 
 export async function serverFetch(
@@ -21,7 +22,7 @@ export async function serverFetch(
     );
   }
 
-  const { appCheckToken, ...requestInit } = options;
+  const { appCheckToken, acceptRedirect = false, ...requestInit } = options;
 
   const headers = new Headers(requestInit.headers);
 
@@ -33,24 +34,43 @@ export async function serverFetch(
     headers.set('Content-Type', 'application/json');
   }
 
+  const fullUrl = `${baseURL}${url}`;
+
+  let parsedBody: unknown = requestInit.body;
   try {
-    const response = await fetch(`${baseURL}${url}`, {
+    if (typeof requestInit.body === 'string') {
+      parsedBody = JSON.parse(requestInit.body);
+    }
+  } catch {
+    parsedBody = requestInit.body;
+  }
+
+  try {
+    const response = await fetch(fullUrl, {
       ...requestInit,
       headers,
       cache: 'no-store',
+      redirect: acceptRedirect ? 'manual' : 'follow',
     });
 
-    console.log(`[Spring Response Status] ${response.status}`);
+    const isAcceptedRedirect = acceptRedirect && response.status >= 300 && response.status < 400;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const message =
-        errorData &&
-        typeof errorData === 'object' &&
-        'message' in errorData &&
-        typeof (errorData as { message?: unknown }).message === 'string'
-          ? (errorData as { message: string }).message
-          : 'BACKEND_API_ERROR';
+    if (!response.ok && !isAcceptedRedirect) {
+      const text = await response.text();
+
+      let message = 'BACKEND_API_ERROR';
+
+      try {
+        const json = JSON.parse(text);
+        if (
+          json &&
+          typeof json === 'object' &&
+          'message' in json &&
+          typeof (json as { message?: unknown }).message === 'string'
+        ) {
+          message = (json as { message: string }).message;
+        }
+      } catch {}
 
       throw new ApiError(response.status, message);
     }
