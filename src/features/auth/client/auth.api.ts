@@ -10,19 +10,9 @@ import type {
   VerifyCodeRequest,
 } from '../types/request';
 
-import type {
-  SessionResponse,
-  SignInResponse,
-  UserResponse,
-} from '../types/response';
+import type { SessionResponse, SignInResponse, UserResponse } from '../types/response';
 
 // 브라우저 -> Next API
-export async function registerWebDevice() {
-  return clientRequest<{ success: boolean }>('/api/auth/device', {
-    method: 'POST',
-  });
-}
-
 export async function signIn(payload: SignInRequest) {
   return clientRequest<SignInResponse>('/api/auth/sign-in', {
     method: 'POST',
@@ -44,35 +34,27 @@ export async function logout() {
 }
 
 export async function getSession() {
-  return clientRequest<SessionResponse>('/api/session', {
+  return clientRequest<SessionResponse>('/api/auth/session', {
     method: 'GET',
   });
 }
 
 // 이메일 중복 체크
 export async function checkEmailDuplicate(payload: EmailValidateRequest) {
-  const fullEmail = payload.email.includes('@')
-    ? payload.email
-    : `${payload.email}@dongyang.ac.kr`;
+  const fullEmail = payload.email.includes('@') ? payload.email : `${payload.email}@dongyang.ac.kr`;
 
-  return clientRequest<{ available: boolean; message?: string }>(
-    '/api/auth/check/email',
-    {
-      method: 'POST',
-      body: JSON.stringify({ email: fullEmail }),
-    },
-  );
+  return clientRequest<{ available: boolean; message?: string }>('/api/auth/check/email', {
+    method: 'POST',
+    body: JSON.stringify({ email: fullEmail }),
+  });
 }
 
 // 닉네임 중복 체크
 export async function checkNicknameDuplicate(payload: NicknameValidateRequest) {
-  return clientRequest<{ available: boolean; message?: string }>(
-    '/api/auth/check/nickname',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-  );
+  return clientRequest<{ available: boolean; message?: string }>('/api/auth/check/nickname', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
 // 인증 코드 전송
