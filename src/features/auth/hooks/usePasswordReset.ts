@@ -5,7 +5,7 @@ import {
   resetPassword,
   sendPasswordResetCode,
   verifyPasswordResetCode,
-} from '../api/passwordReset';
+} from '../client/auth.api';
 import { usePasswordResetStore } from '../stores/passwordResetStore';
 
 export const usePasswordReset = () => {

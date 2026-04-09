@@ -39,10 +39,7 @@ async function readServerMessage(res: Response): Promise<string | null> {
 }
 
 // auth 기능부터 우선 적용
-export async function clientRequest<T>(
-  url: string,
-  init?: RequestInit,
-): Promise<T> {
+export async function clientRequest<T>(url: string, init?: RequestInit): Promise<T> {
   const token = useAppCheckStore.getState().token;
 
   if (!token) {
@@ -55,8 +52,7 @@ export async function clientRequest<T>(
     const headers = new Headers(init?.headers);
     headers.set('X-Firebase-AppCheck', token);
 
-    const isFormData =
-      typeof FormData !== 'undefined' && init?.body instanceof FormData;
+    const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData;
 
     if (!isFormData && !headers.has('Content-Type') && typeof init?.body === 'string') {
       headers.set('Content-Type', 'application/json');
