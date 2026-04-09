@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { SignUpRequest } from '@/features/auth/types/authTypes';
+import { SignUpRequest } from '../types/request';
 
 interface SignUpState {
   inputs: SignUpRequest & { passCheck: string };

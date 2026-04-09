@@ -1,6 +1,7 @@
 import { ApiError } from '@/lib/api/apiError';
-import { apiFetch } from '@/lib/api/apiFetch';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
+
+import { checkEmailDuplicate } from '@/features/auth/client/auth.api';
 
 export interface EmailCheckResult {
   ok: boolean;
@@ -9,10 +10,7 @@ export interface EmailCheckResult {
 
 async function requestEmailValidation(email: string) {
   try {
-    await apiFetch<void>('/api/auth/check/email', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
+    await checkEmailDuplicate({ email });
 
     return { status: HttpStatusCode.NO_CONTENT };
   } catch (error) {
