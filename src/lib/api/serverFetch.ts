@@ -4,7 +4,7 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
 // Next -> Spring
-interface ServerFetchOptions extends RequestInit {
+export interface ServerFetchOptions extends RequestInit {
   appCheckToken?: string;
   acceptRedirect?: boolean;
 }
@@ -30,20 +30,13 @@ export async function serverFetch(
     headers.set('X-Firebase-AppCheck', appCheckToken);
   }
 
-  if (!(requestInit.body instanceof FormData) && !headers.has('Content-Type')) {
+  const isFormData = typeof FormData !== 'undefined' && requestInit.body instanceof FormData;
+
+  if (!isFormData && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
   const fullUrl = `${baseURL}${url}`;
-
-  let parsedBody: unknown = requestInit.body;
-  try {
-    if (typeof requestInit.body === 'string') {
-      parsedBody = JSON.parse(requestInit.body);
-    }
-  } catch {
-    parsedBody = requestInit.body;
-  }
 
   try {
     const response = await fetch(fullUrl, {
