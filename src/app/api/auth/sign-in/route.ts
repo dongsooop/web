@@ -7,7 +7,11 @@ import { ApiError } from '@/lib/api/apiError';
 import type { SignInRequest } from '@/features/auth/types/request';
 import type { BackendSignInResponse } from '@/features/auth/types/backend';
 import { signInWithSpring } from '@/features/auth/server/auth.api';
-import { setAuthCookies, setDeviceCookies } from '@/features/auth/server/auth.cookies';
+import {
+  setAuthCookies,
+  setDepartmentTypeCookie,
+  setDeviceCookies,
+} from '@/features/auth/server/auth.cookies';
 import { toSignInResponse } from '@/features/auth/mapper';
 
 export async function POST(request: NextRequest) {
@@ -42,10 +46,16 @@ export async function POST(request: NextRequest) {
       deviceType,
     });
 
-    const response = NextResponse.json(toSignInResponse(data), { status: HttpStatusCode.OK });
+    const response = NextResponse.json(toSignInResponse(data), {
+      status: HttpStatusCode.OK,
+    });
 
     setAuthCookies(response, data.accessToken, data.refreshToken);
     setDeviceCookies(response, deviceToken, deviceType);
+
+    if (data.departmentType) {
+      setDepartmentTypeCookie(response, data.departmentType);
+    }
 
     return response;
   } catch (error) {
