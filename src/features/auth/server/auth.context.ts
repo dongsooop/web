@@ -6,6 +6,7 @@ export interface AuthContext {
   deviceToken?: string;
   appCheckToken?: string;
   deviceType?: string;
+  departmentType?: string;
 }
 
 export function extractAuthContext(request: NextRequest): AuthContext {
@@ -14,6 +15,7 @@ export function extractAuthContext(request: NextRequest): AuthContext {
     refreshToken: request.cookies.get('refresh_token')?.value,
     deviceToken: request.cookies.get('device_token')?.value,
     deviceType: request.cookies.get('device_type')?.value || 'WEB',
+    departmentType: request.cookies.get('department_type')?.value,
     appCheckToken: request.headers.get('X-Firebase-AppCheck') || undefined,
   };
 }
