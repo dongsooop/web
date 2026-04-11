@@ -18,7 +18,7 @@ export interface BackendSignInResponse {
   refreshToken: string;
 }
 
-export interface BackendRefreshResponse {
+export interface BackendReissueResponse {
   accessToken: string;
   refreshToken: string;
 }

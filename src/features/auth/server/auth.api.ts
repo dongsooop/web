@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { serverFetch } from '@/lib/api/serverFetch';
+import { serverFetchAuth } from '@/lib/api/serverFetchAuth';
 
 import type {
   EmailValidateRequest,
@@ -12,28 +13,18 @@ import type {
   VerifyCodeRequest,
 } from '../types/request';
 
-import type { BackendSignInResponse } from '../types/backend';
-import { authorizationHeader, deviceTokenHeader } from './auth.header';
+import type { BackendReissueResponse, BackendSignInResponse } from '../types/backend';
+import { buildAuthHeaders } from './auth.header';
 
-interface ServerAuthRequestOptions {
+type SpringRequestOptions = {
   appCheckToken?: string;
   cookieHeader?: string | null;
-}
+};
 
-interface SignInWithSpringOptions extends ServerAuthRequestOptions {
-  deviceToken: string;
-  deviceType: string;
-}
-
-function createHeaders(cookieHeader?: string | null) {
-  const headers = new Headers();
-
-  if (cookieHeader) {
-    headers.set('Cookie', cookieHeader);
-  }
-
-  return headers;
-}
+type SpringAuthRequestOptions = SpringRequestOptions & {
+  accessToken: string;
+  refreshToken?: string;
+};
 
 function getRequiredEndpoint(name: string): string {
   const value = process.env[name];
@@ -48,10 +39,16 @@ function getRequiredEndpoint(name: string): string {
 // Next -> Spring auth API
 export async function signInWithSpring(
   payload: SignInRequest,
-  options: SignInWithSpringOptions,
+  options: SpringRequestOptions & {
+    deviceToken: string;
+    deviceType: string;
+  },
 ): Promise<BackendSignInResponse> {
   const endpoint = getRequiredEndpoint('LOGIN_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   const requestBody = {
     email: payload.email,
@@ -70,12 +67,39 @@ export async function signInWithSpring(
   return response.json() as Promise<BackendSignInResponse>;
 }
 
+export async function reissueWithSpring(
+  options: SpringRequestOptions & {
+    refreshToken: string;
+  },
+): Promise<BackendReissueResponse> {
+  const endpoint = getRequiredEndpoint('REISSUE_ENDPOINT');
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+    baseHeaders: {
+      'Content-Type': 'text/plain',
+    },
+  });
+
+  const response = await serverFetch(endpoint, {
+    method: 'POST',
+    body: options.refreshToken,
+    headers,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return response.json() as Promise<BackendReissueResponse>;
+}
+
 export async function signUpWithSpring(
   payload: SignUpRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('SIGN_UP_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -85,35 +109,34 @@ export async function signUpWithSpring(
   });
 }
 
-// 로그아웃
-interface LogoutWithSpringOptions extends ServerAuthRequestOptions {
-  accessToken?: string;
-  deviceToken?: string;
-}
-
-export async function logoutWithSpring(options: LogoutWithSpringOptions = {}): Promise<Response> {
+export async function logoutWithSpring(
+  options: SpringAuthRequestOptions & {
+    deviceToken: string;
+  },
+) {
   const endpoint = getRequiredEndpoint('LOGOUT_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
 
-  authorizationHeader(headers, options.accessToken);
-  deviceTokenHeader(headers, options.deviceToken);
-
-  const response = await serverFetch(endpoint, {
+  return serverFetchAuth(endpoint, {
     method: 'POST',
-    headers,
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
     acceptRedirect: true,
+    headers: {
+      'Device-Token': options.deviceToken,
+    },
   });
-
-  return response;
 }
 
 export async function checkEmailDuplicateWithSpring(
   payload: EmailValidateRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('EMAIL_VALIDATE_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -125,10 +148,13 @@ export async function checkEmailDuplicateWithSpring(
 
 export async function checkNicknameDuplicateWithSpring(
   payload: NicknameValidateRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('NICKNAME_VALIDATE_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -140,10 +166,13 @@ export async function checkNicknameDuplicateWithSpring(
 
 export async function sendCodeWithSpring(
   payload: SendCodeRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('SEND_EMAIL_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -155,10 +184,13 @@ export async function sendCodeWithSpring(
 
 export async function verifyCodeWithSpring(
   payload: VerifyCodeRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('CHECK_CODE_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -170,10 +202,13 @@ export async function verifyCodeWithSpring(
 
 export async function sendPasswordResetCodeWithSpring(
   payload: SendCodeRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('PW_SEND_EMAIL_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -185,10 +220,13 @@ export async function sendPasswordResetCodeWithSpring(
 
 export async function verifyPasswordResetCodeWithSpring(
   payload: VerifyCodeRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('PW_CHECK_CODE_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',
@@ -200,10 +238,13 @@ export async function verifyPasswordResetCodeWithSpring(
 
 export async function resetPasswordWithSpring(
   payload: ResetPasswordRequest,
-  options: ServerAuthRequestOptions = {},
+  options: SpringRequestOptions = {},
 ): Promise<Response> {
   const endpoint = getRequiredEndpoint('PW_RESET_ENDPOINT');
-  const headers = createHeaders(options.cookieHeader);
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
 
   return serverFetch(endpoint, {
     method: 'POST',

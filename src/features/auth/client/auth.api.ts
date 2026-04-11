@@ -1,4 +1,5 @@
 import { clientRequest } from '@/lib/api/clientRequest';
+import { clientRequestAuth } from '@/lib/api/clientRequestAuth';
 
 import type {
   EmailValidateRequest,
@@ -14,7 +15,7 @@ import type { SessionResponse, SignInResponse, UserResponse } from '../types/res
 
 // 브라우저 -> Next API
 export async function signIn(payload: SignInRequest) {
-  return clientRequest<SignInResponse>('/api/auth/sign-in', {
+  return clientRequestAuth<SignInResponse>('/api/auth/sign-in', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -28,13 +29,13 @@ export async function signUp(payload: SignUpRequest) {
 }
 
 export async function logout() {
-  return clientRequest<{ success: boolean }>('/api/auth/logout', {
+  return clientRequestAuth<{ success: boolean }>('/api/auth/logout', {
     method: 'POST',
   });
 }
 
 export async function getSession() {
-  return clientRequest<SessionResponse>('/api/auth/session', {
+  return clientRequestAuth<SessionResponse>('/api/auth/session', {
     method: 'GET',
   });
 }
