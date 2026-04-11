@@ -14,15 +14,18 @@ import { getErrorMessage } from '@/lib/errors/messages';
 
 export default function SignInForm() {
   const router = useRouter();
-  const { signIn, isLoading } = useAuth();
+  const { signIn } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
+    if (isSigningIn) return;
+
     setErrorMessage(null);
 
     const trimmedEmail = email.trim();
@@ -39,6 +42,8 @@ export default function SignInForm() {
     }
 
     try {
+      setIsSigningIn(true);
+
       await signIn({
         email: `${trimmedEmail}@dongyang.ac.kr`,
         password: trimmedPassword,
@@ -47,6 +52,8 @@ export default function SignInForm() {
       router.push('/home');
     } catch (error) {
       setErrorMessage(getErrorMessage('auth', error));
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -77,68 +84,68 @@ export default function SignInForm() {
   };
 
   return (
-    <>
-      <section className="flex w-full max-w-[480px] flex-col items-center gap-4 pt-4">
-        <div className="h-4" />
-        <div className="flex items-center">
-          <Image
-            src="/img/logo.svg"
-            alt="동숲 로고"
-            width={128}
-            height={128}
-            className="h-32 w-32"
-            priority
-          />
-        </div>
-        <div className="h-2" />
+    <section className="flex w-full max-w-[480px] flex-col items-center gap-4 pt-4">
+      <div className="h-4" />
 
-        <div className="w-full">
-          <SchoolEmailInput
-            value={email}
-            onChange={setEmail}
-            placeholder="학교 Gmail을 입력해 주세요"
-          />
-        </div>
+      <div className="flex items-center">
+        <Image
+          src="/img/logo.svg"
+          alt="동숲 로고"
+          width={128}
+          height={128}
+          className="h-32 w-32"
+          priority
+        />
+      </div>
 
-        <div className="w-full">
-          <AuthInput
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="비밀번호를 입력해 주세요"
-          />
-        </div>
+      <div className="h-2" />
 
-        {errorMessage ? (
-          <p className="text-small font-regular text-warning w-full whitespace-pre-line">
-            {errorMessage}
-          </p>
-        ) : null}
+      <div className="w-full">
+        <SchoolEmailInput
+          value={email}
+          onChange={setEmail}
+          placeholder="학교 Gmail을 입력해 주세요"
+        />
+      </div>
 
-        <Button fullWidth variant="primary" onClick={handleLogin} disabled={isLoading}>
-          {isLoading ? '로그인 중...' : '로그인'}
-        </Button>
+      <div className="w-full">
+        <AuthInput
+          type="password"
+          value={password}
+          onChange={setPassword}
+          placeholder="비밀번호를 입력해 주세요"
+        />
+      </div>
 
-        <Button fullWidth variant="outline" onClick={handleSignUp}>
-          회원가입
-        </Button>
+      {errorMessage && (
+        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+          {errorMessage}
+        </p>
+      )}
 
-        <button
-          type="button"
-          onClick={handlePasswordReset}
-          className="text-normal text-gray4 min-h-[44px] font-bold"
-        >
-          비밀번호 변경
-        </button>
+      <Button fullWidth variant="primary" onClick={handleLogin} isLoading={isSigningIn}>
+        로그인
+      </Button>
 
-        <SocialLoginButtons onLogin={handleSocialLogin} />
+      <Button fullWidth variant="outline" onClick={handleSignUp}>
+        회원가입
+      </Button>
 
-        {dialogMessage ? (
-          <p className="text-small font-regular text-warning w-full whitespace-pre-line">
-            {dialogMessage}
-          </p>
-        ) : null}
-      </section>
-    </>
+      <button
+        type="button"
+        onClick={handlePasswordReset}
+        className="text-normal text-gray4 min-h-[44px] font-bold"
+      >
+        비밀번호 변경
+      </button>
+
+      <SocialLoginButtons onLogin={handleSocialLogin} />
+
+      {dialogMessage && (
+        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+          {dialogMessage}
+        </p>
+      )}
+    </section>
   );
 }
