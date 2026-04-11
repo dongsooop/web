@@ -21,14 +21,10 @@ function isExpired(exp: number): boolean {
   return exp * 1000 <= Date.now();
 }
 
-export async function restoreSessionUser(): Promise<UserResponse | null> {
-  const accessToken = await getAccessTokenCookie();
-  const departmentType = await getDepartmentTypeCookie();
-
-  if (!accessToken) {
-    return null;
-  }
-
+export function restoreUserFromAccessToken(
+  accessToken: string,
+  departmentType?: string | null,
+): UserResponse | null {
   try {
     const payload = decodeJwtPayload<JwtAccessPayload>(accessToken);
 
@@ -37,24 +33,28 @@ export async function restoreSessionUser(): Promise<UserResponse | null> {
     }
 
     if (isExpired(payload.exp)) {
-      console.log('[restoreSessionUser] token expired:', {
-        exp: payload.exp,
-        expMs: payload.exp * 1000,
-        nowMs: Date.now(),
-      });
       return null;
     }
 
-    const restoredUser: UserResponse = {
+    return {
       id: Number(payload.sub),
       email: '',
       nickname: '',
       departmentType: departmentType ?? '',
       role: payload.role ?? [],
     };
-
-    return restoredUser;
-  } catch (error) {
+  } catch {
     return null;
   }
+}
+
+export async function restoreSessionUser(): Promise<UserResponse | null> {
+  const accessToken = await getAccessTokenCookie();
+  const departmentType = await getDepartmentTypeCookie();
+
+  if (!accessToken) {
+    return null;
+  }
+
+  return restoreUserFromAccessToken(accessToken, departmentType);
 }
