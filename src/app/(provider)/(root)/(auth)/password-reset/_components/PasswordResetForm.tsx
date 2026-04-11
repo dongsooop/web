@@ -49,6 +49,7 @@ export default function PasswordResetForm() {
     }
 
     const isSuccess = await handleReset();
+
     if (isSuccess) {
       alert('비밀번호가 성공적으로 변경되었습니다.');
       router.push('/sign-in');
@@ -82,11 +83,11 @@ export default function PasswordResetForm() {
                   disabled={status.isEmailChecked}
                 />
               </div>
+
               <Button
                 variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
                 onClick={handleCheckEmail}
                 disabled={!inputs.email.trim() || status.isEmailChecked}
-                isLoading={isLoading && !status.isCodeSent}
               >
                 {status.isEmailChecked ? '확인 완료' : '확인'}
               </Button>
@@ -102,6 +103,7 @@ export default function PasswordResetForm() {
                     disabled={!status.isCodeSent || status.isCodeVerified}
                   />
                 </div>
+
                 <Button
                   variant={
                     status.isEmailChecked &&
@@ -132,11 +134,11 @@ export default function PasswordResetForm() {
                     return '재전송';
                   })()}
                 </Button>
+
                 <Button
                   variant={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
                   onClick={handleVerifyCode}
                   disabled={!status.isCodeSent || status.isCodeVerified || !inputs.code}
-                  isLoading={isLoading && status.isCodeSent && !status.isCodeVerified}
                 >
                   {status.isCodeVerified ? '완료' : '확인'}
                 </Button>
@@ -159,7 +161,9 @@ export default function PasswordResetForm() {
 
                 return (
                   <p
-                    className={`text-small text-regular ${!analysis.isValid && !isPassEmpty ? 'text-warning' : 'text-gray4'}`}
+                    className={`text-small text-regular ${
+                      !analysis.isValid && !isPassEmpty ? 'text-warning' : 'text-gray4'
+                    }`}
                   >
                     {isPassEmpty
                       ? '8자 이상, 영문/숫자/특수문자 포함'

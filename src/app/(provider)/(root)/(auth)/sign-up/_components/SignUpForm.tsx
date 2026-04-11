@@ -286,10 +286,11 @@ export default function SignUpForm() {
             fullWidth
             variant={isFormValid ? 'primary' : 'gray'}
             className="h-[52px]"
-            disabled={!isFormValid || isLoading}
+            disabled={!isFormValid}
+            isLoading={isLoading}
             onClick={handleSignUp}
           >
-            {isLoading ? '가입 중...' : '가입하기'}
+            가입하기
           </Button>
         </div>
       </section>
