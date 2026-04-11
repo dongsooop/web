@@ -57,24 +57,6 @@ export default function SignInForm() {
     }
   };
 
-  const handleSocialLogin = async (platform: 'kakao' | 'google' | 'apple') => {
-    try {
-      setErrorMessage(null);
-      setDialogMessage(null);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      if (platform === 'kakao') {
-        setDialogMessage('카카오 로그인 중 오류가 발생했습니다.');
-        return;
-      }
-
-      router.push('/my-page');
-    } catch {
-      setDialogMessage('소셜 로그인 중 오류가 발생했습니다.');
-    }
-  };
-
   const handleSignUp = () => {
     router.push('/sign-up');
   };
@@ -138,8 +120,6 @@ export default function SignInForm() {
       >
         비밀번호 변경
       </button>
-
-      <SocialLoginButtons onLogin={handleSocialLogin} />
 
       {dialogMessage && (
         <p className="text-small font-regular text-warning w-full whitespace-pre-line">
