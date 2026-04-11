@@ -9,24 +9,25 @@ import { useAuthStore } from '../stores/useAuthStore';
 import type { SignInRequest } from '../types/request';
 
 export function useAuth() {
-  const initializeInFlightRef = useRef(false);
+  const initInFlightRef = useRef(false);
 
   const user = useAuthStore((state) => state.user);
-  const isInitialized = useAuthStore((state) => state.isInitialized);
-  const isSessionExpired = useAuthStore((state) => state.isSessionExpired);
+  const isReady = useAuthStore((state) => state.isReady);
+  const isExpired = useAuthStore((state) => state.isExpired);
 
-  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser);
+  const setUser = useAuthStore((state) => state.setUser);
   const clearAuth = useAuthStore((state) => state.clearAuth);
-  const markInitialized = useAuthStore((state) => state.markInitialized);
-  const markSessionExpired = useAuthStore((state) => state.markSessionExpired);
-  const clearSessionExpired = useAuthStore((state) => state.clearSessionExpired);
+  const setReady = useAuthStore((state) => state.setReady);
+  const expireSession = useAuthStore((state) => state.expireSession);
+  const clearExpired = useAuthStore((state) => state.clearExpired);
 
-  const initializeSession = useCallback(async () => {
-    if (initializeInFlightRef.current) {
+  // 초기 세션 상태 복원
+  const initSession = useCallback(async () => {
+    if (initInFlightRef.current) {
       return;
     }
 
-    initializeInFlightRef.current = true;
+    initInFlightRef.current = true;
 
     try {
       const appCheckToken = useAppCheckStore.getState().token;
@@ -38,7 +39,7 @@ export function useAuth() {
       const session = await getSession();
 
       if (session?.isLoggedIn && session.user) {
-        setAuthenticatedUser(toUserModel(session.user));
+        setUser(toUserModel(session.user));
         return;
       }
 
@@ -46,11 +47,12 @@ export function useAuth() {
     } catch {
       clearAuth();
     } finally {
-      markInitialized();
-      initializeInFlightRef.current = false;
+      setReady();
+      initInFlightRef.current = false;
     }
-  }, [clearAuth, markInitialized, setAuthenticatedUser]);
+  }, [clearAuth, setReady, setUser]);
 
+  // 로그인 요청 및 사용자 상태 반영
   const signIn = useCallback(
     async (payload: SignInRequest) => {
       const response = await signInRequest(payload);
@@ -59,14 +61,15 @@ export function useAuth() {
         throw new Error('로그인 응답에 사용자 정보가 없습니다.');
       }
 
-      setAuthenticatedUser(toUserModel(response.user));
-      clearSessionExpired();
+      setUser(toUserModel(response.user));
+      clearExpired();
 
       return response;
     },
-    [clearSessionExpired, setAuthenticatedUser],
+    [clearExpired, setUser],
   );
 
+  // 로그아웃 요청 후 인증 상태 초기화
   const logout = useCallback(async () => {
     try {
       await logoutRequest();
@@ -78,12 +81,12 @@ export function useAuth() {
   return {
     user,
     isLoggedIn: !!user,
-    isInitialized,
-    isSessionExpired,
-    initializeSession,
+    isReady,
+    isExpired,
+    initSession,
     signIn,
     logout,
-    markSessionExpired,
-    clearSessionExpired,
+    expireSession,
+    clearExpired,
   };
 }

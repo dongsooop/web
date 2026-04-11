@@ -15,7 +15,7 @@ export async function clientRequestAuth<T>(url: string, init: RequestInit = {}):
   const { code, message } = await readErrorResponse(response);
 
   if (response.status === HttpStatusCode.UNAUTHORIZED && code === 'SESSION_EXPIRED') {
-    useAuthStore.getState().markSessionExpired();
+    useAuthStore.getState().expireSession();
   }
 
   throw new ApiError(response.status, message ?? 'Request failed');
