@@ -1,133 +1,89 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 
 import { getSession, logout as logoutRequest, signIn as signInRequest } from '../client/auth.api';
 import { toUserModel } from '../mapper';
 import { useAuthStore } from '../stores/useAuthStore';
 
 import type { SignInRequest } from '../types/request';
-import { useAppCheckStore } from '@/store/useAppCheckStore';
-
-type UseAuthLoadingState = {
-  initializing: boolean;
-  signingIn: boolean;
-  loggingOut: boolean;
-};
 
 export function useAuth() {
-  const [loading, setLoading] = useState<UseAuthLoadingState>({
-    initializing: false,
-    signingIn: false,
-    loggingOut: false,
-  });
-
-  const logoutInFlightRef = useRef(false);
-  const signInInFlightRef = useRef(false);
   const initializeInFlightRef = useRef(false);
 
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const isInitialized = useAuthStore((state) => state.isInitialized);
   const user = useAuthStore((state) => state.user);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const isSessionExpired = useAuthStore((state) => state.isSessionExpired);
 
-  const { setSession, clearSession, setInitialized } = useAuthStore((state) => state.actions);
-
-  const setLoadingState = useCallback((key: keyof UseAuthLoadingState, value: boolean) => {
-    setLoading((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const markInitialized = useAuthStore((state) => state.markInitialized);
+  const markSessionExpired = useAuthStore((state) => state.markSessionExpired);
+  const clearSessionExpired = useAuthStore((state) => state.clearSessionExpired);
 
   const initializeSession = useCallback(async () => {
-    if (initializeInFlightRef.current) return;
+    if (initializeInFlightRef.current) {
+      return;
+    }
 
     initializeInFlightRef.current = true;
-    setLoadingState('initializing', true);
 
     try {
-      const token = useAppCheckStore.getState().token;
+      const appCheckToken = useAppCheckStore.getState().token;
 
-      if (!token) {
+      if (!appCheckToken) {
         return;
       }
 
       const session = await getSession();
 
       if (session?.isLoggedIn && session.user) {
-        setSession(toUserModel(session.user));
+        setAuthenticatedUser(toUserModel(session.user));
         return;
       }
 
-      clearSession();
+      clearAuth();
     } catch {
-      clearSession();
+      clearAuth();
     } finally {
-      setInitialized(true);
-      setLoadingState('initializing', false);
+      markInitialized();
       initializeInFlightRef.current = false;
     }
-  }, [setLoadingState, setSession, clearSession, setInitialized]);
+  }, [clearAuth, markInitialized, setAuthenticatedUser]);
 
   const signIn = useCallback(
     async (payload: SignInRequest) => {
-      if (signInInFlightRef.current) {
-        throw new Error('로그인 요청이 이미 진행 중입니다.');
+      const response = await signInRequest(payload);
+
+      if (!response?.user) {
+        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
       }
 
-      signInInFlightRef.current = true;
-      setLoadingState('signingIn', true);
+      setAuthenticatedUser(toUserModel(response.user));
+      clearSessionExpired();
 
-      try {
-        const response = await signInRequest(payload);
-
-        if (!response) {
-          throw new Error('로그인 응답이 없습니다.');
-        }
-
-        if (!response.user) {
-          throw new Error('로그인 응답에 사용자 정보가 없습니다.');
-        }
-
-        const userModel = toUserModel(response.user);
-        setSession(userModel);
-
-        return response;
-      } finally {
-        setLoadingState('signingIn', false);
-        signInInFlightRef.current = false;
-      }
+      return response;
     },
-    [setSession, setLoadingState],
+    [clearSessionExpired, setAuthenticatedUser],
   );
 
   const logout = useCallback(async () => {
-    if (logoutInFlightRef.current) {
-      return;
-    }
-
-    logoutInFlightRef.current = true;
-    setLoadingState('loggingOut', true);
-
     try {
       await logoutRequest();
-      clearSession();
     } finally {
-      setLoadingState('loggingOut', false);
-      logoutInFlightRef.current = false;
+      clearAuth();
     }
-  }, [clearSession, setLoadingState]);
+  }, [clearAuth]);
 
-  const isLoading = useMemo(() => {
-    return loading.initializing || loading.signingIn || loading.loggingOut;
-  }, [loading]);
-
-  return useMemo(
-    () => ({
-      isLoading,
-      isLoggedIn,
-      isInitialized,
-      user,
-      loading,
-      initializeSession,
-      signIn,
-      logout,
-    }),
-    [isLoading, isLoggedIn, isInitialized, user, loading, initializeSession, signIn, logout],
-  );
+  return {
+    user,
+    isLoggedIn: !!user,
+    isInitialized,
+    isSessionExpired,
+    initializeSession,
+    signIn,
+    logout,
+    markSessionExpired,
+    clearSessionExpired,
+  };
 }

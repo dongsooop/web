@@ -4,53 +4,56 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
 import { extractAuthContext } from '@/features/auth/server/auth.context';
+import {
+  clearAuthCookies,
+  clearDeviceCookies,
+  clearUserMetadataCookies,
+} from '@/features/auth/server/auth.cookies';
 import { logoutWithSpring } from '@/features/auth/server/auth.api';
-import { clearAuthCookies } from '@/features/auth/server/auth.cookies';
+import { createSessionExpiredResponse } from '@/features/auth/server/auth.route';
+
+function buildLogoutResponse(body: Record<string, unknown>, status: number) {
+  const response = NextResponse.json(body, { status });
+
+  clearAuthCookies(response);
+  clearDeviceCookies(response);
+  clearUserMetadataCookies(response);
+
+  return response;
+}
 
 export async function POST(request: NextRequest) {
-  const { accessToken, appCheckToken, deviceToken } = extractAuthContext(request);
-
-  if (!appCheckToken) {
-    return NextResponse.json(
-      { message: 'Unauthorized: App Check token is missing' },
-      { status: HttpStatusCode.UNAUTHORIZED },
-    );
-  }
-
-  if (!accessToken) {
-    return NextResponse.json(
-      { message: '액세스 토큰이 없습니다.' },
-      { status: HttpStatusCode.UNAUTHORIZED },
-    );
-  }
-
-  if (!deviceToken) {
-    return NextResponse.json(
-      { message: '디바이스 토큰이 없습니다.' },
-      { status: HttpStatusCode.BAD_REQUEST },
-    );
-  }
+  const authContext = extractAuthContext(request);
+  const { accessToken, refreshToken, appCheckToken, deviceToken } = authContext;
 
   try {
-    await logoutWithSpring({
+    if (!accessToken || !deviceToken) {
+      return buildLogoutResponse({ success: true }, HttpStatusCode.OK);
+    }
+
+    const result = await logoutWithSpring({
       accessToken,
+      refreshToken,
       appCheckToken,
       deviceToken,
     });
 
-    const response = NextResponse.json({ success: true }, { status: HttpStatusCode.OK });
-
-    clearAuthCookies(response);
-
-    return response;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      return NextResponse.json({ message: error.message }, { status: error.status });
+    if (result.shouldClearAuthCookies) {
+      const response = createSessionExpiredResponse();
+      clearDeviceCookies(response);
+      clearUserMetadataCookies(response);
+      return response;
     }
 
-    return NextResponse.json(
+    return buildLogoutResponse({ success: true }, HttpStatusCode.OK);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return buildLogoutResponse({ message: error.message }, error.status);
+    }
+
+    return buildLogoutResponse(
       { message: '로그아웃 처리 중 오류가 발생했습니다.' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
 }

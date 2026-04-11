@@ -1,41 +1,51 @@
 import { create } from 'zustand';
-import type { User, UserState } from '../types/ui-model';
 
-interface AuthStoreState extends UserState {
+import type { User } from '../types/ui-model';
+
+type AuthStore = {
+  user: User | null;
   isInitialized: boolean;
-}
+  isSessionExpired: boolean;
 
-interface AuthStoreActions {
-  setSession: (user: User | null) => void;
-  clearSession: () => void;
-  setInitialized: (value: boolean) => void;
-}
-
-type AuthStore = AuthStoreState & {
-  actions: AuthStoreActions;
+  setAuthenticatedUser: (user: User) => void;
+  clearAuth: () => void;
+  markInitialized: () => void;
+  markSessionExpired: () => void;
+  clearSessionExpired: () => void;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
-  isLoggedIn: false,
-  isInitialized: false,
   user: null,
+  isInitialized: false,
+  isSessionExpired: false,
 
-  actions: {
-    setSession: (user) =>
-      set({
-        isLoggedIn: Boolean(user),
-        user,
-      }),
+  setAuthenticatedUser: (user) =>
+    set({
+      user,
+      isSessionExpired: false,
+      isInitialized: true,
+    }),
 
-    clearSession: () =>
-      set({
-        isLoggedIn: false,
-        user: null,
-      }),
+  clearAuth: () =>
+    set({
+      user: null,
+      isSessionExpired: false,
+    }),
 
-    setInitialized: (value) =>
-      set({
-        isInitialized: value,
-      }),
-  },
+  markInitialized: () =>
+    set({
+      isInitialized: true,
+    }),
+
+  markSessionExpired: () =>
+    set({
+      user: null,
+      isSessionExpired: true,
+      isInitialized: true,
+    }),
+
+  clearSessionExpired: () =>
+    set({
+      isSessionExpired: false,
+    }),
 }));

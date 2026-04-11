@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -24,17 +25,21 @@ function isActivePath(pathname: string, href: string) {
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isLoggedIn, logout, loading } = useAuth();
+  const { isLoggedIn, isInitialized, logout } = useAuth();
 
-  const isLoggingOut = loading.loggingOut;
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
 
     try {
+      setIsLoggingOut(true);
       await logout();
       router.replace('/sign-in');
-    } catch {}
+    } catch {
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -67,7 +72,11 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center">
-          {isLoggedIn ? (
+          {!isInitialized ? (
+            <div className="inline-flex min-h-[40px] items-center justify-center px-3 text-sm text-gray-400">
+              ...
+            </div>
+          ) : isLoggedIn ? (
             <button
               type="button"
               onClick={handleLogout}

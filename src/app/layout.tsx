@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import QueryProvider from '@/providers/QueryProvider';
 import FirebaseProvider from '@/providers/FirebaseProvider';
 import AuthInitializer from '@/features/auth/components/AuthInitializer';
+import SessionExpiredHandler from '@/features/auth/components/SessionExpiredHandler';
 
 const pretendard = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <QueryProvider>
           <FirebaseProvider>
             <AuthInitializer />
+            <SessionExpiredHandler />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
