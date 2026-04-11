@@ -8,7 +8,7 @@ import {
   sendCode,
   verifyCode,
   signUp,
-} from '../api/authApi';
+} from '../client/auth.api';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { DepartmentType } from '@/constants/department';
 
@@ -46,7 +46,7 @@ export const useSignUp = () => {
         isCodeSent: true,
         error: null,
         remainingSeconds: 300,
-        failCount: 0, // 코드 재전송 시 실패 횟수 초기화
+        failCount: 0,
       });
     },
     onError: (error) => handleError(error, 'sendCode'),
@@ -153,8 +153,8 @@ export const useSignUp = () => {
 
       const finalPayload = {
         email: buildSchoolEmail(email),
-        password: password,
-        nickname: nickname,
+        password,
+        nickname,
         departmentType: departmentType as DepartmentType,
       };
 

@@ -25,7 +25,7 @@ function isActivePath(pathname: string, href: string) {
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isLoggedIn, isInitialized, logout } = useAuth();
+  const { isLoggedIn, isReady, logout } = useAuth();
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -36,7 +36,6 @@ export default function Header() {
       setIsLoggingOut(true);
       await logout();
       router.replace('/sign-in');
-    } catch {
     } finally {
       setIsLoggingOut(false);
     }
@@ -72,7 +71,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center">
-          {!isInitialized ? (
+          {!isReady ? (
             <div className="inline-flex min-h-[40px] items-center justify-center px-3 text-sm text-gray-400">
               ...
             </div>

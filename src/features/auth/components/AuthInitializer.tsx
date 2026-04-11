@@ -5,16 +5,16 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
 export default function AuthInitializer() {
-  const { initializeSession, isInitialized } = useAuth();
+  const { initSession, isReady } = useAuth();
   const token = useAppCheckStore((state) => state.token);
 
   useEffect(() => {
     if (!token) return;
 
-    if (!isInitialized) {
-      void initializeSession();
+    if (!isReady) {
+      void initSession();
     }
-  }, [token, isInitialized, initializeSession]);
+  }, [token, isReady, initSession]);
 
   return null;
 }
