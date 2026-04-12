@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!departmentType) {
-    return NextResponse.json(
-      { message: 'Unauthorized: departmentType is missing' },
-      { status: HttpStatusCode.UNAUTHORIZED },
-    );
+    return createSessionExpiredResponse();
   }
 
   try {
