@@ -4,16 +4,13 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ListItem from '@/components/ui/ListItem';
-import { useHomeDataQuery } from '@/features/home/hooks/useHomeDataQuery';
+import type { HomeUiModel } from '@/features/home/types/ui-model';
 
-export default function NewNotices() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomeDataQuery();
+type NewNoticesProps = {
+  notices: HomeUiModel['notices'];
+};
 
-  if (isLoading) return <div>공지사항 로딩 중...</div>;
-  if (isError) return <div>{displayErrorMessage}</div>;
-
-  const items = data?.notices ?? [];
-
+export default function NewNotices({ notices }: NewNoticesProps) {
   return (
     <Card
       title="새로운 공지"
@@ -30,7 +27,7 @@ export default function NewNotices() {
       }
     >
       <div className="border-gray2 rounded-2xl bg-white px-2">
-        {items.map((it, idx) => (
+        {notices.map((it, idx) => (
           <div key={it.link} className={idx === 0 ? '' : 'border-gray2 border-t'}>
             <ListItem
               href={it.link}

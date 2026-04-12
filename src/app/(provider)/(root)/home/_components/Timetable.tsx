@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useHomeDataQuery } from '@/features/home/hooks/useHomeDataQuery';
+import type { HomeUiModel } from '@/features/home/types/ui-model';
 
 const TIMETABLE_ROW_HEIGHT = 50;
 
@@ -17,12 +17,15 @@ function formatDisplayTime(value: string) {
   return value.slice(0, 5);
 }
 
-export default function Timetable() {
+type TimetableProps = {
+  timetable: HomeUiModel['timetable'];
+};
+
+export default function Timetable({ timetable }: TimetableProps) {
   const { isLoggedIn } = useAuth();
-  const { data, isLoading, isError, displayErrorMessage } = useHomeDataQuery();
   const slots = useMemo(
-    () => [...(data?.timetable ?? [])].sort((a, b) => toMinutes(a.startAt) - toMinutes(b.startAt)),
-    [data?.timetable],
+    () => [...timetable].sort((a, b) => toMinutes(a.startAt) - toMinutes(b.startAt)),
+    [timetable],
   );
 
   return (
@@ -67,15 +70,7 @@ export default function Timetable() {
           className={`${!isLoggedIn ? 'pointer-events-none blur-[3px] select-none' : ''}`}
           aria-hidden={!isLoggedIn}
         >
-          {isLoading ? (
-            <div className="text-small text-gray5 flex min-h-[220px] items-center justify-center">
-              시간표 로딩 중...
-            </div>
-          ) : isError ? (
-            <div className="text-small text-gray5 flex min-h-[220px] items-center justify-center text-center">
-              {displayErrorMessage}
-            </div>
-          ) : slots.length > 0 ? (
+          {slots.length > 0 ? (
             <div className="flex flex-col gap-2">
               {slots.map((slot, index) => (
                 <div

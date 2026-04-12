@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useHomeDataQuery } from '@/features/home/hooks/useHomeDataQuery';
+import type { HomeUiModel } from '@/features/home/types/ui-model';
 
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -13,12 +13,15 @@ function ymd(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
-export default function MiniCalendar() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomeDataQuery();
+type MiniCalendarProps = {
+  schedules: HomeUiModel['schedules'];
+};
+
+export default function MiniCalendar({ schedules }: MiniCalendarProps) {
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => ymd(today));
-  const todaySchedules = (data?.schedules ?? []).slice(0, 3);
+  const todaySchedules = schedules.slice(0, 3);
 
   const year = view.getFullYear();
   const month = view.getMonth();
@@ -118,15 +121,7 @@ export default function MiniCalendar() {
         </div>
 
         <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-1">
-          {isLoading ? (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center">
-              일정 로딩 중...
-            </div>
-          ) : isError ? (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
-              {displayErrorMessage}
-            </div>
-          ) : todaySchedules.length > 0 ? (
+          {todaySchedules.length > 0 ? (
             <div className="grid h-full grid-cols-3 gap-2">
               {todaySchedules.map((schedule, index) => (
                 <div

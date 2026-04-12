@@ -19,7 +19,7 @@ export default function Header() {
     try {
       setIsLoggingOut(true);
       await logout();
-      router.replace('/sign-in');
+      router.refresh(); // 현재 페이지 유지 + 데이터 갱신
     } finally {
       setIsLoggingOut(false);
     }

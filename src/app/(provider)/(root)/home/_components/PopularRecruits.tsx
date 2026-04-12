@@ -4,16 +4,13 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ListItem from '@/components/ui/ListItem';
-import { useHomeDataQuery } from '@/features/home/hooks/useHomeDataQuery';
+import type { HomeUiModel } from '@/features/home/types/ui-model';
 
-export default function PopularRecruits() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomeDataQuery();
+type PopularRecruitsProps = {
+  popularRecruitments: HomeUiModel['popularRecruitments'];
+};
 
-  if (isLoading) return <div>게시글 로딩 중...</div>;
-  if (isError) return <div>{displayErrorMessage}</div>;
-
-  const items = data?.popularRecruitments ?? [];
-
+export default function PopularRecruits({ popularRecruitments }: PopularRecruitsProps) {
   return (
     <Card
       title="인기 모집"
@@ -28,8 +25,8 @@ export default function PopularRecruits() {
       }
     >
       <div className="border-gray2 rounded-2xl bg-white px-2">
-        {items.length > 0 ? (
-          items.map((it, idx) => (
+        {popularRecruitments.length > 0 ? (
+          popularRecruitments.map((it, idx) => (
             <div key={it.id} className={idx === 0 ? '' : 'border-gray2 border-t'}>
               // 게시판 기능 추가되면 경로 변경
               <ListItem href={`${it.id}`} title={it.title} tags={it.tags} />
