@@ -15,9 +15,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = (await request.json()) as SendCodeRequest;
+    let body: SendCodeRequest;
 
-    if (!body.userEmail?.trim()) {
+    try {
+      body = (await request.json()) as SendCodeRequest;
+    } catch {
+      return NextResponse.json(
+        { message: '잘못된 요청 본문입니다.' },
+        { status: HttpStatusCode.BAD_REQUEST },
+      );
+    }
+
+    const userEmail = typeof body.userEmail === 'string' ? body.userEmail.trim() : '';
+
+    if (!userEmail) {
       return NextResponse.json(
         { message: '이메일을 입력해 주세요.' },
         { status: HttpStatusCode.BAD_REQUEST },
@@ -25,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = {
-      userEmail: body.userEmail.trim(),
+      userEmail,
     };
 
     const response = await sendPasswordResetCodeWithSpring(payload, { appCheckToken });

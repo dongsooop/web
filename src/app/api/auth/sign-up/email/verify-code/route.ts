@@ -15,10 +15,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = (await request.json()) as VerifyCodeRequest;
+    let body: VerifyCodeRequest;
 
-    const userEmail = body.userEmail?.trim();
-    const code = body.code?.trim();
+    try {
+      body = (await request.json()) as VerifyCodeRequest;
+    } catch {
+      return NextResponse.json(
+        { message: '잘못된 요청 본문입니다.' },
+        { status: HttpStatusCode.BAD_REQUEST },
+      );
+    }
+
+    const userEmail = typeof body.userEmail === 'string' ? body.userEmail.trim() : '';
+    const code = typeof body.code === 'string' ? body.code.trim() : '';
 
     if (!userEmail || !code) {
       return NextResponse.json(
