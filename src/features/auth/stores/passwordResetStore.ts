@@ -44,14 +44,39 @@ export const usePasswordResetStore = create<PasswordResetState>((set) => ({
   ...initialState,
   actions: {
     setField: (key, value) =>
-      set((s) => ({
-        inputs: { ...s.inputs, [key]: value },
-        status: {
-          ...s.status,
-          error: s.status.error === 'CODE_LIMIT_EXCEEDED' ? s.status.error : null,
-          errorContext: s.status.error === 'CODE_LIMIT_EXCEEDED' ? s.status.errorContext : null,
-        },
-      })),
+      set((s) => {
+        const isEmailField = key === 'email';
+        const isLimitError = s.status.error === 'CODE_LIMIT_EXCEEDED';
+
+        return {
+          step: isEmailField ? 'email' : s.step,
+          inputs: {
+            ...s.inputs,
+            [key]: value,
+            ...(isEmailField
+              ? {
+                  code: '',
+                  pass: '',
+                  passCheck: '',
+                }
+              : {}),
+          },
+          status: {
+            ...s.status,
+            error: isEmailField ? null : isLimitError ? s.status.error : null,
+            errorContext: isEmailField ? null : isLimitError ? s.status.errorContext : null,
+            ...(isEmailField
+              ? {
+                  isEmailChecked: false,
+                  isCodeSent: false,
+                  isCodeVerified: false,
+                  remainingSeconds: 0,
+                  failCount: 0,
+                }
+              : {}),
+          },
+        };
+      }),
 
     setStatus: (patch) =>
       set((s) => ({
