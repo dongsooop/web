@@ -72,7 +72,7 @@ export default function Header() {
 
         <div className="flex items-center">
           {!isReady ? (
-            <div className="inline-flex min-h-[40px] items-center justify-center px-3 text-sm text-gray-400">
+            <div className="inline-flex min-h-[44px] items-center justify-center px-3 text-sm text-gray-400">
               ...
             </div>
           ) : isLoggedIn ? (
@@ -80,14 +80,14 @@ export default function Header() {
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+              className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
             </button>
           ) : (
             <Link
               href="/sign-in"
-              className="text-normal hover:bg-gray1 inline-flex min-h-[40px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+              className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black"
             >
               로그인
             </Link>

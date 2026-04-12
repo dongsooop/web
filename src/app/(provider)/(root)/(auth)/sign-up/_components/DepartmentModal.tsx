@@ -29,7 +29,11 @@ export default function DeptSelectModal({
       >
         <div className="border-gray1 sticky top-0 flex items-center justify-between rounded-t-[20px] border-b bg-white p-5 sm:rounded-t-[16px]">
           <h2 className="text-large font-bold text-black">학과 선택</h2>
-          <button onClick={onClose} className="text-gray4 p-1 transition-colors hover:text-black">
+          <button
+            onClick={onClose}
+            type="button"
+            className="text-gray4 min-h-[44px] p-1 transition-colors hover:text-black"
+          >
             <X size={24} strokeWidth={2} />
           </button>
         </div>
@@ -43,7 +47,7 @@ export default function DeptSelectModal({
                 onSelect(d.code);
                 onClose();
               }}
-              className={`active:bg-gray1 text-normal flex w-full items-center justify-between rounded-[12px] px-5 py-4 transition-colors ${
+              className={`active:bg-gray1 text-normal flex min-h-[44px] w-full items-center justify-between rounded-[12px] px-5 py-4 transition-colors ${
                 selectedCode === d.code ? 'text-primary bg-primary-5 font-bold' : 'text-black'
               }`}
             >

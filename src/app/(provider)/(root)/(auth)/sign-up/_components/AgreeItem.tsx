@@ -26,6 +26,7 @@ const AgreementItem = ({ label, link, checked, onChange }: AgreementItemProps) =
       <Link
         href={link}
         target="_blank"
+        rel="noopener noreferrer"
         className="text-small text-gray4 ml-auto flex min-h-[44px] min-w-[44px] items-center justify-end font-bold hover:underline"
       >
         보기
