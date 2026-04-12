@@ -1,4 +1,5 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
+import { ApiError } from '@/lib/api/apiError';
 import { NextResponse } from 'next/server';
 
 import { fetchGuestHome } from '../service';
@@ -34,14 +35,19 @@ export async function GET(request: Request) {
 
     const data = normalizeNoticeLinks(await result.json(), schoolUrl);
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: result.status });
   } catch (error: any) {
+    const status =
+      error instanceof ApiError && error.status !== HttpStatusCode.NETWORK_ERROR
+        ? error.status
+        : HttpStatusCode.INTERNAL_SERVER_ERROR;
+
     return NextResponse.json(
       {
         message: error.message || 'Network Connection Failed',
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        status,
       },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      { status },
     );
   }
 }

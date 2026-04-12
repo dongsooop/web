@@ -1,6 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
 import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
+import { ApiError } from '@/lib/api/apiError';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchHome } from './service';
@@ -49,18 +50,23 @@ export async function GET(request: NextRequest) {
     }
 
     const data = normalizeNoticeLinks(await result.response.json(), schoolUrl);
-    const response = NextResponse.json(data);
+    const response = NextResponse.json(data, { status: result.response.status });
 
     applyAuthResult(response, result);
 
     return response;
   } catch (error: any) {
+    const status =
+      error instanceof ApiError && error.status !== HttpStatusCode.NETWORK_ERROR
+        ? error.status
+        : HttpStatusCode.INTERNAL_SERVER_ERROR;
+
     return NextResponse.json(
       {
         message: error.message || 'Network Connection Failed',
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        status,
       },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      { status },
     );
   }
 }
