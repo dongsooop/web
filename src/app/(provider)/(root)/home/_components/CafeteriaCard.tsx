@@ -24,7 +24,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
       <div className="flex items-center justify-between">
         <button
           onClick={handlePrev}
-          className="flex h-10 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
           aria-label="이전 식단"
         >
           <ChevronLeft size={20} />
@@ -34,7 +34,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
 
         <button
           onClick={handleNext}
-          className="flex h-10 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
           aria-label="이후 식단"
         >
           <ChevronRight size={20} />

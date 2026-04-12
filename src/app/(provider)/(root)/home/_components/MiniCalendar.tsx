@@ -52,7 +52,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
           <button
             type="button"
             onClick={onPrev}
-            className="hover:bg-gray1 inline-flex h-8 w-8 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
             aria-label="이전 달"
           >
             <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -60,7 +60,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
           <button
             type="button"
             onClick={onNext}
-            className="hover:bg-gray1 inline-flex h-8 w-8 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
             aria-label="다음 달"
           >
             <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -100,7 +100,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
                   type="button"
                   onClick={() => setSelected(key)}
                   className={[
-                    'mx-auto inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
+                    'mx-auto inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
                     isSelected ? 'bg-primary text-white' : 'text-black',
                     !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
                   ].join(' ')}

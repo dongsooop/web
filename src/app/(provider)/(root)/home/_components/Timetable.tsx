@@ -39,14 +39,14 @@ export default function Timetable({ timetable }: TimetableProps) {
         {isLoggedIn ? (
           <Link
             href="/timetable"
-            className="text-small text-gray5 hover:bg-gray1 inline-flex items-center gap-2 rounded-full px-2 py-1"
+            className="text-small text-gray5 hover:bg-gray1 inline-flex min-h-11 items-center gap-2 rounded-full px-3 py-1"
             aria-label="더보기"
           >
             <ChevronRight className="h-4 w-4" />
           </Link>
         ) : (
           <span
-            className="text-small text-gray4 inline-flex cursor-not-allowed items-center gap-2 rounded-full px-2 py-1"
+            className="text-small text-gray4 inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full px-3 py-1"
             aria-label="로그인 후 이용 가능"
           >
             <ChevronRight className="h-4 w-4" />
