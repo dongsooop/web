@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ListItem from '@/components/ui/ListItem';
-import { useHomeQuery } from '@/features/home/hooks/useHomeQuery';
+import { useHomeDataQuery } from '@/features/home/hooks/useHomeDataQuery';
 
 export default function PopularRecruits() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomeQuery();
+  const { data, isLoading, isError, displayErrorMessage } = useHomeDataQuery();
 
   if (isLoading) return <div>게시글 로딩 중...</div>;
   if (isError) return <div>{displayErrorMessage}</div>;

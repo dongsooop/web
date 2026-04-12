@@ -2,21 +2,28 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { getErrorMessage } from '@/lib/errors/messages';
-import { fetcher } from '@/utils/request';
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 
+import { fetchHome } from '../client/home.api';
 import { mapHomeResponseToUi } from '../mapper';
 
 export const useHomeQuery = () => {
+  const isInitialized = useAppCheckStore((state) => state.isInitialized);
+  const isReady = useAuthStore((state) => state.isReady);
+  const departmentType = useAuthStore((state) => state.user?.departmentType);
+
   const query = useQuery({
-    queryKey: ['home-data'],
-    queryFn: () => fetcher('/home'),
+    queryKey: ['home-data', 'auth', departmentType ?? 'guest'],
+    queryFn: fetchHome,
     select: (data) => mapHomeResponseToUi(data),
     staleTime: 1000 * 60 * 5,
+    enabled: isInitialized && isReady && !!departmentType,
   });
 
   return {
     ...query,
-    displayErrorMessage: query.error ? getErrorMessage('home' as any, query.error) : null,
+    displayErrorMessage: query.error ? getErrorMessage('home', query.error) : null,
   };
 };

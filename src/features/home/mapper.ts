@@ -19,16 +19,20 @@ const NOTICE_LABELS = {
 
 const RECRUIT_TAG_TONES: TagTone[] = ['blue', 'red', 'yellow'];
 
+function formatHomeTime(value: string) {
+  return value.slice(0, 5);
+}
+
 export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
   return {
     timetable: (dto.timetable ?? []).map((item) => ({
       ...item,
-      timeRange: `${item.startAt} - ${item.endAt}`,
+      timeRange: `${formatHomeTime(item.startAt)} - ${formatHomeTime(item.endAt)}`,
     })),
 
     schedules: (dto.schedules ?? []).map((item) => ({
       ...item,
-      timeRange: `${item.startAt} - ${item.endAt}`,
+      timeRange: `${formatHomeTime(item.startAt)} - ${formatHomeTime(item.endAt)}`,
       typeLabel: SCHEDULE_LABELS[item.type],
     })),
 
