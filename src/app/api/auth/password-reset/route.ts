@@ -1,24 +1,16 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { serverRequest } from '@/utils/serverRequest';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiError } from '@/lib/api/apiError';
 import { ResetPasswordRequest } from '@/features/auth/types/request';
+import { resetPasswordWithSpring } from '@/features/auth/server/auth.api';
 
 export async function POST(request: NextRequest) {
-  const endpoint = process.env.PW_RESET_ENDPOINT;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
   if (!appCheckToken) {
     return NextResponse.json(
       { message: 'Unauthorized: App Check token is missing' },
       { status: HttpStatusCode.UNAUTHORIZED },
-    );
-  }
-
-  if (!endpoint) {
-    return NextResponse.json(
-      { message: '비밀번호 변경 서비스를 현재 사용할 수 없습니다.' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
     );
   }
 
@@ -40,10 +32,7 @@ export async function POST(request: NextRequest) {
       password,
     };
 
-    const response = await serverRequest(endpoint, appCheckToken, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
+    const response = await resetPasswordWithSpring(payload, { appCheckToken });
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
       return new NextResponse(null, {
@@ -68,6 +57,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json({ message: error.message }, { status: error.status });
+    }
+
+    if (error instanceof Error && error.message.endsWith('is missing')) {
+      return NextResponse.json(
+        { message: '비밀번호 변경 서비스를 현재 사용할 수 없습니다.' },
+        { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      );
     }
 
     return NextResponse.json(

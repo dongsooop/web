@@ -1,11 +1,10 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { serverRequest } from '@/utils/serverRequest';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiError } from '@/lib/api/apiError';
-import { EmailValidateRequest } from '@/features/auth/types/request';
+import type { EmailValidateRequest } from '@/features/auth/types/request';
+import { checkEmailDuplicateWithSpring } from '@/features/auth/server/auth.api';
 
 export async function POST(request: NextRequest) {
-  const endpoint = process.env.EMAIL_VALIDATE_ENDPOINT;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
   if (!appCheckToken) {
@@ -15,16 +14,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!endpoint) {
-    return NextResponse.json(
-      { message: '이메일 중복검사 서비스를 현재 사용할 수 없습니다.' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
-    );
-  }
-
   try {
     const body = (await request.json()) as EmailValidateRequest;
-
     const email = body.email?.trim();
 
     if (!email) {
@@ -34,40 +25,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await serverRequest(endpoint, appCheckToken, {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
+    await checkEmailDuplicateWithSpring({ email }, { appCheckToken });
 
-    if (response.status === HttpStatusCode.NO_CONTENT) {
-      return new NextResponse(null, {
-        status: HttpStatusCode.NO_CONTENT,
-      });
-    }
-
-    if (response.status === HttpStatusCode.CONFLICT) {
-      return new NextResponse(null, {
-        status: HttpStatusCode.CONFLICT,
-      });
-    }
-
-    const contentType = response.headers.get('content-type') || '';
-
-    if (contentType.includes('application/json')) {
-      const data = await response.json();
-      return NextResponse.json(data, { status: response.status });
-    }
-
-    const text = await response.text();
-    return new NextResponse(text, {
-      status: response.status,
-      headers: {
-        'Content-Type': contentType || 'text/plain; charset=utf-8',
-      },
-    });
+    return NextResponse.json({ available: true }, { status: HttpStatusCode.OK });
   } catch (error) {
     if (error instanceof ApiError) {
+      if (error.status === HttpStatusCode.CONFLICT) {
+        return NextResponse.json(
+          {
+            available: false,
+            message: '이미 사용 중인 이메일입니다.',
+          },
+          { status: HttpStatusCode.CONFLICT },
+        );
+      }
+
       return NextResponse.json({ message: error.message }, { status: error.status });
+    }
+
+    if (error instanceof Error && error.message.endsWith('is missing')) {
+      return NextResponse.json(
+        { message: '이메일 중복검사 서비스를 현재 사용할 수 없습니다.' },
+        { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      );
     }
 
     return NextResponse.json(

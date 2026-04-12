@@ -1,24 +1,16 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { serverRequest } from '@/utils/serverRequest';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiError } from '@/lib/api/apiError';
 import { SignUpRequest } from '@/features/auth/types/request';
+import { signUpWithSpring } from '@/features/auth/server/auth.api';
 
 export async function POST(request: NextRequest) {
-  const endpoint = process.env.SIGNUP_ENDPOINT;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
   if (!appCheckToken) {
     return NextResponse.json(
       { message: '인증 토큰이 누락되었습니다.' },
       { status: HttpStatusCode.UNAUTHORIZED },
-    );
-  }
-
-  if (!endpoint) {
-    return NextResponse.json(
-      { message: '회원가입 서비스를 현재 사용할 수 없습니다.' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
     );
   }
 
@@ -41,13 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await serverRequest(endpoint, appCheckToken, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await signUpWithSpring(payload, { appCheckToken });
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
       return new NextResponse(null, { status: HttpStatusCode.NO_CONTENT });
@@ -68,7 +54,14 @@ export async function POST(request: NextRequest) {
     if (error instanceof ApiError) {
       return NextResponse.json({ message: error.message }, { status: error.status });
     }
-    console.error('회원가입 서버 에러:', error);
+
+    if (error instanceof Error && error.message.endsWith('is missing')) {
+      return NextResponse.json(
+        { message: '회원가입 서비스를 현재 사용할 수 없습니다.' },
+        { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      );
+    }
+
     return NextResponse.json(
       { message: '회원가입 처리 중 오류가 발생했습니다.' },
       { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
