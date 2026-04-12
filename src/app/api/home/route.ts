@@ -1,11 +1,26 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { serverRequest } from '@/utils/serverRequest';
-import { NextResponse } from 'next/server';
+import { extractAuthContext } from '@/features/auth/server/auth.context';
+import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-  const endpoint = process.env.HOME_ENDPOINT;
+import { fetchHome } from './service';
+
+function normalizeNoticeLinks(data: any, schoolUrl: string) {
+  if (data && Array.isArray(data.notices)) {
+    data.notices = data.notices.map((notice: any) => ({
+      ...notice,
+      link: notice.link.startsWith('http')
+        ? notice.link
+        : `${schoolUrl}${notice.link.startsWith('/') ? '' : '/'}${notice.link}`,
+    }));
+  }
+
+  return data;
+}
+
+export async function GET(request: NextRequest) {
   const schoolUrl = process.env.SCHOOL_URL!;
-  const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
+  const { accessToken, refreshToken, appCheckToken, departmentType } = extractAuthContext(request);
 
   if (!appCheckToken) {
     return NextResponse.json(
@@ -14,36 +29,31 @@ export async function GET(request: Request) {
     );
   }
 
-  if (!endpoint) {
+  if (!departmentType) {
     return NextResponse.json(
-      { message: 'Internal Server Error: API URL is missing' },
-      { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
+      { message: 'Unauthorized: departmentType is missing' },
+      { status: HttpStatusCode.UNAUTHORIZED },
     );
   }
 
   try {
-    const res = await serverRequest(endpoint, appCheckToken, {
-      method: 'GET',
-      cache: 'no-store',
+    const result = await fetchHome({
+      accessToken,
+      refreshToken,
+      appCheckToken,
+      departmentType,
     });
 
-    const data = await res.json();
-    if (!res.ok) {
-      return NextResponse.json(
-        { message: data?.message || 'Backend Error' },
-        { status: res.status },
-      );
-    }
-    if (data && Array.isArray(data.notices)) {
-      data.notices = data.notices.map((notice: any) => ({
-        ...notice,
-        link: notice.link.startsWith('http')
-          ? notice.link
-          : `${schoolUrl}${notice.link.startsWith('/') ? '' : '/'}${notice.link}`,
-      }));
+    if (result.response.status === HttpStatusCode.UNAUTHORIZED) {
+      return createSessionExpiredResponse();
     }
 
-    return NextResponse.json(data);
+    const data = normalizeNoticeLinks(await result.response.json(), schoolUrl);
+    const response = NextResponse.json(data);
+
+    applyAuthResult(response, result);
+
+    return response;
   } catch (error: any) {
     return NextResponse.json(
       {
