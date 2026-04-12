@@ -2,28 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
-const NAV = [
-  { href: '/home', label: '홈' },
-  { href: '/board', label: '게시판' },
-  { href: '/chat', label: '채팅' },
-  { href: '/my-page', label: '마이페이지' },
-];
-
-function cx(...classes: Array<string | false | undefined | null>) {
-  return classes.filter(Boolean).join(' ');
-}
-
-function isActivePath(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(href + '/');
-}
-
 export default function Header() {
-  const pathname = usePathname();
   const router = useRouter();
   const { isLoggedIn, isReady, logout } = useAuth();
 
@@ -48,27 +32,6 @@ export default function Header() {
           <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
           <span className="text-large font-semibold text-black">Dongsoop</span>
         </Link>
-
-        <nav className="hidden items-center gap-8 md:flex lg:hidden">
-          {NAV.map((item) => {
-            const active = isActivePath(pathname, item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cx(
-                  'text-normal font-regular border-b-2 pb-1 transition-colors duration-200',
-                  active
-                    ? 'border-primary text-primary'
-                    : 'hover:text-primary border-transparent text-black',
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
 
         <div className="flex items-center">
           {!isReady ? (
