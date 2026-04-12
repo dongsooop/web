@@ -5,10 +5,20 @@ function getRequiredHomeEndpoint() {
   const endpoint = process.env.HOME_ENDPOINT;
 
   if (!endpoint) {
-    throw new Error('환경 변수 HOME_ENDPOINT가 설정되지 않았습니다.');
+    throw new Error('HOME_ENDPOINT_MISSING');
   }
 
   return endpoint;
+}
+
+function toDepartmentTypeSegment(departmentType?: string) {
+  const normalized = departmentType?.trim();
+
+  if (!normalized) {
+    throw new Error('DEPARTMENT_TYPE_MISSING');
+  }
+
+  return encodeURIComponent(normalized);
 }
 
 export async function fetchHome(options: {
@@ -18,12 +28,9 @@ export async function fetchHome(options: {
   departmentType?: string;
 }) {
   const endpoint = getRequiredHomeEndpoint();
+  const departmentTypeSegment = toDepartmentTypeSegment(options.departmentType);
 
-  if (!options.departmentType) {
-    throw new Error('departmentType가 없습니다.');
-  }
-
-  return serverFetchAuth(`${endpoint}/${options.departmentType}`, {
+  return serverFetchAuth(`${endpoint}/${departmentTypeSegment}`, {
     method: 'GET',
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
