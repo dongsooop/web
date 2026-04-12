@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <header className="border-gray2 sticky top-0 z-40 w-full border-b bg-white">
       <div className="flex h-14 w-full items-center justify-between px-4">
-        <Link href="/home" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
           <span className="text-large font-semibold text-black">Dongsoop</span>
         </Link>

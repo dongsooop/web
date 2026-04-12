@@ -49,7 +49,7 @@ export default function SignInForm() {
         password: trimmedPassword,
       });
 
-      router.push('/home');
+      router.push('/');
     } catch (error) {
       setErrorMessage(getErrorMessage('auth', error));
     } finally {
