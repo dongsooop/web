@@ -1,9 +1,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { getErrorMessage } from '@/lib/errors/messages';
-import { mapHomeResponseToUi } from '../mapper';
 import { fetcher } from '@/utils/request';
+
+import { mapHomeResponseToUi } from '../mapper';
 
 export const useHomeQuery = () => {
   const query = useQuery({

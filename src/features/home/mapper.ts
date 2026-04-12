@@ -1,5 +1,5 @@
-import { HomeResponse } from './types';
-import { HomeUiModel, TagTone } from './ui-model';
+import type { HomeResponse } from './types/response';
+import type { HomeUiModel, TagTone } from './types/ui-model';
 
 const SCHEDULE_LABELS = {
   MEMBER: '멤버',

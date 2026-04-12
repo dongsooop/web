@@ -1,4 +1,4 @@
-import { HomeResponse } from '@/features/home/types';
+import type { HomeResponse } from '@/features/home/types/response';
 import { serverRequest } from '@/utils/serverRequest';
 
 export const getHomeData = async (token: string): Promise<HomeResponse> => {

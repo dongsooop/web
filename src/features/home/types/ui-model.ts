@@ -1,4 +1,4 @@
-import type { HomeNoticeType, HomeRecruitmentType, HomeScheduleType, TimeHHMM } from './types';
+import type { HomeNoticeType, HomeRecruitmentType, HomeScheduleType, TimeHHMM } from './response';
 
 export type HomeTag = {
   label: string;
