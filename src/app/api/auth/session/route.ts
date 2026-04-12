@@ -31,6 +31,11 @@ export async function GET(request: NextRequest) {
 
     const departmentType = await getDepartmentTypeCookie();
     const restoredUser = restoreUserFromAccessToken(reissuedTokens.accessToken, departmentType);
+
+    if (!restoredUser) {
+      return createSessionExpiredResponse();
+    }
+
     const response = NextResponse.json(toSessionResponse(restoredUser));
 
     applyAuthResult(response, { reissuedTokens });
