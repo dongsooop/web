@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       departmentType: departmentType?.trim(),
     };
 
-    // 필수값 검증
     if (!payload.email || !payload.password || !payload.nickname || !payload.departmentType) {
       return NextResponse.json(
         { message: '모든 정보를 올바르게 입력해 주세요.' },

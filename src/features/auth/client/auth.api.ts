@@ -13,7 +13,7 @@ import type {
 
 import type { SessionResponse, SignInResponse, UserResponse } from '../types/response';
 
-// 브라우저 -> Next API
+{/* 브라우저 -> Next API */}
 export async function signIn(payload: SignInRequest) {
   return clientRequestAuth<SignInResponse>('/api/auth/sign-in', {
     method: 'POST',
@@ -40,7 +40,6 @@ export async function getSession() {
   });
 }
 
-// 이메일 중복 체크
 export async function checkEmailDuplicate(payload: EmailValidateRequest) {
   const fullEmail = payload.email.includes('@') ? payload.email : `${payload.email}@dongyang.ac.kr`;
 
@@ -50,7 +49,6 @@ export async function checkEmailDuplicate(payload: EmailValidateRequest) {
   });
 }
 
-// 닉네임 중복 체크
 export async function checkNicknameDuplicate(payload: NicknameValidateRequest) {
   return clientRequest<{ available: boolean; message?: string }>('/api/auth/check/nickname', {
     method: 'POST',
@@ -58,7 +56,6 @@ export async function checkNicknameDuplicate(payload: NicknameValidateRequest) {
   });
 }
 
-// 인증 코드 전송
 export async function sendCode(payload: SendCodeRequest) {
   return clientRequest<{ success: boolean; message?: string }>(
     '/api/auth/sign-up/email/send-code',
@@ -69,7 +66,6 @@ export async function sendCode(payload: SendCodeRequest) {
   );
 }
 
-// 인증 코드 검증
 export async function verifyCode(payload: VerifyCodeRequest) {
   return clientRequest<void>('/api/auth/sign-up/email/verify-code', {
     method: 'POST',
@@ -77,7 +73,6 @@ export async function verifyCode(payload: VerifyCodeRequest) {
   });
 }
 
-// 비밀번호 변경
 export async function resetPassword(payload: ResetPasswordRequest) {
   return clientRequest<void>('/api/auth/password-reset', {
     method: 'POST',
@@ -85,7 +80,6 @@ export async function resetPassword(payload: ResetPasswordRequest) {
   });
 }
 
-// 인증 코드 전송(비밀번호 변경화면)
 export async function sendPasswordResetCode(payload: SendCodeRequest) {
   return clientRequest<{ success: boolean; message?: string }>(
     '/api/auth/password-reset/email/send-code',
@@ -96,7 +90,6 @@ export async function sendPasswordResetCode(payload: SendCodeRequest) {
   );
 }
 
-// 인증 코드 검증(비밀번호 변경화면)
 export async function verifyPasswordResetCode(payload: VerifyCodeRequest) {
   return clientRequest<void>('/api/auth/password-reset/email/verify-code', {
     method: 'POST',

@@ -1,5 +1,5 @@
 export const HttpStatusCode = {
-  NETWORK_ERROR: 0, // 네트워크 에러 코드
+  NETWORK_ERROR: 0,
   OK: 200,
   CREATED: 201,
   ACCEPTED: 202,

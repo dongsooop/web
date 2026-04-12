@@ -28,7 +28,6 @@ export default function PopularRecruits({ popularRecruitments }: PopularRecruits
         {popularRecruitments.length > 0 ? (
           popularRecruitments.map((it, idx) => (
             <div key={it.id} className={idx === 0 ? '' : 'border-gray2 border-t'}>
-              // 게시판 기능 추가되면 경로 변경
               <ListItem href={`${it.id}`} title={it.title} tags={it.tags} />
             </div>
           ))

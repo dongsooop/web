@@ -11,7 +11,6 @@ import { usePasswordResetStore } from '../stores/passwordResetStore';
 export const usePasswordReset = () => {
   const { inputs, status, step, actions } = usePasswordResetStore();
 
-  // 이메일 존재 여부 확인
   const emailCheckMutation = useMutation({
     mutationFn: (email: string) => checkPasswordResetEmail(buildSchoolEmail(email)),
     onSuccess: (res) => {
@@ -28,7 +27,6 @@ export const usePasswordReset = () => {
     onError: (err) => actions.setStatus({ error: err, errorContext: 'emailCheck' }),
   });
 
-  // 인증 코드 발송
   const sendCodeMutation = useMutation({
     mutationFn: (email: string) => sendPasswordResetCode({ userEmail: buildSchoolEmail(email) }),
     onSuccess: () => {
@@ -43,7 +41,6 @@ export const usePasswordReset = () => {
     onError: (err) => actions.setStatus({ error: err, errorContext: 'sendCode' }),
   });
 
-  // 인증 코드 검증 (프론트엔드 3회 제한 로직)
   const verifyCodeMutation = useMutation({
     mutationFn: ({ email, code }: { email: string; code: string }) => 
       verifyPasswordResetCode({ userEmail: buildSchoolEmail(email), code: code.trim() }),
@@ -62,7 +59,6 @@ export const usePasswordReset = () => {
     },
   });
 
-  // 비밀번호 재설정 실행
   const resetMutation = useMutation({
     mutationFn: () => resetPassword({ 
       email: buildSchoolEmail(inputs.email), 
@@ -84,7 +80,6 @@ export const usePasswordReset = () => {
     handleCheckEmail: () => emailCheckMutation.mutate(inputs.email),
     handleSendCode: () => sendCodeMutation.mutate(inputs.email),
     
-    // 실행 전 실패 횟수 체크
     handleVerifyCode: () => {
       if (status.failCount >= 3) {
         actions.setStatus({ error: 'CODE_LIMIT_EXCEEDED', errorContext: 'verifyCode' });

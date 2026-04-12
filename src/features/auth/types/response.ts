@@ -1,5 +1,3 @@
-// 브라우저가 받는 응답 타입
-
 export interface UserResponse {
   id: number;
   email: string;

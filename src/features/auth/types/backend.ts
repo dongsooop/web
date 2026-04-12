@@ -1,5 +1,3 @@
-// Next 서버 내부 전용
-
 export interface BackendUser {
   id: number;
   email: string;

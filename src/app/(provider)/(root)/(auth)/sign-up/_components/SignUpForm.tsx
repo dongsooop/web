@@ -74,7 +74,6 @@ export default function SignUpForm() {
   return (
     <>
       <section className="flex w-full max-w-[480px] flex-col gap-10 bg-white py-6">
-        {/* 헤더 */}
         <div className="flex flex-col gap-3 px-4">
           <h1 className="text-title font-bold text-black">동숲 회원가입</h1>
           <p className="text-small font-regular text-gray4">
@@ -89,7 +88,6 @@ export default function SignUpForm() {
           </Link>
         </div>
 
-        {/* 이메일 섹션 */}
         <div className="flex flex-col gap-4 px-4">
           <SectionLabel
             title="이메일"
@@ -188,7 +186,6 @@ export default function SignUpForm() {
           </div>
         </div>
 
-        {/* 비밀번호 섹션 */}
         <div className="flex flex-col gap-4 px-4">
           <SectionLabel
             title="비밀번호"
@@ -217,7 +214,6 @@ export default function SignUpForm() {
           />
         </div>
 
-        {/* 닉네임 섹션 */}
         <div className="flex flex-col gap-4 px-4">
           <SectionLabel
             title="닉네임"
@@ -250,7 +246,6 @@ export default function SignUpForm() {
           </div>
         </div>
 
-        {/* 학과 섹션 */}
         <div className="flex flex-col gap-4 px-4">
           <SectionLabel title="학과" />
           <button

@@ -3,24 +3,24 @@ export type ValidationResult = {
   message: string;
 };
 
-// 학교 이메일 유효성 검사
+{/* 학교 이메일 유효성 검사 */}
 export function validateSchoolEmailLocalPart(value: string) {
   const trimmed = value.trim();
   return /^[a-zA-Z0-9._%+-]+$/.test(trimmed);
 }
 
-// 학교 도메인과 결합
+{/* 학교 도메인과 결합 */}
 export function buildSchoolEmail(localPart: string) {
   const trimmed = localPart.trim();
   return trimmed ? `${trimmed}@dongyang.ac.kr` : '';
 }
 
-// 닉네임 유효성 검사
+{/* 닉네임 유효성 검사 */}
 export function validateNickname(value: string) {
   return analyzeNickname(value).isValid;
 }
 
-// 닉네임 상태 분석 및 메시지 반환
+{/* 닉네임 상태 분석 및 메시지 반환 */}
 export function analyzeNickname(value: string): ValidationResult {
   const trimmed = value.trim();
 
@@ -52,12 +52,10 @@ export function analyzeNickname(value: string): ValidationResult {
   };
 }
 
-// 비밀번호 유효성 검사
 export function validatePassword(value: string) {
   return analyzePassword(value).isValid;
 }
 
-// 비밀번호 상태 분석 및 메시지 반환
 export function analyzePassword(value: string): ValidationResult {
   const isEnglishValid =
     /^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>~`[\]\\/\-_=+]+$/.test(value) &&

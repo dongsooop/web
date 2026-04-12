@@ -1,14 +1,10 @@
-// 브라우저나 next에서 보내는 요청 타입
-
 export type DeviceType = 'WEB' | 'ANDROID' | 'IOS';
 
-// 로그인
 export interface SignInRequest {
   email: string;
   password: string;
 }
 
-// 회원가입
 export interface SignUpRequest {
   email: string;
   password: string;
@@ -24,7 +20,7 @@ export interface NicknameValidateRequest {
   nickname: string;
 }
 
-export interface ResetPasswordRequest  {
+export interface ResetPasswordRequest {
   email: string;
   password: string;
 }

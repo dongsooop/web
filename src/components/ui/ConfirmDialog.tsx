@@ -84,7 +84,6 @@ export default function ConfirmDialog({
           </p>
         </div>
 
-        {/* 버튼 영역 */}
         <div className="mt-8 flex justify-end gap-1">
           {!isSingleAction && (
             <button

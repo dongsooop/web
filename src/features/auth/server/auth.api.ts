@@ -36,7 +36,6 @@ function getRequiredEndpoint(name: string): string {
   return value;
 }
 
-// Next -> Spring auth API
 export async function signInWithSpring(
   payload: SignInRequest,
   options: SpringRequestOptions & {
