@@ -90,7 +90,7 @@ export default function ConfirmDialog({
             <button
               type="button"
               onClick={onClose}
-              className={`text-normal rounded-lg px-4 py-2 font-semibold transition-colors ${cancelTextClass}`}
+              className={`text-normal min-h-[44px] rounded-lg px-4 py-2 font-semibold transition-colors ${cancelTextClass}`}
             >
               {cancelText}
             </button>
@@ -99,7 +99,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className={`rounded-lg px-4 py-2 text-[15px] font-semibold transition-all active:scale-[0.97] ${confirmTextClass}`}
+            className={`text-normal min-h-[44px] rounded-lg px-4 py-2 text-[15px] font-semibold transition-all active:scale-[0.97] ${confirmTextClass}`}
           >
             {confirmText}
           </button>
