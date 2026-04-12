@@ -2,7 +2,7 @@ import 'server-only';
 
 import type { UserResponse } from '@/features/auth/types/response';
 import type { JwtAccessPayload } from '@/features/auth/types/backend';
-import { getAccessTokenCookie, getDepartmentTypeCookie } from './auth.cookies';
+import { getAccessTokenCookie, getStoredSessionUserCookie } from './auth.cookies';
 
 function decodeJwtPayload<T>(token: string): T {
   const parts = token.split('.');
@@ -21,50 +21,38 @@ function isExpired(exp: number): boolean {
   return exp * 1000 <= Date.now();
 }
 
-export function restoreUserFromAccessToken(
-  accessToken: string,
-  departmentType?: string | null,
-): UserResponse | null {
+function hasUsableAccessToken(accessToken: string): boolean {
   try {
     const payload = decodeJwtPayload<JwtAccessPayload>(accessToken);
 
     if (payload.type !== 'ACCESS') {
-      return null;
+      return false;
+    }
+
+    if (typeof payload.exp !== 'number') {
+      return false;
     }
 
     if (isExpired(payload.exp)) {
-      return null;
+      return false;
     }
 
-    const userId = Number(payload.sub);
-
-    if (!Number.isFinite(userId)) {
-      return null;
-    }
-
-    const roles = Array.isArray(payload.role)
-      ? payload.role.filter((role): role is string => typeof role === 'string')
-      : [];
-
-    return {
-      id: userId,
-      email: '',
-      nickname: '',
-      departmentType: departmentType ?? '',
-      role: roles,
-    };
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }
 
 export async function restoreSessionUser(): Promise<UserResponse | null> {
   const accessToken = await getAccessTokenCookie();
-  const departmentType = await getDepartmentTypeCookie();
 
   if (!accessToken) {
     return null;
   }
 
-  return restoreUserFromAccessToken(accessToken, departmentType);
+  if (!hasUsableAccessToken(accessToken)) {
+    return null;
+  }
+
+  return getStoredSessionUserCookie();
 }

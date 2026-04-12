@@ -11,6 +11,7 @@ import {
   setAuthCookies,
   setDepartmentTypeCookie,
   setDeviceCookies,
+  setStoredSessionUserCookie,
 } from '@/features/auth/server/auth.cookies';
 import { toSignInResponse } from '@/features/auth/mapper';
 
@@ -30,21 +31,40 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let rawBody: unknown;
+
   try {
-    const body = (await request.json()) as SignInRequest;
+    rawBody = await request.json();
+  } catch {
+    return NextResponse.json(
+      { message: '잘못된 요청 형식입니다.' },
+      { status: HttpStatusCode.BAD_REQUEST },
+    );
+  }
 
-    if (!body.email || !body.password) {
-      return NextResponse.json(
-        { message: '이메일과 비밀번호를 입력해 주세요.' },
-        { status: HttpStatusCode.BAD_REQUEST },
-      );
-    }
+  const body = (rawBody ?? {}) as Partial<SignInRequest>;
+  const email = typeof body.email === 'string' ? body.email.trim() : '';
+  const password = typeof body.password === 'string' ? body.password : '';
 
-    const data: BackendSignInResponse = await signInWithSpring(body, {
-      appCheckToken,
-      deviceToken,
-      deviceType,
-    });
+  if (!email || !password) {
+    return NextResponse.json(
+      { message: '이메일과 비밀번호를 입력해 주세요.' },
+      { status: HttpStatusCode.BAD_REQUEST },
+    );
+  }
+
+  try {
+    const data: BackendSignInResponse = await signInWithSpring(
+      {
+        email,
+        password,
+      },
+      {
+        appCheckToken,
+        deviceToken,
+        deviceType,
+      },
+    );
 
     const response = NextResponse.json(toSignInResponse(data), {
       status: HttpStatusCode.OK,
@@ -56,6 +76,14 @@ export async function POST(request: NextRequest) {
     if (data.departmentType) {
       setDepartmentTypeCookie(response, data.departmentType);
     }
+
+    setStoredSessionUserCookie(response, {
+      id: data.id,
+      email: data.email,
+      nickname: data.nickname,
+      departmentType: data.departmentType ?? '',
+      role: Array.isArray(data.role) ? data.role : [],
+    });
 
     return response;
   } catch (error) {
