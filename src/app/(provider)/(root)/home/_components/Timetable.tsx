@@ -45,10 +45,7 @@ export default function Timetable({ timetable }: TimetableProps) {
             <ChevronRight className="h-4 w-4" />
           </Link>
         ) : (
-          <span
-            className="text-small text-gray4 inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full px-3 py-1"
-            aria-label="로그인 후 이용 가능"
-          >
+          <span className="text-small text-gray4 inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full px-3 py-1">
             <ChevronRight className="h-4 w-4" />
           </span>
         )}
@@ -56,11 +53,16 @@ export default function Timetable({ timetable }: TimetableProps) {
 
       <div className="bg-primary/5 relative mt-4 flex-1 rounded-xl p-4">
         {!isLoggedIn ? (
-          <div
-            className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/35"
-            aria-hidden="true"
-          >
-            <div className="text-small text-gray6 rounded-full bg-white/90 px-4 py-2 font-semibold shadow-sm backdrop-blur-sm">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl">
+            <div
+              className="absolute inset-0 rounded-xl bg-white/35"
+              aria-hidden="true"
+            />
+            <div
+              className="text-small text-gray6 relative rounded-full bg-white/90 px-4 py-2 font-semibold shadow-sm backdrop-blur-sm"
+              role="note"
+              aria-live="polite"
+            >
               로그인이 필요한 서비스예요!
             </div>
           </div>
