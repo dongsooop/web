@@ -1,4 +1,11 @@
-import type { HomeNoticeType, HomeRecruitmentType, HomeScheduleType, TimeHHMM } from './types';
+import type { HomeNoticeType, HomeRecruitmentType, HomeScheduleType, TimeHHMM } from './response';
+
+export type HomeTag = {
+  label: string;
+  tone: TagTone;
+};
+
+export type TagTone = 'blue' | 'red' | 'yellow' | 'gray' | 'outline';
 
 export type HomeUiModel = {
   timetable: HomeUiTimetableItem[];
@@ -38,7 +45,6 @@ export type HomeUiPopularRecruitmentItem = {
   id: number;
   title: string;
   content: string;
-  tags: string[];
+  tags: HomeTag[];
   type: HomeRecruitmentType;
-  typeLabel: string;
 };

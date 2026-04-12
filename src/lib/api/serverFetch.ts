@@ -3,7 +3,7 @@ import 'server-only';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
-// Next -> Spring
+{/* Next -> Spring */}
 export interface ServerFetchOptions extends RequestInit {
   appCheckToken?: string;
   acceptRedirect?: boolean;

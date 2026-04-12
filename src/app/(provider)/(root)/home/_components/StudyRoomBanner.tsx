@@ -7,7 +7,6 @@ export default function StudyRoomBanner() {
       href="/library"
       className="flex h-full items-center justify-between rounded-lg bg-white p-4 shadow-sm"
     >
-      {/* 왼쪽 영역 */}
       <div className="flex items-center gap-6">
         <BookOpen className="text-gray6 h-6 w-6" />
 
@@ -20,7 +19,6 @@ export default function StudyRoomBanner() {
         </div>
       </div>
 
-      {/* 오른쪽 아이콘 */}
       <ChevronRight className="text-gray5 h-6 w-6" />
     </Link>
   );

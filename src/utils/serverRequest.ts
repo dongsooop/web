@@ -1,7 +1,6 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
-// TODO: 점진적으로 serverFetch.ts로 이전 예정
 export const serverRequest = async (url: string, token: string, options: RequestInit = {}) => {
   const baseURL = process.env.BASE_URL;
 
@@ -25,8 +24,6 @@ export const serverRequest = async (url: string, token: string, options: Request
       ...options,
       headers,
     });
-
-    console.log(`[Spring Response Status] ${response.status}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

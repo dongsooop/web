@@ -6,20 +6,20 @@ import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
-import { fetchHome } from '../client/home.api';
+import { fetchGuestHome } from '../client/home.api';
 import { mapHomeResponseToUi } from '../mapper';
 
-export const useHomeQuery = () => {
+export const useGuestHomeQuery = () => {
   const isInitialized = useAppCheckStore((state) => state.isInitialized);
   const isReady = useAuthStore((state) => state.isReady);
   const departmentType = useAuthStore((state) => state.user?.departmentType);
 
   const query = useQuery({
-    queryKey: ['home-data', 'auth', departmentType ?? 'guest'],
-    queryFn: fetchHome,
+    queryKey: ['home-data', 'guest'],
+    queryFn: fetchGuestHome,
     select: (data) => mapHomeResponseToUi(data),
     staleTime: 1000 * 60 * 5,
-    enabled: isInitialized && isReady && !!departmentType,
+    enabled: isInitialized && isReady && !departmentType,
   });
 
   return {

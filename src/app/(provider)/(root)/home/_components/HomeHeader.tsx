@@ -1,5 +1,7 @@
+import { getTodayLabel } from '@/utils/formatter/date';
+
 export default function HomeHeader() {
-  const dateLabel = '5월 21일 (화)';
+  const dateLabel = getTodayLabel();
 
   return (
     <div className="flex flex-col gap-2">

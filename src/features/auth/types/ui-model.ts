@@ -1,5 +1,3 @@
-// ui 전용 모델
-
 export interface User {
   id: number;
   email: string;

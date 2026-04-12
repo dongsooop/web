@@ -1,10 +1,8 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-import { extractAuthContext } from '@/features/auth/server/auth.context';
-import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
 import { ApiError } from '@/lib/api/apiError';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { fetchHome } from './service';
+import { fetchGuestHome } from '../service';
 
 function normalizeNoticeLinks(data: any, schoolUrl: string) {
   if (data && Array.isArray(data.notices)) {
@@ -19,9 +17,9 @@ function normalizeNoticeLinks(data: any, schoolUrl: string) {
   return data;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const schoolUrl = process.env.SCHOOL_URL!;
-  const { accessToken, refreshToken, appCheckToken, departmentType } = extractAuthContext(request);
+  const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
   if (!appCheckToken) {
     return NextResponse.json(
@@ -30,28 +28,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  if (!departmentType) {
-    return createSessionExpiredResponse();
-  }
-
   try {
-    const result = await fetchHome({
-      accessToken,
-      refreshToken,
+    const result = await fetchGuestHome({
       appCheckToken,
-      departmentType,
     });
 
-    if (result.response.status === HttpStatusCode.UNAUTHORIZED) {
-      return createSessionExpiredResponse();
-    }
+    const data = normalizeNoticeLinks(await result.json(), schoolUrl);
 
-    const data = normalizeNoticeLinks(await result.response.json(), schoolUrl);
-    const response = NextResponse.json(data, { status: result.response.status });
-
-    applyAuthResult(response, result);
-
-    return response;
+    return NextResponse.json(data, { status: result.status });
   } catch (error: any) {
     const status =
       error instanceof ApiError && error.status !== HttpStatusCode.NETWORK_ERROR

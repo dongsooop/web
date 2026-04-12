@@ -7,7 +7,7 @@ export type ErrorResponseBody = {
   message?: string;
 };
 
-// JSON 응답을 안전하게 파싱 (실패 시 null)
+
 export async function safeReadJson(res: Response): Promise<unknown | null> {
   const contentType = res.headers.get('content-type') ?? '';
 
@@ -22,7 +22,6 @@ export async function safeReadJson(res: Response): Promise<unknown | null> {
   }
 }
 
-// text 응답을 안전하게 읽기 (실패 시 null)
 export async function safeReadText(res: Response): Promise<string | null> {
   try {
     const text = await res.text();
@@ -32,7 +31,6 @@ export async function safeReadText(res: Response): Promise<string | null> {
   }
 }
 
-// 에러 응답에서 code와 message 추출
 export async function readErrorResponse(res: Response): Promise<{
   code: string | null;
   message: string | null;
@@ -54,7 +52,6 @@ export async function readErrorResponse(res: Response): Promise<{
   };
 }
 
-// App Check 및 Content-Type을 포함한 요청 헤더 생성
 export function buildRequestHeaders(init?: RequestInit, appCheckToken?: string) {
   const headers = new Headers(init?.headers);
 
@@ -71,7 +68,6 @@ export function buildRequestHeaders(init?: RequestInit, appCheckToken?: string) 
   return headers;
 }
 
-// App Check 토큰을 가져오고 없으면 에러 발생
 export function getAppCheckTokenOrThrow() {
   const appCheckToken = useAppCheckStore.getState().token;
 
@@ -82,7 +78,6 @@ export function getAppCheckTokenOrThrow() {
   return appCheckToken;
 }
 
-// 공통 fetch 실행 (App Check + headers + credentials)
 export async function executeRequest(
   url: string,
   init: RequestInit = {},
@@ -102,7 +97,6 @@ export async function executeRequest(
   }
 }
 
-// Response를 실제 데이터로 변환 (성공/에러 처리 포함)
 export async function parseResponseData<T>(response: Response): Promise<T> {
   if (response.status === HttpStatusCode.NO_CONTENT) {
     return undefined as T;
@@ -123,7 +117,6 @@ export async function parseResponseData<T>(response: Response): Promise<T> {
   throw new ApiError(response.status, message ?? 'Request failed');
 }
 
-// 인증이 필요 없는 공통 API 요청 함수
 export async function clientRequest<T>(url: string, init: RequestInit = {}): Promise<T> {
   const response = await executeRequest(url, init, 'omit');
   return parseResponseData<T>(response);

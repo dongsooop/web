@@ -21,7 +21,6 @@ export function useAuth() {
   const expireSession = useAuthStore((state) => state.expireSession);
   const clearExpired = useAuthStore((state) => state.clearExpired);
 
-  // 초기 세션 상태 복원
   const initSession = useCallback(async () => {
     if (initInFlightRef.current) {
       return;
@@ -52,7 +51,6 @@ export function useAuth() {
     }
   }, [clearAuth, setReady, setUser]);
 
-  // 로그인 요청 및 사용자 상태 반영
   const signIn = useCallback(
     async (payload: SignInRequest) => {
       const response = await signInRequest(payload);
@@ -69,7 +67,6 @@ export function useAuth() {
     [clearExpired, setUser],
   );
 
-  // 로그아웃 요청 후 인증 상태 초기화
   const logout = useCallback(async () => {
     try {
       await logoutRequest();
