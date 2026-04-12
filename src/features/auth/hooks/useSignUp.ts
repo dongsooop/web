@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { HttpStatusCode } from '@/constants/httpStatusCode';
+import { ApiError } from '@/lib/api/apiError';
 import { useSignUpStore } from '../stores/signUpStore';
 import { validatePassword, validateNickname, buildSchoolEmail } from '../validators/authValidators';
 import {
@@ -67,6 +69,14 @@ export const useSignUp = () => {
       });
     },
     onError: (error) => {
+      const isInvalidCodeError =
+        error instanceof ApiError && error.status === HttpStatusCode.BAD_REQUEST;
+
+      if (!isInvalidCodeError) {
+        handleError(error, 'verifyCode');
+        return;
+      }
+
       const nextFail = status.failCount + 1;
       const isLimitReached = nextFail >= 3;
 
