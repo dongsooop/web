@@ -36,12 +36,22 @@ export function restoreUserFromAccessToken(
       return null;
     }
 
+    const userId = Number(payload.sub);
+
+    if (!Number.isFinite(userId)) {
+      return null;
+    }
+
+    const roles = Array.isArray(payload.role)
+      ? payload.role.filter((role): role is string => typeof role === 'string')
+      : [];
+
     return {
-      id: Number(payload.sub),
+      id: userId,
       email: '',
       nickname: '',
       departmentType: departmentType ?? '',
-      role: payload.role ?? [],
+      role: roles,
     };
   } catch {
     return null;
