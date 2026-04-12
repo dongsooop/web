@@ -27,6 +27,15 @@ const DEVICE_COOKIE_OPTIONS = {
   maxAge: 60 * 60 * 24 * 30,
 };
 
+const DEVICE_COOKIE_CLEAR_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 0,
+  expires: new Date(0),
+};
+
 const USER_METADATA_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -107,15 +116,8 @@ export function setDeviceCookies(response: NextResponse, deviceToken: string, de
 }
 
 export function clearDeviceCookies(response: NextResponse) {
-  response.cookies.set(DEVICE_TOKEN_COOKIE, '', {
-    ...DEVICE_COOKIE_OPTIONS,
-    expires: new Date(0),
-  });
-
-  response.cookies.set(DEVICE_TYPE_COOKIE, '', {
-    ...DEVICE_COOKIE_OPTIONS,
-    expires: new Date(0),
-  });
+  response.cookies.set(DEVICE_TOKEN_COOKIE, '', DEVICE_COOKIE_CLEAR_OPTIONS);
+  response.cookies.set(DEVICE_TYPE_COOKIE, '', DEVICE_COOKIE_CLEAR_OPTIONS);
 }
 
 export function setDepartmentTypeCookie(response: NextResponse, departmentType: string) {
