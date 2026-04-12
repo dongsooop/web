@@ -54,10 +54,14 @@ export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
       content: item.content,
       type: item.type,
       tags: item.tags
-        ? item.tags.split(',').map((tag, idx) => ({
-            label: tag.trim(),
-            tone: RECRUIT_TAG_TONES[idx] ?? 'gray',
-          }))
+        ? item.tags
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter((tag) => tag.length > 0)
+            .map((tag, idx) => ({
+              label: tag,
+              tone: RECRUIT_TAG_TONES[idx] ?? 'gray',
+            }))
         : [],
     })),
   };
