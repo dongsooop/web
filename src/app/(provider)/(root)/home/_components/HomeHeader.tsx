@@ -1,5 +1,3 @@
-'use client';
-
 import { getTodayLabel } from '@/utils/formatter/date';
 
 export default function HomeHeader() {
