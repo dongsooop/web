@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import QueryProvider from '@/providers/QueryProvider';
+import FirebaseProvider from '@/providers/FirebaseProvider';
+import AuthInitializer from '@/features/auth/components/AuthInitializer';
+import SessionExpiredHandler from '@/features/auth/components/SessionExpiredHandler';
 
 const pretendard = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
@@ -15,8 +21,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={pretendard.variable}>
-      <body className="antialiased">{children}</body>
+    <html lang="ko">
+      <body className={`${pretendard.variable} font-pretendard flex min-h-dvh flex-col`}>
+        <QueryProvider>
+          <FirebaseProvider>
+            <AuthInitializer />
+            <SessionExpiredHandler />
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </FirebaseProvider>
+        </QueryProvider>
+      </body>
     </html>
   );
 }
