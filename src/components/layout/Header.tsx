@@ -16,11 +16,14 @@ export default function Header() {
   const handleLogout = async () => {
     if (isLoggingOut) return;
 
+    setIsLoggingOut(true);
+
     try {
-      setIsLoggingOut(true);
       await logout();
-      router.refresh(); // 현재 페이지 유지 + 데이터 갱신
+    } catch {
+      // client store는 이미 정리되었을 수 있으므로, 서버 상태를 다시 확인해 맞춘다.
     } finally {
+      router.refresh();
       setIsLoggingOut(false);
     }
   };
