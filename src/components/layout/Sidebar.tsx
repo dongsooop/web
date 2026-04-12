@@ -10,7 +10,7 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-const NAV: NavItem[] = [
+export const NAV: NavItem[] = [
   { label: '홈', href: '/', icon: <Home className="h-5 w-5" /> },
   { label: '모여봐요', href: '/board', icon: <LayoutGrid className="h-5 w-5" /> },
   { label: '채팅', href: '/chat', icon: <MessageCircle className="h-5 w-5" /> },
