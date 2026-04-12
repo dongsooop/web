@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { toSessionResponse } from '@/features/auth/mapper';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
-import {
-  restoreSessionUser,
-  restoreUserFromAccessToken,
-} from '@/features/auth/server/auth.service';
+import { restoreSessionUser } from '@/features/auth/server/auth.service';
 import { reissueWithSpring } from '@/features/auth/server/auth.api';
 import { createSessionExpiredResponse, applyAuthResult } from '@/features/auth/server/auth.route';
-import { getDepartmentTypeCookie } from '@/features/auth/server/auth.cookies';
+import { getStoredSessionUserCookie } from '@/features/auth/server/auth.cookies';
 
 export async function GET(request: NextRequest) {
   const user = await restoreSessionUser();
@@ -29,14 +26,13 @@ export async function GET(request: NextRequest) {
       appCheckToken,
     });
 
-    const departmentType = await getDepartmentTypeCookie();
-    const restoredUser = restoreUserFromAccessToken(reissuedTokens.accessToken, departmentType);
+    const storedUser = await getStoredSessionUserCookie();
 
-    if (!restoredUser) {
+    if (!storedUser) {
       return createSessionExpiredResponse();
     }
 
-    const response = NextResponse.json(toSessionResponse(restoredUser));
+    const response = NextResponse.json(toSessionResponse(storedUser));
 
     applyAuthResult(response, { reissuedTokens });
 
