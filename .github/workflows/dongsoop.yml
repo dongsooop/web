@@ -69,6 +69,6 @@ jobs:
             cd ~/dongsoop &&
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
             docker pull \${DOCKER_USERNAME}/dongsoop-web:latest &&
-            docker compose -f web-docker-compose.yml up -d --remove-orphans &&
+            docker compose -f web-docker-compose.yml up -d &&
             docker system prune -af
           "
