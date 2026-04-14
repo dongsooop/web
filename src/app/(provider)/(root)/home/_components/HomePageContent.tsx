@@ -6,7 +6,7 @@ import MiniCalendar from './MiniCalendar';
 import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
-import PopularRecruits from './PopularRecruits';
+import EclassAssignment from './EclassAssignment';
 import StudyRoomBanner from './StudyRoomBanner';
 import { useHomePageData } from '@/features/home/hooks/useHomePageData';
 
@@ -86,7 +86,7 @@ export default function HomePageContent() {
           </div>
 
           <div className="col-span-12 lg:col-span-6">
-            <PopularRecruits popularRecruitments={data.home.popularRecruitments} />
+            <EclassAssignment />
           </div>
         </div>
       </div>
