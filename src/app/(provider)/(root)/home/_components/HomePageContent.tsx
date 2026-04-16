@@ -72,7 +72,7 @@ export default function HomePageContent() {
           </div>
 
           <div className="h-full lg:row-span-2">
-            <MiniCalendar schedules={data.home.schedules} />
+                <MiniCalendar />
           </div>
         </div>
 
