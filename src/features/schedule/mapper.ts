@@ -1,21 +1,10 @@
+import { toDateKey, toTimeKey } from './lib/date';
+import type { Schedule } from './types/model';
 import type { ScheduleResponse, ScheduleType } from './types/response';
-import type { ScheduleUiItem, ScheduleUiModel } from './types/ui-model';
 
 type RawScheduleRecord = Record<string, unknown>;
 
-function pad(value: number) {
-  return String(value).padStart(2, '0');
-}
-
-function toDateKey(date: Date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-function toTime(value: Date) {
-  return `${pad(value.getHours())}:${pad(value.getMinutes())}`;
-}
-
-function parseDateValue(value: unknown) {
+function parseDate(value: unknown) {
   if (typeof value !== 'string' && typeof value !== 'number') {
     return null;
   }
@@ -24,7 +13,7 @@ function parseDateValue(value: unknown) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function normalizeTimeString(value: unknown) {
+function parseTime(value: unknown) {
   if (typeof value !== 'string') {
     return null;
   }
@@ -33,18 +22,18 @@ function normalizeTimeString(value: unknown) {
   return match ? match[1] : null;
 }
 
-function resolveDateKey(item: RawScheduleRecord) {
+function getDateKey(item: RawScheduleRecord) {
   const directDate = item.date ?? item.scheduleDate ?? item.day;
   if (typeof directDate === 'string') {
     return directDate.slice(0, 10);
   }
 
-  const startDate = parseDateValue(item.startAt ?? item.startDate ?? item.startedAt);
+  const startDate = parseDate(item.startAt ?? item.startDate ?? item.startedAt);
   if (startDate) {
     return toDateKey(startDate);
   }
 
-  const endDate = parseDateValue(item.endAt ?? item.endDate ?? item.endedAt);
+  const endDate = parseDate(item.endAt ?? item.endDate ?? item.endedAt);
   if (endDate) {
     return toDateKey(endDate);
   }
@@ -52,61 +41,58 @@ function resolveDateKey(item: RawScheduleRecord) {
   return '';
 }
 
-function resolveTime(item: RawScheduleRecord, keys: string[]) {
+function getTime(item: RawScheduleRecord, keys: string[]) {
   for (const key of keys) {
     const value = item[key];
-    const normalized = normalizeTimeString(value);
-    if (normalized) {
-      return normalized;
+    const time = parseTime(value);
+    if (time) {
+      return time;
     }
 
-    const parsedDate = parseDateValue(value);
+    const parsedDate = parseDate(value);
     if (parsedDate) {
-      return toTime(parsedDate);
+      return toTimeKey(parsedDate);
     }
   }
 
   return '00:00';
 }
 
-function normalizeType(value: unknown): ScheduleType {
+function parseType(value: unknown): ScheduleType {
   if (typeof value === 'string' && value.toUpperCase() === 'OFFICIAL') {
     return 'OFFICIAL';
   }
   return 'MEMBER';
 }
 
-function normalizeTitle(item: RawScheduleRecord) {
+function getTitle(item: RawScheduleRecord) {
   const value = item.title ?? item.name ?? item.scheduleName ?? item.content;
 
   return typeof value === 'string' && value.trim() ? value.trim() : '일정';
 }
 
-function toUiSchedule(item: RawScheduleRecord): ScheduleUiItem | null {
-  const type = normalizeType(item.type ?? item.scheduleType ?? item.category);
-  const dateKey = resolveDateKey(item);
+function toModel(item: RawScheduleRecord): Schedule | null {
+  const type = parseType(item.type ?? item.scheduleType ?? item.category);
+  const dateKey = getDateKey(item);
 
   if (!dateKey) {
     return null;
   }
 
-  const startAt = resolveTime(item, ['startAt', 'startDate', 'startedAt', 'time']);
-  const endAt = resolveTime(item, ['endAt', 'endDate', 'endedAt']);
+  const startAt = getTime(item, ['startAt', 'startDate', 'startedAt', 'time']);
+  const endAt = getTime(item, ['endAt', 'endDate', 'endedAt']);
 
   return {
-    title: normalizeTitle(item),
+    title: getTitle(item),
     dateKey,
     startAt,
     endAt,
     type,
-    displayTime: type === 'OFFICIAL' ? '학사' : `${startAt} - ${endAt}`,
   };
 }
 
-export function mapScheduleResponseToUi(dto: ScheduleResponse): ScheduleUiModel {
-  return {
-    schedules: (dto.schedules ?? [])
-      .map((item) => toUiSchedule(item as unknown as RawScheduleRecord))
-      .filter((item): item is ScheduleUiItem => item !== null),
-  };
+export function toModelList(dto: ScheduleResponse): Schedule[] {
+  return (dto.schedules ?? [])
+    .map((item) => toModel(item as unknown as RawScheduleRecord))
+    .filter((item): item is Schedule => item !== null);
 }
