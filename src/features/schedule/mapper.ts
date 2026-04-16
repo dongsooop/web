@@ -1,39 +1,24 @@
 import { toDateKey, toTimeKey } from './lib/date';
 import type { Schedule } from './types/model';
-import type { ScheduleResponse, ScheduleType } from './types/response';
+import type { ScheduleResponse, ScheduleResponseItem, ScheduleType } from './types/response';
 
-type RawScheduleRecord = Record<string, unknown>;
-
-function parseDate(value: unknown) {
-  if (typeof value !== 'string' && typeof value !== 'number') {
-    return null;
-  }
-
+function parseDate(value: string) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function parseTime(value: unknown) {
-  if (typeof value !== 'string') {
-    return null;
-  }
-
+function parseTime(value: string) {
   const match = value.match(/^(\d{2}:\d{2})/);
   return match ? match[1] : null;
 }
 
-function getDateKey(item: RawScheduleRecord) {
-  const directDate = item.date ?? item.scheduleDate ?? item.day;
-  if (typeof directDate === 'string') {
-    return directDate.slice(0, 10);
-  }
-
-  const startDate = parseDate(item.startAt ?? item.startDate ?? item.startedAt);
+function getDateKey(item: ScheduleResponseItem) {
+  const startDate = parseDate(item.startAt);
   if (startDate) {
     return toDateKey(startDate);
   }
 
-  const endDate = parseDate(item.endAt ?? item.endDate ?? item.endedAt);
+  const endDate = parseDate(item.endAt);
   if (endDate) {
     return toDateKey(endDate);
   }
@@ -41,18 +26,15 @@ function getDateKey(item: RawScheduleRecord) {
   return '';
 }
 
-function getTime(item: RawScheduleRecord, keys: string[]) {
-  for (const key of keys) {
-    const value = item[key];
-    const time = parseTime(value);
-    if (time) {
-      return time;
-    }
+function getTime(value: string) {
+  const time = parseTime(value);
+  if (time) {
+    return time;
+  }
 
-    const parsedDate = parseDate(value);
-    if (parsedDate) {
-      return toTimeKey(parsedDate);
-    }
+  const parsedDate = parseDate(value);
+  if (parsedDate) {
+    return toTimeKey(parsedDate);
   }
 
   return '00:00';
@@ -65,25 +47,25 @@ function parseType(value: unknown): ScheduleType {
   return 'MEMBER';
 }
 
-function getTitle(item: RawScheduleRecord) {
-  const value = item.title ?? item.name ?? item.scheduleName ?? item.content;
-
-  return typeof value === 'string' && value.trim() ? value.trim() : '일정';
+function getTitle(item: ScheduleResponseItem) {
+  return item.title.trim() ? item.title.trim() : '일정';
 }
 
-function toModel(item: RawScheduleRecord): Schedule | null {
-  const type = parseType(item.type ?? item.scheduleType ?? item.category);
+function toModel(item: ScheduleResponseItem): Schedule | null {
+  const type = parseType(item.type);
   const dateKey = getDateKey(item);
 
   if (!dateKey) {
     return null;
   }
 
-  const startAt = getTime(item, ['startAt', 'startDate', 'startedAt', 'time']);
-  const endAt = getTime(item, ['endAt', 'endDate', 'endedAt']);
+  const startAt = getTime(item.startAt);
+  const endAt = getTime(item.endAt);
 
   return {
+    id: item.id,
     title: getTitle(item),
+    location: item.location,
     dateKey,
     startAt,
     endAt,
@@ -93,6 +75,6 @@ function toModel(item: RawScheduleRecord): Schedule | null {
 
 export function toModelList(dto: ScheduleResponse): Schedule[] {
   return (dto.schedules ?? [])
-    .map((item) => toModel(item as unknown as RawScheduleRecord))
+    .map(toModel)
     .filter((item): item is Schedule => item !== null);
 }
