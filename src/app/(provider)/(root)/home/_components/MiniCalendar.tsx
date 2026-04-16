@@ -2,46 +2,39 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { HomeUiModel } from '@/features/home/types/ui-model';
 
-const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
+import {
+  buildCalendarCells,
+  formatScheduleTimeLabel,
+  getVisibleSchedules,
+  shiftCalendarMonth,
+  WEEK_LABELS,
+} from '@/features/schedule/lib/calendar';
+import { toDateKey, toMonthKey } from '@/features/schedule/lib/date';
+import { formatDateLabel, formatMonthLabel } from '@/utils/formatter/date';
 
-function ymd(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-type MiniCalendarProps = {
-  schedules: HomeUiModel['schedules'];
-};
-
-export default function MiniCalendar({ schedules }: MiniCalendarProps) {
+export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-  const [selected, setSelected] = useState(() => ymd(today));
-  const todaySchedules = schedules.slice(0, 3);
+  const [selected, setSelected] = useState(() => toDateKey(today));
+  const monthKey = toMonthKey(view);
+  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
   const year = view.getFullYear();
   const month = view.getMonth();
+  const cells = useMemo(() => buildCalendarCells(view), [view]);
+  const monthText = formatMonthLabel(view);
+  const { visibleSchedules, overflowCount } = useMemo(
+    () => getVisibleSchedules(data ?? [], selected),
+    [data, selected],
+  );
 
-  const firstDay = new Date(year, month, 1);
-  const startWeekday = firstDay.getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-
-  const cells = useMemo(() => {
-    const arr: Array<{ date: number | null; key: string }> = [];
-    for (let i = 0; i < startWeekday; i++) arr.push({ date: null, key: `e-${i}` });
-    for (let d = 1; d <= lastDate; d++) arr.push({ date: d, key: `d-${d}` });
-    return arr;
-  }, [startWeekday, lastDate]);
-
-  const onPrev = () => setView((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1));
-  const onNext = () => setView((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1));
-
-  const monthText = `${month + 1}월`;
-  const formatDisplayTime = (value: string) => value.slice(0, 5);
+  const handleMoveMonth = (delta: number) => {
+    const nextState = shiftCalendarMonth(view, selected, delta);
+    setView(nextState.view);
+    setSelected(nextState.selectedDateKey);
+  };
 
   return (
     <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
@@ -51,7 +44,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={onPrev}
+            onClick={() => handleMoveMonth(-1)}
             className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
             aria-label="이전 달"
           >
@@ -59,7 +52,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
           </button>
           <button
             type="button"
-            onClick={onNext}
+            onClick={() => handleMoveMonth(1)}
             className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
             aria-label="다음 달"
           >
@@ -73,7 +66,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
           <div className="text-small w-6 font-semibold text-black">{monthText}</div>
 
           <div className="text-gray5 text-small grid flex-1 grid-cols-7 text-center font-semibold">
-            {WEEK.map((w) => (
+            {WEEK_LABELS.map((w) => (
               <div key={w} className="py-1">
                 {w}
               </div>
@@ -89,9 +82,9 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
               if (c.date == null) return <div key={c.key} />;
 
               const dateObj = new Date(year, month, c.date);
-              const key = ymd(dateObj);
+              const key = toDateKey(dateObj);
 
-              const isToday = key === ymd(today);
+              const isToday = key === toDateKey(today);
               const isSelected = key === selected;
 
               return (
@@ -116,26 +109,43 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
 
       <div className="border-gray2 mt-4 flex min-h-0 flex-1 flex-col overflow-hidden border-t pt-4">
         <div className="shrink-0 px-1">
-          <div className="text-small font-semibold text-black">오늘의 일정</div>
-          <div className="text-small text-gray5 mt-1">선택한 날짜와 관계없이 오늘 기준으로 표시돼요</div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-small font-semibold text-black">
+              {formatDateLabel(selected)} 일정
+            </div>
+            {overflowCount > 0 ? (
+              <div className="text-small text-gray5 shrink-0 font-semibold">+{overflowCount}</div>
+            ) : null}
+          </div>
         </div>
 
         <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-1">
-          {todaySchedules.length > 0 ? (
+          {isError ? (
+            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
+              {displayErrorMessage}
+            </div>
+          ) : isLoading ? (
             <div className="grid h-full grid-cols-3 gap-2">
-              {todaySchedules.map((schedule, index) => (
+              {Array.from({ length: 3 }).map((_, index) => (
                 <div
-                  key={`${schedule.title}-${schedule.timeRange}-${index}`}
+                  key={index}
+                  className="border-gray2 bg-gray1 min-h-[88px] animate-pulse rounded-xl border"
+                />
+              ))}
+            </div>
+          ) : visibleSchedules.length > 0 ? (
+            <div className="grid h-full grid-cols-3 gap-2">
+              {visibleSchedules.map((schedule, index) => (
+                <div
+                  key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
                   className="border-gray2 flex min-w-0 flex-col justify-center rounded-xl border bg-white px-3 py-3"
                 >
                   <div className="min-w-0">
-                    <div className="truncate text-small font-semibold text-black">
+                    <div className="text-small truncate font-semibold text-black">
                       {schedule.title}
                     </div>
                     <div className="text-small text-gray5 mt-1 truncate">
-                      {schedule.type === 'OFFICIAL'
-                        ? '학사'
-                        : `${formatDisplayTime(schedule.startAt)} - ${formatDisplayTime(schedule.endAt)}`}
+                      {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
                 </div>
@@ -143,7 +153,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
             </div>
           ) : (
             <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
-              오늘 예정된 일정이 없어요.
+              선택한 날짜에 예정된 일정이 없어요.
             </div>
           )}
         </div>

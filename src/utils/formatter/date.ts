@@ -6,3 +6,12 @@ export const getTodayLabel = () => {
   
   return `${month}월 ${date}일 (${dayOfWeek})`;
 };
+
+export function formatDateLabel(dateKey: string) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+}
+
+export function formatMonthLabel(date: Date) {
+  return `${date.getMonth() + 1}월`;
+}
