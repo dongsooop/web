@@ -93,7 +93,7 @@ export default function MiniCalendar() {
                   type="button"
                   onClick={() => setSelected(key)}
                   className={[
-                    'mx-auto inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
+                    'mx-auto inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
                     isSelected ? 'bg-primary text-white' : 'text-black',
                     !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
                   ].join(' ')}
@@ -107,7 +107,8 @@ export default function MiniCalendar() {
         </div>
       </div>
 
-      <div className="border-gray2 mt-4 flex min-h-0 flex-1 flex-col overflow-hidden border-t pt-4">
+      <div className="mt-1 flex min-h-0 flex-col pt-4">
+        <div className="border-gray2 mb-4 h-px w-full shrink-0 border-t" aria-hidden="true" />
         <div className="shrink-0 px-1">
           <div className="flex items-center justify-between gap-3">
             <div className="text-small font-semibold text-black">
@@ -119,32 +120,32 @@ export default function MiniCalendar() {
           </div>
         </div>
 
-        <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-1">
+        <div className="mt-3 min-h-11 px-1">
           {isError ? (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
               {displayErrorMessage}
             </div>
           ) : isLoading ? (
-            <div className="grid h-full grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="border-gray2 bg-gray1 min-h-[88px] animate-pulse rounded-xl border"
+                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
                 />
               ))}
             </div>
           ) : visibleSchedules.length > 0 ? (
-            <div className="grid h-full grid-cols-3 gap-2">
+            <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
                 <div
                   key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
-                  className="border-gray2 flex min-w-0 flex-col justify-center rounded-xl border bg-white px-3 py-3"
+                  className="border-gray2 flex min-w-0 flex-col justify-center rounded-xl border bg-white px-3"
                 >
                   <div className="min-w-0">
                     <div className="text-small truncate font-semibold text-black">
                       {schedule.title}
                     </div>
-                    <div className="text-small text-gray5 mt-1 truncate">
+                    <div className="text-small text-gray5 mt-0.5 truncate">
                       {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
@@ -152,7 +153,7 @@ export default function MiniCalendar() {
               ))}
             </div>
           ) : (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
               선택한 날짜에 예정된 일정이 없어요.
             </div>
           )}

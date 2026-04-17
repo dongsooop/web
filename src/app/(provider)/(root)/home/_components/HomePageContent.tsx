@@ -18,11 +18,13 @@ function HomePageLoading() {
 
         <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:items-stretch">
           <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
-          <div className="flex h-full flex-col gap-4">
-            <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
-            <div className="border-gray2 bg-gray1 h-[140px] animate-pulse rounded-2xl" />
-            <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
+
+          <div className="flex flex-col gap-4 lg:h-full">
+            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-[2]" />
+            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-1" />
+            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-1" />
           </div>
+
           <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
         </div>
 
@@ -60,19 +62,17 @@ export default function HomePageContent() {
             <Timetable timetable={data.home.timetable} />
           </div>
 
-          <div className="h-full">
-            <div className="flex h-full flex-col gap-4">
-              <div className="h-full">
-                <CafeteriaCard menus={data.cafeteria} />
-              </div>
+          <div className="flex flex-col gap-4 lg:h-full">
+            <div className="lg:min-h-0 lg:flex-[2]">
+              <CafeteriaCard menus={data.cafeteria} />
+            </div>
 
-              <div className="h-[140px]">
-                <RestaurantBanner />
-              </div>
+            <div className="lg:min-h-0 lg:flex-1">
+              <RestaurantBanner />
+            </div>
 
-              <div className="h-full">
-                <StudyRoomBanner />
-              </div>
+            <div className="lg:min-h-0 lg:flex-1">
+              <StudyRoomBanner />
             </div>
           </div>
 
@@ -85,7 +85,7 @@ export default function HomePageContent() {
           <div className="min-w-0">
             <NewNotices notices={data.home.notices} />
           </div>
-
+          {/* Eclass 들어갈 위치 */}
           <div className="min-w-0">
             <PopularRecruits popularRecruitments={data.home.popularRecruitments} />
           </div>
