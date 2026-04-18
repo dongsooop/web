@@ -17,7 +17,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
   const handleNext = () => setIndex((p) => (p === 6 ? 0 : p + 1));
 
   const title = index === todayIndex ? '오늘의 학식' : `${DAY_LABELS[index]}요일 학식`;
-  const bodyText = useMemo(() => menus[index] || '식단 정보가 없습니다.', [menus, index]);
+  const bodyText = menus[index] || '식단 정보가 없습니다.';
 
   return (
     <div className="flex min-h-11 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:h-full">
