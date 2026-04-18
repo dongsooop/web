@@ -6,7 +6,6 @@ import MiniCalendar from './MiniCalendar';
 import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
-import PopularRecruits from './PopularRecruits';
 import StudyRoomBanner from './StudyRoomBanner';
 import { useHomePageData } from '@/features/home/hooks/useHomePageData';
 
@@ -79,14 +78,11 @@ export default function HomePageContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4">
           <div className="min-w-0">
             <NewNotices notices={data.home.notices} />
           </div>
-          {/* Eclass 들어갈 위치 */}
-          <div className="min-w-0">
-            <PopularRecruits popularRecruitments={data.home.popularRecruitments} />
-          </div>
+          <div className="min-w-0">{/* Eclass 들어갈 위치 */}</div>
         </div>
       </div>
     </div>
