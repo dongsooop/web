@@ -172,46 +172,38 @@ export default function MiniCalendar() {
       </div>
 
       {openedScheduleIndex !== null ? (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-40 bg-black/20"
-            onClick={() => setOpenedScheduleIndex(null)}
-            aria-label="일정 팝업 닫기"
-          />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4"
+          onClick={() => setOpenedScheduleIndex(null)}
+        >
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={() => setOpenedScheduleIndex(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="일정 상세"
+            className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
           >
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-label="일정 상세"
-              className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="text-small text-gray5">{formatDateLabel(selected)} 일정</div>
-                <button
-                  type="button"
-                  onClick={() => setOpenedScheduleIndex(null)}
-                  className="hover:bg-gray1 inline-flex min-w-11 shrink-0 items-center justify-center rounded-full text-gray-500"
-                  aria-label="일정 팝업 닫기"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="text-normal mt-3 font-semibold text-black">
-                {visibleSchedules[openedScheduleIndex]?.title}
-              </div>
-              <div className="text-small text-gray5 mt-2">
-                {visibleSchedules[openedScheduleIndex]
-                  ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
-                  : ''}
-              </div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-small text-gray5">{formatDateLabel(selected)} 일정</div>
+              <button
+                type="button"
+                onClick={() => setOpenedScheduleIndex(null)}
+                className="hover:bg-gray1 inline-flex min-w-11 shrink-0 items-center justify-center rounded-full text-gray-500"
+                aria-label="일정 팝업 닫기"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="text-normal mt-3 font-semibold text-black">
+              {visibleSchedules[openedScheduleIndex]?.title}
+            </div>
+            <div className="text-small text-gray5 mt-2">
+              {visibleSchedules[openedScheduleIndex]
+                ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
+                : ''}
             </div>
           </div>
-        </>
+        </div>
       ) : null}
     </section>
   );
