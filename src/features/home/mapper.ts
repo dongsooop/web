@@ -1,5 +1,5 @@
 import type { HomeResponse } from './types/response';
-import type { HomeUiModel, TagTone } from './types/ui-model';
+import type { HomeUiModel } from './types/ui-model';
 
 const SCHEDULE_LABELS = {
   MEMBER: '멤버',
@@ -16,8 +16,6 @@ const NOTICE_LABELS = {
     typeLabel: '학과',
   },
 } as const;
-
-const RECRUIT_TAG_TONES: TagTone[] = ['blue', 'red', 'yellow'];
 
 function formatHomeTime(value: string) {
   return value.slice(0, 5);
@@ -47,22 +45,5 @@ export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
         ],
       };
     }),
-
-    popularRecruitments: (dto.popular_recruitments ?? []).map((item) => ({
-      id: item.id,
-      title: item.title,
-      content: item.content,
-      type: item.type,
-      tags: item.tags
-        ? item.tags
-            .split(',')
-            .map((tag) => tag.trim())
-            .filter((tag) => tag.length > 0)
-            .map((tag, idx) => ({
-              label: tag,
-              tone: RECRUIT_TAG_TONES[idx] ?? 'gray',
-            }))
-        : [],
-    })),
   };
 }
