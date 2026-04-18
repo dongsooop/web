@@ -16,16 +16,16 @@ function HomePageLoading() {
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4">
         <HomeHeader />
 
-        <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:items-stretch">
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
-
-          <div className="flex flex-col gap-4 lg:h-full">
-            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-[2]" />
-            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-1" />
-            <div className="border-gray2 bg-gray1 animate-pulse rounded-2xl lg:min-h-0 lg:flex-1" />
-          </div>
+        <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
+          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:row-span-2" />
 
           <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
+
+          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:row-span-3" />
+
+          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
+
+          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:col-span-2" />
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -57,27 +57,25 @@ export default function HomePageContent() {
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4">
         <HomeHeader />
 
-        <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:items-stretch">
-          <div className="h-full">
+        <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
+          <div className="h-full lg:row-span-2">
             <Timetable timetable={data.home.timetable} />
           </div>
 
-          <div className="flex flex-col gap-4 lg:h-full">
-            <div className="lg:min-h-0 lg:flex-[2]">
-              <CafeteriaCard menus={data.cafeteria} />
-            </div>
+          <div className="h-full">
+            <CafeteriaCard menus={data.cafeteria} />
+          </div>
 
-            <div className="lg:min-h-0 lg:flex-1">
-              <RestaurantBanner />
-            </div>
-
-            <div className="lg:min-h-0 lg:flex-1">
-              <StudyRoomBanner />
-            </div>
+          <div className="h-full lg:row-span-3">
+            <MiniCalendar />
           </div>
 
           <div className="h-full">
-            <MiniCalendar />
+            <StudyRoomBanner />
+          </div>
+
+          <div className="h-full lg:col-span-2">
+            <RestaurantBanner />
           </div>
         </div>
 
