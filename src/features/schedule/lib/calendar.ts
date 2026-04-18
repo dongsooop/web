@@ -77,5 +77,5 @@ export function getVisibleSchedules(
 }
 
 export function formatScheduleTimeLabel(schedule: Schedule) {
-  return schedule.type === 'OFFICIAL' ? '학사' : `${schedule.startAt} - ${schedule.endAt}`;
+  return schedule.type === 'OFFICIAL' ? '학사일정' : `${schedule.startAt} - ${schedule.endAt}`;
 }

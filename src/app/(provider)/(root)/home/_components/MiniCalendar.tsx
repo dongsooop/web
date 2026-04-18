@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
 import {
@@ -18,6 +18,7 @@ export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => toDateKey(today));
+  const [openedScheduleIndex, setOpenedScheduleIndex] = useState<number | null>(null);
   const monthKey = toMonthKey(view);
   const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
@@ -34,6 +35,7 @@ export default function MiniCalendar() {
     const nextState = shiftCalendarMonth(view, selected, delta);
     setView(nextState.view);
     setSelected(nextState.selectedDateKey);
+    setOpenedScheduleIndex(null);
   };
 
   return (
@@ -45,7 +47,7 @@ export default function MiniCalendar() {
           <button
             type="button"
             onClick={() => handleMoveMonth(-1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="이전 달"
           >
             <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -53,7 +55,7 @@ export default function MiniCalendar() {
           <button
             type="button"
             onClick={() => handleMoveMonth(1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="다음 달"
           >
             <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -91,15 +93,22 @@ export default function MiniCalendar() {
                 <button
                   key={c.key}
                   type="button"
-                  onClick={() => setSelected(key)}
-                  className={[
-                    'mx-auto inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
-                    isSelected ? 'bg-primary text-white' : 'text-black',
-                    !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
-                  ].join(' ')}
+                  onClick={() => {
+                    setSelected(key);
+                    setOpenedScheduleIndex(null);
+                  }}
+                  className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
                   aria-label={`${month + 1}월 ${c.date}일`}
                 >
-                  {c.date}
+                  <span
+                    className={[
+                      'inline-flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold',
+                      isSelected ? 'bg-primary text-white' : 'text-black',
+                      !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
+                    ].join(' ')}
+                  >
+                    {c.date}
+                  </span>
                 </button>
               );
             })}
@@ -107,7 +116,8 @@ export default function MiniCalendar() {
         </div>
       </div>
 
-      <div className="border-gray2 mt-4 flex min-h-0 flex-1 flex-col overflow-hidden border-t pt-4">
+      <div className="mt-1 flex min-h-0 flex-col pt-4">
+        <div className="border-gray2 mb-4 h-px w-full shrink-0 border-t" aria-hidden="true" />
         <div className="shrink-0 px-1">
           <div className="flex items-center justify-between gap-3">
             <div className="text-small font-semibold text-black">
@@ -119,45 +129,82 @@ export default function MiniCalendar() {
           </div>
         </div>
 
-        <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-1">
+        <div className="mt-3 min-h-11 px-1">
           {isError ? (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
               {displayErrorMessage}
             </div>
           ) : isLoading ? (
-            <div className="grid h-full grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={index}
-                  className="border-gray2 bg-gray1 min-h-[88px] animate-pulse rounded-xl border"
+                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
                 />
               ))}
             </div>
           ) : visibleSchedules.length > 0 ? (
-            <div className="grid h-full grid-cols-3 gap-2">
+            <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
-                <div
+                <button
                   key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
-                  className="border-gray2 flex min-w-0 flex-col justify-center rounded-xl border bg-white px-3 py-3"
+                  type="button"
+                  onClick={() => setOpenedScheduleIndex(index)}
+                  className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
                 >
                   <div className="min-w-0">
                     <div className="text-small truncate font-semibold text-black">
                       {schedule.title}
                     </div>
-                    <div className="text-small text-gray5 mt-1 truncate">
+                    <div className="text-small text-gray5 mt-0.5 truncate">
                       {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           ) : (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
               선택한 날짜에 예정된 일정이 없어요.
             </div>
           )}
         </div>
       </div>
+
+      {openedScheduleIndex !== null ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4"
+          onClick={() => setOpenedScheduleIndex(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="일정 상세"
+            className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-small text-gray5">{formatDateLabel(selected)} 일정</div>
+              <button
+                type="button"
+                onClick={() => setOpenedScheduleIndex(null)}
+                className="hover:bg-gray1 inline-flex min-w-11 shrink-0 items-center justify-center rounded-full text-gray-500"
+                aria-label="일정 팝업 닫기"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="text-normal mt-3 font-semibold text-black">
+              {visibleSchedules[openedScheduleIndex]?.title}
+            </div>
+            <div className="text-small text-gray5 mt-2">
+              {visibleSchedules[openedScheduleIndex]
+                ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
+                : ''}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

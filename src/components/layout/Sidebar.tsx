@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, User, MessageCircle } from 'lucide-react';
+import { Home, User } from 'lucide-react';
 
 type NavItem = {
   label: string;
@@ -12,8 +12,6 @@ type NavItem = {
 
 export const NAV: NavItem[] = [
   { label: '홈', href: '/', icon: <Home className="h-5 w-5" /> },
-  { label: '모여봐요', href: '/board', icon: <LayoutGrid className="h-5 w-5" /> },
-  { label: '채팅', href: '/chat', icon: <MessageCircle className="h-5 w-5" /> },
   { label: '마이페이지', href: '/mypage', icon: <User className="h-5 w-5" /> },
 ];
 
