@@ -47,7 +47,7 @@ export default function MiniCalendar() {
           <button
             type="button"
             onClick={() => handleMoveMonth(-1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="이전 달"
           >
             <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -55,7 +55,7 @@ export default function MiniCalendar() {
           <button
             type="button"
             onClick={() => handleMoveMonth(1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="다음 달"
           >
             <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
