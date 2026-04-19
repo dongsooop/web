@@ -1,47 +1,71 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { HomeUiModel } from '@/features/home/types/ui-model';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
+import {
+  buildCalendarCells,
+  formatScheduleTimeLabel,
+  getVisibleSchedules,
+  shiftCalendarMonth,
+  WEEK_LABELS,
+} from '@/features/schedule/lib/calendar';
+import { toDateKey, toMonthKey } from '@/features/schedule/lib/date';
+import { formatDateLabel, formatMonthLabel } from '@/utils/formatter/date';
 
-function ymd(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-type MiniCalendarProps = {
-  schedules: HomeUiModel['schedules'];
-};
-
-export default function MiniCalendar({ schedules }: MiniCalendarProps) {
+export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-  const [selected, setSelected] = useState(() => ymd(today));
-  const todaySchedules = schedules.slice(0, 3);
+  const [selected, setSelected] = useState(() => toDateKey(today));
+  const [openedScheduleIndex, setOpenedScheduleIndex] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+  const monthKey = toMonthKey(view);
+  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
   const year = view.getFullYear();
   const month = view.getMonth();
+  const cells = useMemo(() => buildCalendarCells(view), [view]);
+  const monthText = formatMonthLabel(view);
+  const { visibleSchedules, overflowCount } = useMemo(
+    () => getVisibleSchedules(data ?? [], selected),
+    [data, selected],
+  );
 
-  const firstDay = new Date(year, month, 1);
-  const startWeekday = firstDay.getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  useEffect(() => {
+    if (openedScheduleIndex === null) {
+      previouslyFocusedElementRef.current?.focus();
+      previouslyFocusedElementRef.current = null;
+      return;
+    }
 
-  const cells = useMemo(() => {
-    const arr: Array<{ date: number | null; key: string }> = [];
-    for (let i = 0; i < startWeekday; i++) arr.push({ date: null, key: `e-${i}` });
-    for (let d = 1; d <= lastDate; d++) arr.push({ date: d, key: `d-${d}` });
-    return arr;
-  }, [startWeekday, lastDate]);
+    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
 
-  const onPrev = () => setView((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1));
-  const onNext = () => setView((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1));
+    dialogRef.current?.focus();
 
-  const monthText = `${month + 1}월`;
-  const formatDisplayTime = (value: string) => value.slice(0, 5);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpenedScheduleIndex(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openedScheduleIndex]);
+
+  const handleMoveMonth = (delta: number) => {
+    const nextState = shiftCalendarMonth(view, selected, delta);
+    setView(nextState.view);
+    setSelected(nextState.selectedDateKey);
+    setOpenedScheduleIndex(null);
+  };
 
   return (
     <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
@@ -51,16 +75,16 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={onPrev}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            onClick={() => handleMoveMonth(-1)}
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="이전 달"
           >
             <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
           </button>
           <button
             type="button"
-            onClick={onNext}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-full"
+            onClick={() => handleMoveMonth(1)}
+            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
             aria-label="다음 달"
           >
             <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -73,7 +97,7 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
           <div className="text-small w-6 font-semibold text-black">{monthText}</div>
 
           <div className="text-gray5 text-small grid flex-1 grid-cols-7 text-center font-semibold">
-            {WEEK.map((w) => (
+            {WEEK_LABELS.map((w) => (
               <div key={w} className="py-1">
                 {w}
               </div>
@@ -89,24 +113,31 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
               if (c.date == null) return <div key={c.key} />;
 
               const dateObj = new Date(year, month, c.date);
-              const key = ymd(dateObj);
+              const key = toDateKey(dateObj);
 
-              const isToday = key === ymd(today);
+              const isToday = key === toDateKey(today);
               const isSelected = key === selected;
 
               return (
                 <button
                   key={c.key}
                   type="button"
-                  onClick={() => setSelected(key)}
-                  className={[
-                    'mx-auto inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-[12px] font-semibold',
-                    isSelected ? 'bg-primary text-white' : 'text-black',
-                    !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
-                  ].join(' ')}
+                  onClick={() => {
+                    setSelected(key);
+                    setOpenedScheduleIndex(null);
+                  }}
+                  className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
                   aria-label={`${month + 1}월 ${c.date}일`}
                 >
-                  {c.date}
+                  <span
+                    className={[
+                      'inline-flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold',
+                      isSelected ? 'bg-primary text-white' : 'text-black',
+                      !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
+                    ].join(' ')}
+                  >
+                    {c.date}
+                  </span>
                 </button>
               );
             })}
@@ -114,40 +145,97 @@ export default function MiniCalendar({ schedules }: MiniCalendarProps) {
         </div>
       </div>
 
-      <div className="border-gray2 mt-4 flex min-h-0 flex-1 flex-col overflow-hidden border-t pt-4">
+      <div className="mt-1 flex min-h-0 flex-col pt-4">
+        <div className="border-gray2 mb-4 h-px w-full shrink-0 border-t" aria-hidden="true" />
         <div className="shrink-0 px-1">
-          <div className="text-small font-semibold text-black">오늘의 일정</div>
-          <div className="text-small text-gray5 mt-1">선택한 날짜와 관계없이 오늘 기준으로 표시돼요</div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-small font-semibold text-black">
+              {formatDateLabel(selected)} 일정
+            </div>
+            {overflowCount > 0 ? (
+              <div className="text-small text-gray5 shrink-0 font-semibold">+{overflowCount}</div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-1">
-          {todaySchedules.length > 0 ? (
-            <div className="grid h-full grid-cols-3 gap-2">
-              {todaySchedules.map((schedule, index) => (
+        <div className="mt-3 min-h-11 px-1">
+          {isError ? (
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
+              {displayErrorMessage}
+            </div>
+          ) : isLoading ? (
+            <div className="grid grid-cols-3 gap-2">
+              {Array.from({ length: 3 }).map((_, index) => (
                 <div
-                  key={`${schedule.title}-${schedule.timeRange}-${index}`}
-                  className="border-gray2 flex min-w-0 flex-col justify-center rounded-xl border bg-white px-3 py-3"
+                  key={index}
+                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
+                />
+              ))}
+            </div>
+          ) : visibleSchedules.length > 0 ? (
+            <div className="grid h-14 grid-cols-3 gap-2">
+              {visibleSchedules.map((schedule, index) => (
+                <button
+                  key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
+                  type="button"
+                  onClick={() => setOpenedScheduleIndex(index)}
+                  className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
                 >
                   <div className="min-w-0">
-                    <div className="truncate text-small font-semibold text-black">
+                    <div className="text-small truncate font-semibold text-black">
                       {schedule.title}
                     </div>
-                    <div className="text-small text-gray5 mt-1 truncate">
-                      {schedule.type === 'OFFICIAL'
-                        ? '학사'
-                        : `${formatDisplayTime(schedule.startAt)} - ${formatDisplayTime(schedule.endAt)}`}
+                    <div className="text-small text-gray5 mt-0.5 truncate">
+                      {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           ) : (
-            <div className="text-small text-gray5 flex h-full min-h-[120px] items-center justify-center text-center">
-              오늘 예정된 일정이 없어요.
+            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
+              선택한 날짜에 예정된 일정이 없어요.
             </div>
           )}
         </div>
       </div>
+
+      {openedScheduleIndex !== null ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4"
+          onClick={() => setOpenedScheduleIndex(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="일정 상세"
+            tabIndex={-1}
+            ref={dialogRef}
+            className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-small text-gray5">{formatDateLabel(selected)} 일정</div>
+              <button
+                type="button"
+                onClick={() => setOpenedScheduleIndex(null)}
+                className="hover:bg-gray1 inline-flex min-w-11 shrink-0 items-center justify-center rounded-full text-gray-500"
+                aria-label="일정 팝업 닫기"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="text-normal mt-3 font-semibold text-black">
+              {visibleSchedules[openedScheduleIndex]?.title}
+            </div>
+            <div className="text-small text-gray5 mt-2">
+              {visibleSchedules[openedScheduleIndex]
+                ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
+                : ''}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

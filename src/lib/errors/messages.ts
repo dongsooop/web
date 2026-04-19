@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '../api/apiError';
 
-type Scope = 'home' | 'cafeteria' | 'auth' | 'signup';
+type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule';
 
 function common(err: unknown): string | null {
   if (err instanceof ApiError) {
@@ -39,6 +39,11 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     return (
       common(err) ??
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    );
+  },
+  schedule: (err) => {
+    return (
+      common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
   auth: (err, context) => {
