@@ -27,8 +27,7 @@ function HomePageLoading() {
           <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:col-span-2" />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="bg-gray1 h-72 animate-pulse rounded-2xl" />
+        <div className="grid grid-cols-1 gap-4">
           <div className="bg-gray1 h-72 animate-pulse rounded-2xl" />
         </div>
       </div>
