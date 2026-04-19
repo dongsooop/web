@@ -17,6 +17,9 @@ const pretendard = localFont({
 export const metadata: Metadata = {
   title: '동숲 | Dongsoop',
   description: '동양미래대학교 대학생들을 위한 소셜 네트워크 플랫폼',
+  other: {
+    'google-adsense-account': 'ca-pub-9706697545903881',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
