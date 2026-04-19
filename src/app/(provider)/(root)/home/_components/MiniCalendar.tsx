@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
@@ -19,6 +19,8 @@ export default function MiniCalendar() {
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => toDateKey(today));
   const [openedScheduleIndex, setOpenedScheduleIndex] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
   const monthKey = toMonthKey(view);
   const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
@@ -30,6 +32,33 @@ export default function MiniCalendar() {
     () => getVisibleSchedules(data ?? [], selected),
     [data, selected],
   );
+
+  useEffect(() => {
+    if (openedScheduleIndex === null) {
+      previouslyFocusedElementRef.current?.focus();
+      previouslyFocusedElementRef.current = null;
+      return;
+    }
+
+    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+    dialogRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpenedScheduleIndex(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openedScheduleIndex]);
 
   const handleMoveMonth = (delta: number) => {
     const nextState = shiftCalendarMonth(view, selected, delta);
@@ -180,6 +209,8 @@ export default function MiniCalendar() {
             role="dialog"
             aria-modal="true"
             aria-label="일정 상세"
+            tabIndex={-1}
+            ref={dialogRef}
             className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
             onClick={(event) => event.stopPropagation()}
           >
