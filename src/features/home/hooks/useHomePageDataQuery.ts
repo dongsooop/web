@@ -12,7 +12,7 @@ import { getWeekKey } from '@/utils/date/date';
 import { fetchGuestHome, fetchHome } from '../client/home.api';
 import { mapHomeResponseToUi } from '../mapper';
 
-export const useHomePageData = () => {
+export const useHomePageDataQuery = () => {
   const { isLoggedIn, isReady, user } = useAuth();
   const isInitialized = useAppCheckStore((state) => state.isInitialized);
   const weekKey = getWeekKey();
