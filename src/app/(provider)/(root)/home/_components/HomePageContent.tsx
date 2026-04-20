@@ -7,7 +7,7 @@ import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
 import StudyRoomBanner from './StudyRoomBanner';
-import { useHomePageData } from '@/features/home/hooks/useHomePageData';
+import { useHomePageDataQuery } from '@/features/home/hooks/useHomePageDataQuery';
 
 function HomePageLoading() {
   return (
@@ -36,7 +36,7 @@ function HomePageLoading() {
 }
 
 export default function HomePageContent() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomePageData();
+  const { data, isLoading, isError, displayErrorMessage } = useHomePageDataQuery();
 
   if (isError) {
     return (

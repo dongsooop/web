@@ -12,6 +12,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# 외부에서 전달받을 빌드 타임 환경 변수 선언 및 환경 변수 등록
+ARG NEXT_PUBLIC_API_URL
+ARG BASE_URL
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV BASE_URL=$BASE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
@@ -26,7 +32,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs \
   && adduser  --system --uid 1001 nextjs
 
-# standalone output 활용 (next.config.ts에서 output: 'standalone' 필요 — 아래 주석 참고)
+# standalone output 활용
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static   ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public         ./public
