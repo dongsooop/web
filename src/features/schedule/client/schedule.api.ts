@@ -4,7 +4,7 @@ import { clientRequestAuth } from '@/lib/api/clientRequestAuth';
 import type { ScheduleResponse } from '../types/response';
 
 export async function fetchSchedule(month: string, isAuthenticated: boolean) {
-  const url = `/api/schedule/${encodeURIComponent(month)}`;
+  const url = `/bff/schedule/${encodeURIComponent(month)}`;
   const request = isAuthenticated ? clientRequestAuth<ScheduleResponse> : clientRequest<ScheduleResponse>;
 
   return request(url, {

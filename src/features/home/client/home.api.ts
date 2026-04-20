@@ -5,13 +5,13 @@ import type { HomeResponse } from '../types/response';
 
 {/* Browser -> Next API */}
 export async function fetchHome() {
-  return clientRequestAuth<HomeResponse>('/api/home', {
+  return clientRequestAuth<HomeResponse>('/bff/home', {
     method: 'GET',
   });
 }
 
 export async function fetchGuestHome() {
-  return clientRequest<HomeResponse>('/api/home/guest', {
+  return clientRequest<HomeResponse>('/bff/home/guest', {
     method: 'GET',
   });
 }
