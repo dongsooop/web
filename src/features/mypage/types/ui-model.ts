@@ -21,7 +21,6 @@ export type MyPageUser = {
 export type SocialAccount = {
   platform: SocialPlatform;
   isConnected: boolean;
-  connectedDate?: string;
 };
 
 export type MyPageSession = {

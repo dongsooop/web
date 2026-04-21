@@ -4,7 +4,6 @@ const mockSocialAccounts: SocialAccount[] = [
   {
     platform: 'KAKAO',
     isConnected: true,
-    connectedDate: '2026.04.09',
   },
   {
     platform: 'GOOGLE',
