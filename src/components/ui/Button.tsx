@@ -19,8 +19,8 @@ const VARIANT_CLASS_MAP: Record<ButtonVariant, string> = {
 };
 
 const HEIGHT_CLASS_MAP: Record<ButtonHeight, string> = {
-  default: 'h-[44px]',
-  cta: 'h-[48px]',
+  default: 'h-11',
+  cta: 'min-h-12',
 };
 
 export default function Button({
