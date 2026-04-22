@@ -10,17 +10,13 @@ import ManagementLinkCard from './ManagementLinkCard';
 import MyActivityItem from './MyActivityItem';
 
 export default function LoggedInCard() {
-  const { previewMode, session, selectMenu } = useMyPageContext();
+  const { session, selectMenu } = useMyPageContext();
   const user = session.user;
 
   if (!user) return null;
 
   const isAdmin = user.role.includes('ADMIN');
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
-  const socialConnectionsHref =
-    previewMode === 'guest'
-      ? '/mypage/social-connections'
-      : `/mypage/social-connections?view=${previewMode}`;
 
   return (
     <div className="space-y-4">
@@ -49,7 +45,7 @@ export default function LoggedInCard() {
         <div className="text-small mb-3 px-1 font-bold text-black">학사 관리</div>
 
         <ManagementLinkCard
-          href="#"
+          href="/timetable"
           icon={Table2}
           title="시간표 관리"
           description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
@@ -58,7 +54,7 @@ export default function LoggedInCard() {
         <div className="bg-gray2 m-3 h-px" />
 
         <ManagementLinkCard
-          href="#"
+          href="/calendar"
           icon={CalendarDays}
           title="일정 관리"
           description="나의 일정을 추가하고 계획을 관리할 수 있어요."
@@ -69,7 +65,7 @@ export default function LoggedInCard() {
         <div className="text-small mb-3 px-1 font-bold text-black">연결 및 지원</div>
 
         <ManagementLinkCard
-          href={socialConnectionsHref}
+          href="/mypage/social-connections"
           icon={Link2}
           title="소셜 계정 연동"
           description="원하는 소셜 계정을 연동하거나 해제할 수 있어요."
@@ -78,7 +74,7 @@ export default function LoggedInCard() {
         <div className="bg-gray2 m-3 h-px" />
 
         <ManagementLinkCard
-          href="#"
+          href="/mypage/feedback"
           icon={MessageCircleMore}
           title="피드백 하러가기"
           description="서비스 이용 중 불편한 점이나 개선 사항을 알려주세요."
