@@ -42,9 +42,7 @@ export default function SocialConnectionsPageClient({
                   key={account.platform}
                   platform={account.platform}
                   isConnected={account.isConnected}
-                  buttonProps={{
-                    onClick: () => handleSelectSocialAccount(account.platform),
-                  }}
+                  onClick={() => handleSelectSocialAccount(account.platform)}
                 />
               ))}
             </div>

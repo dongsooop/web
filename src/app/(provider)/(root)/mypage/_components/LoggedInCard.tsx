@@ -90,10 +90,7 @@ export default function LoggedInCard() {
           <div className="space-y-1">
             <MyActivityItem label="신고 관리" onClick={() => selectMenu('admin-report')} />
             <MyActivityItem label="과팅 오픈" onClick={() => selectMenu('admin-blind-date')} />
-            <MyActivityItem
-              label="사용자 피드백 결과"
-              onClick={() => selectMenu('admin-feedback')}
-            />
+            <MyActivityItem label="사용자 피드백 결과" onClick={() => selectMenu('admin-feedback')} />
           </div>
         </div>
       ) : null}

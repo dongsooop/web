@@ -1,18 +1,23 @@
 'use client';
 
+import type { ButtonHTMLAttributes } from 'react';
 import { ChevronRight } from 'lucide-react';
 
-type MyActivityItemProps = {
+type MyActivityItemProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
-  onClick: () => void;
 };
 
-export default function MyActivityItem({ label, onClick }: MyActivityItemProps) {
+export default function MyActivityItem({
+  label,
+  className = '',
+  type = 'button',
+  ...props
+}: MyActivityItemProps) {
   return (
     <button
-      type="button"
-      onClick={onClick}
-      className="flex min-h-11 w-full cursor-pointer items-center justify-between rounded-xl px-1 text-left"
+      type={type}
+      {...props}
+      className={`flex min-h-11 w-full cursor-pointer items-center justify-between rounded-xl px-1 text-left ${className}`}
     >
       <span className="text-normal font-regular text-black">{label}</span>
       <div className="flex h-11 w-11 shrink-0 items-center justify-center">

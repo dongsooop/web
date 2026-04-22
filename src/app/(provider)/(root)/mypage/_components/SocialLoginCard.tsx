@@ -1,13 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 import type { SocialPlatform } from '@/features/mypage/types/ui-model';
 
-type SocialLoginCardProps = {
+type SocialLoginCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   platform: SocialPlatform;
   isConnected: boolean;
-  buttonProps?: ComponentPropsWithoutRef<'button'>;
 };
 
 const PLATFORM_META: Record<SocialPlatform, { label: string; imageSrc: string; imageAlt: string }> =
@@ -32,7 +31,9 @@ const PLATFORM_META: Record<SocialPlatform, { label: string; imageSrc: string; i
 export default function SocialLoginCard({
   platform,
   isConnected,
-  buttonProps,
+  className = '',
+  type = 'button',
+  ...props
 }: SocialLoginCardProps) {
   const meta = PLATFORM_META[platform];
 
@@ -53,9 +54,9 @@ export default function SocialLoginCard({
       </div>
 
       <button
-        type="button"
-        {...buttonProps}
-        className={`text-small min-w-11 cursor-pointer rounded-3xl px-4 py-2 font-semibold ${
+        type={type}
+        {...props}
+        className={`text-small min-w-11 cursor-pointer rounded-3xl px-4 py-2 font-semibold ${className} ${
           isConnected ? 'border-warning-100 text-warning-100 border' : 'bg-primary text-white'
         }`}
       >
