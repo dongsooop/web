@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ChevronRight, BookOpen } from 'lucide-react';
 
 export default function StudyRoomBanner() {
+  // TODO: 다음 브랜치에서 학교 스터디룸 예약 페이지로 연결
   return (
     <Link
       href="/library"
