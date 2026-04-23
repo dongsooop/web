@@ -2,19 +2,19 @@ import AppShell from '@/components/layout/AppShell';
 import WebPlaceholderContent from '@/components/placeholder/WebPlaceholderContent';
 
 type WebPlaceholderProps = {
-  pageTitle: string;
-  pageDescription: string;
+  title: string;
+  description: string;
 };
 
 export default function WebPlaceholder({
-  pageTitle,
-  pageDescription,
+  title,
+  description,
 }: WebPlaceholderProps) {
   return (
     <AppShell>
       <WebPlaceholderContent
-        pageTitle={pageTitle}
-        pageDescription={pageDescription}
+        title={title}
+        description={description}
       />
     </AppShell>
   );
