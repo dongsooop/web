@@ -1,21 +1,20 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { CalendarDays, Link2, MessageCircleMore, Settings, Table2 } from 'lucide-react';
-import { useMyPageContext } from '@/features/mypage/context/MyPageContext';
+import type { MyPageUser } from '@/features/mypage/types/ui-model';
 
 import { getDepartmentDisplayName } from '@/constants/department';
 
 import ManagementLinkCard from './ManagementLinkCard';
-import MyActivityItem from './MyActivityItem';
 
-export default function LoggedInCard() {
-  const { session, selectMenu } = useMyPageContext();
-  const user = session.user;
+type LoggedInCardProps = {
+  user: MyPageUser;
+};
 
-  if (!user) return null;
+export default function LoggedInCard({ user }: LoggedInCardProps) {
 
-  const isAdmin = user.role.includes('ADMIN');
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
 
   return (
@@ -39,14 +38,13 @@ export default function LoggedInCard() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => selectMenu('setting')}
+          <Link
+            href="/setting"
             aria-label="설정"
             className="flex h-11 min-h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl text-black"
           >
             <Settings className="h-6 w-6" />
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -89,19 +87,6 @@ export default function LoggedInCard() {
           description="서비스 이용 중 불편한 점이나 개선 사항을 알려주세요."
         />
       </div>
-
-      {isAdmin ? (
-        <div className="w-full rounded-lg bg-white px-4 py-2">
-          <div className="space-y-1">
-            <MyActivityItem label="신고 관리" onClick={() => selectMenu('admin-report')} />
-            <MyActivityItem label="과팅 오픈" onClick={() => selectMenu('admin-blind-date')} />
-            <MyActivityItem
-              label="사용자 피드백 결과"
-              onClick={() => selectMenu('admin-feedback')}
-            />
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

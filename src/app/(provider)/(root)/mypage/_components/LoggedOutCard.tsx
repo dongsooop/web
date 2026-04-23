@@ -2,7 +2,6 @@
 
 import { LogIn, MessageCircleMore } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMyPageContext } from '@/features/mypage/context/MyPageContext';
 
 import Button from '@/components/ui/Button';
 
@@ -10,7 +9,6 @@ import ManagementLinkCard from './ManagementLinkCard';
 
 export default function LoggedOutCard() {
   const router = useRouter();
-  const { selectMenu } = useMyPageContext();
 
   return (
     <div className="space-y-4">
@@ -22,10 +20,7 @@ export default function LoggedOutCard() {
             fullWidth
             height="cta"
             fontWeight="regular"
-            onClick={() => {
-              selectMenu('login');
-              router.push('/sign-in');
-            }}
+            onClick={() => router.push('/sign-in')}
           >
             <span className="text-normal flex items-center justify-center gap-2">
               <LogIn className="h-5 w-5" />
