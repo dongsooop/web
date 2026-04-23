@@ -48,6 +48,21 @@ export default function WebPlaceholder({
   googlePlayHref = DEFAULT_GOOGLE_PLAY_HREF,
   appStoreHref = DEFAULT_APP_STORE_HREF,
 }: WebPlaceholderProps) {
+  const storeButtons = [
+    {
+      href: googlePlayHref.trim(),
+      src: '/img/google_symbol.png',
+      alt: 'Google Play Store',
+      label: 'Google Play Store',
+    },
+    {
+      href: appStoreHref.trim(),
+      src: '/img/apple_symbol.png',
+      alt: 'App Store',
+      label: 'App Store',
+    },
+  ].filter(({ href }) => href);
+
   return (
     <div className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 lg:px-6">
@@ -82,20 +97,13 @@ export default function WebPlaceholder({
               </p>
             </div>
 
-            <div className="mt-10 grid w-full max-w-[760px] grid-cols-1 gap-4 md:grid-cols-2">
-              <StoreButton
-                href={googlePlayHref}
-                src="/img/google_symbol.png"
-                alt="Google Play Store"
-                label="Google Play Store"
-              />
-              <StoreButton
-                href={appStoreHref}
-                src="/img/apple_symbol.png"
-                alt="App Store"
-                label="App Store"
-              />
-            </div>
+            {storeButtons.length > 0 && (
+              <div className="mt-10 grid w-full max-w-[760px] grid-cols-1 gap-4 md:grid-cols-2">
+                {storeButtons.map((button) => (
+                  <StoreButton key={button.label} {...button} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </div>
