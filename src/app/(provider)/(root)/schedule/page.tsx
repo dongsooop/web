@@ -2,9 +2,11 @@ import WebPlaceholder from '@/components/placeholder/WebPlaceholder';
 
 export default function SchedulePage() {
   return (
-    <WebPlaceholder
-      title="시간표 관리"
-      description="수강 과목과 시간표를 확인하고 관리할 수 있어요."
-    />
+    <div className="mx-auto flex min-h-screen w-full flex-col items-center py-6">
+      <WebPlaceholder
+        title="일정 관리"
+        description="학사 일정과 개인 일정을 확인하고 관리할 수 있어요."
+      />
+    </div>
   );
 }
