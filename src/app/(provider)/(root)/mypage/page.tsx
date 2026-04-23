@@ -13,7 +13,7 @@ export default async function MyPagePage({ searchParams }: MyPagePageProps) {
   const { previewMode, session } = getMockMyPageSession(params?.view);
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center py-6 lg:min-h-[calc(100dvh-3rem)]">
+    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center py-4 lg:min-h-[calc(100dvh-3rem)]">
       <MyPageContent session={session} previewMode={previewMode} />
     </div>
   );
