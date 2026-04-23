@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CalendarDays, Link2, MessageCircleMore, Settings, Table2 } from 'lucide-react';
-import type { MyPageUser } from '@/features/mypage/types/ui-model';
+import type { User } from '@/features/auth/types/ui-model';
 
 import { getDepartmentDisplayName } from '@/constants/department';
 
 import ManagementLinkCard from './ManagementLinkCard';
 
 type LoggedInCardProps = {
-  user: MyPageUser;
+  user: User;
 };
 
 export default function LoggedInCard({ user }: LoggedInCardProps) {

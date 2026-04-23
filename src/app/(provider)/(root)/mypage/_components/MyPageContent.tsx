@@ -1,16 +1,24 @@
 'use client';
 
 import PageHeader from '@/components/ui/PageHeader';
-import type { MyPageSession } from '@/features/mypage/types/ui-model';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import LoggedInCard from './LoggedInCard';
 import LoggedOutCard from './LoggedOutCard';
 
-type MyPageContentProps = {
-  session: MyPageSession;
-};
+function MyPageSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="bg-gray1 h-24 animate-pulse rounded-lg" />
+      <div className="bg-gray1 h-44 animate-pulse rounded-lg" />
+      <div className="bg-gray1 h-44 animate-pulse rounded-lg" />
+    </div>
+  );
+}
 
-export default function MyPageContent({ session }: MyPageContentProps) {
+export default function MyPageContent() {
+  const { isLoggedIn, isReady, user } = useAuth();
+
   return (
     <div className="w-full">
       <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4 px-4">
@@ -20,7 +28,13 @@ export default function MyPageContent({ session }: MyPageContentProps) {
         />
 
         <div className="mx-auto w-full py-3">
-          {session.isLoggedIn && session.user ? <LoggedInCard user={session.user} /> : <LoggedOutCard />}
+          {!isReady ? (
+            <MyPageSkeleton />
+          ) : isLoggedIn && user ? (
+            <LoggedInCard user={user} />
+          ) : (
+            <LoggedOutCard />
+          )}
         </div>
       </div>
     </div>
