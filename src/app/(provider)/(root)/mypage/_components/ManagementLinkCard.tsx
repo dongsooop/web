@@ -25,7 +25,7 @@ export default function ManagementLinkCard({
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <div className="text-normal text-black sm:font-semibold">{title}</div>
+          <div className="text-normal font-semibold text-black">{title}</div>
           <p className="text-small text-gray5 mt-1 hidden break-keep sm:block">{description}</p>
         </div>
       </div>

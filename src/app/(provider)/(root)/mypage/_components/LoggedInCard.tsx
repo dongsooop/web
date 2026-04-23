@@ -13,12 +13,11 @@ type LoggedInCardProps = {
 };
 
 export default function LoggedInCard({ user }: LoggedInCardProps) {
-
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
 
   return (
     <div className="space-y-4">
-      <div className="w-full rounded-lg bg-white p-4 py-5">
+      <div className="relative overflow-hidden rounded-lg bg-white p-4 py-5">
         <div className="flex min-w-0 items-center gap-4">
           <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-full">
             <Image
@@ -40,7 +39,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       </div>
 
       <div className="w-full rounded-lg bg-white p-4">
-        <div className="text-small mb-3 px-1 font-bold text-black">학사 관리</div>
+        <div className="text-small mb-3 font-bold text-black">학사 관리</div>
 
         <ManagementLinkCard
           href="/timetable"
@@ -60,7 +59,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       </div>
 
       <div className="w-full rounded-lg bg-white p-4">
-        <div className="text-small mb-3 px-1 font-bold text-black">계정 관리</div>
+        <div className="text-small mb-3 font-bold text-black">계정 관리</div>
 
         <ManagementLinkCard
           href="/mypage/social-connections"
