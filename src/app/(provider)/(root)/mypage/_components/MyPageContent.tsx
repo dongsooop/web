@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 import { MyPageProvider } from '@/features/mypage/context/MyPageContext';
 import type {
   MyPageMenuAction,
@@ -46,19 +46,17 @@ export default function MyPageContent({ session, previewMode }: MyPageContentPro
         selectSocialAccount: handleSelectSocialAccount,
       }}
     >
-      <div className="mx-auto w-full max-w-[760px] px-4 py-5 sm:px-6 sm:py-7">
-        <div className="mb-4 flex justify-end">
-          <button
-            type="button"
-            onClick={() => handleSelectMenu('setting')}
-            aria-label="설정"
-            className="flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-black"
-          >
-            <Settings className="h-6 w-6" />
-          </button>
-        </div>
+      <div className="w-full">
+        <div className="mx-auto flex w-full max-w-[800px] flex-col gap-6 px-4 lg:px-6">
+          <PageHeader
+            title="마이페이지"
+            description="내 정보와 서비스 이용 내역을 한곳에서 관리할 수 있어요."
+          />
 
-        {session.isLoggedIn && session.user ? <LoggedInCard /> : <LoggedOutCard />}
+          <div className="mx-auto w-full py-5">
+            {session.isLoggedIn && session.user ? <LoggedInCard /> : <LoggedOutCard />}
+          </div>
+        </div>
       </div>
     </MyPageProvider>
   );

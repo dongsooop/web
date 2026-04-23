@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { CalendarDays, Link2, MessageCircleMore, Table2 } from 'lucide-react';
+import { CalendarDays, Link2, MessageCircleMore, Settings, Table2 } from 'lucide-react';
 import { useMyPageContext } from '@/features/mypage/context/MyPageContext';
 
 import { getDepartmentDisplayName } from '@/constants/department';
@@ -32,12 +32,21 @@ export default function LoggedInCard() {
             />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="text-large font-bold text-black">{user.nickname}</div>
             <div className="bg-primary-5 text-small text-primary mt-2 inline-flex max-w-full items-center rounded-full px-3 py-1 font-bold">
               <span className="truncate">{departmentLabel}</span>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => selectMenu('setting')}
+            aria-label="설정"
+            className="flex h-11 min-h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl text-black"
+          >
+            <Settings className="h-6 w-6" />
+          </button>
         </div>
       </div>
 
