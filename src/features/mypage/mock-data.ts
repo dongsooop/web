@@ -1,24 +1,8 @@
-import type { MyPagePreviewMode, MyPageSession, SocialAccount } from './types/ui-model';
-
-const mockSocialAccounts: SocialAccount[] = [
-  {
-    platform: 'KAKAO',
-    isConnected: true,
-  },
-  {
-    platform: 'GOOGLE',
-    isConnected: false,
-  },
-  {
-    platform: 'APPLE',
-    isConnected: false,
-  },
-];
+import type { MyPagePreviewMode, MyPageSession } from './types/ui-model';
 
 export const mockLoggedOutSession: MyPageSession = {
   isLoggedIn: false,
   user: null,
-  socialAccounts: mockSocialAccounts,
 };
 
 export const mockLoggedInSession: MyPageSession = {
@@ -29,7 +13,6 @@ export const mockLoggedInSession: MyPageSession = {
     departmentType: 'DEPT_2001',
     role: ['USER'],
   },
-  socialAccounts: mockSocialAccounts,
 };
 
 export const mockAdminSession: MyPageSession = {

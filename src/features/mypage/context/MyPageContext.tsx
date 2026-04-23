@@ -6,14 +6,12 @@ import type {
   MyPageMenuAction,
   MyPagePreviewMode,
   MyPageSession,
-  SocialPlatform,
 } from '../types/ui-model';
 
 type MyPageContextValue = {
   previewMode: MyPagePreviewMode;
   session: MyPageSession;
   selectMenu: (action: MyPageMenuAction) => void;
-  selectSocialAccount: (platform: SocialPlatform) => void;
 };
 
 const MyPageContext = createContext<MyPageContextValue | null>(null);

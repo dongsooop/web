@@ -1,4 +1,3 @@
-export type SocialPlatform = 'KAKAO' | 'GOOGLE' | 'APPLE';
 export type MyPagePreviewMode = 'guest' | 'user' | 'admin';
 
 export type MyPageMenuAction =
@@ -18,13 +17,7 @@ export type MyPageUser = {
   role: string[];
 };
 
-export type SocialAccount = {
-  platform: SocialPlatform;
-  isConnected: boolean;
-};
-
 export type MyPageSession = {
   isLoggedIn: boolean;
   user: MyPageUser | null;
-  socialAccounts: SocialAccount[];
 };

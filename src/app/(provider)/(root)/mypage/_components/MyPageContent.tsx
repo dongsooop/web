@@ -6,7 +6,6 @@ import type {
   MyPageMenuAction,
   MyPagePreviewMode,
   MyPageSession,
-  SocialPlatform,
 } from '@/features/mypage/types/ui-model';
 
 import LoggedInCard from './LoggedInCard';
@@ -33,17 +32,12 @@ export default function MyPageContent({ session, previewMode }: MyPageContentPro
     console.log(actionLabelMap[action]);
   };
 
-  const handleSelectSocialAccount = (platform: SocialPlatform) => {
-    console.log(`${platform} 계정 연동/해제 버튼 클릭`);
-  };
-
   return (
     <MyPageProvider
       value={{
         previewMode,
         session,
         selectMenu: handleSelectMenu,
-        selectSocialAccount: handleSelectSocialAccount,
       }}
     >
       <div className="w-full">
