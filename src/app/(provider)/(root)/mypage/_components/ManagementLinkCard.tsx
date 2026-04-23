@@ -18,7 +18,7 @@ export default function ManagementLinkCard({
   return (
     <Link
       href={href}
-      className="flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-[8px] px-3"
+      className="flex min-h-14 w-full cursor-pointer items-center justify-between gap-4 rounded-lg"
     >
       <div className="flex min-w-0 items-center gap-4">
         <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">

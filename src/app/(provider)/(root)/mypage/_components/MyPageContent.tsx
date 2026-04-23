@@ -41,13 +41,13 @@ export default function MyPageContent({ session, previewMode }: MyPageContentPro
       }}
     >
       <div className="w-full">
-        <div className="mx-auto flex w-full max-w-[800px] flex-col gap-6 px-4 lg:px-6">
+        <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4 px-4">
           <PageHeader
             title="마이페이지"
             description="내 정보와 서비스 이용 내역을 한곳에서 관리할 수 있어요."
           />
 
-          <div className="mx-auto w-full py-5">
+          <div className="mx-auto w-full py-3">
             {session.isLoggedIn && session.user ? <LoggedInCard /> : <LoggedOutCard />}
           </div>
         </div>

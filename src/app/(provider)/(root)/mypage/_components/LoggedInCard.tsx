@@ -20,7 +20,7 @@ export default function LoggedInCard() {
 
   return (
     <div className="space-y-4">
-      <div className="w-full rounded-[8px] bg-white px-4 py-5">
+      <div className="w-full rounded-lg bg-white p-4 py-5">
         <div className="flex min-w-0 items-center gap-4">
           <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-full">
             <Image
@@ -50,7 +50,7 @@ export default function LoggedInCard() {
         </div>
       </div>
 
-      <div className="w-full rounded-[8px] bg-white p-4">
+      <div className="w-full rounded-lg bg-white p-4">
         <div className="text-small mb-3 px-1 font-bold text-black">학사 관리</div>
 
         <ManagementLinkCard
@@ -63,14 +63,14 @@ export default function LoggedInCard() {
         <div className="bg-gray2 m-3 h-px" />
 
         <ManagementLinkCard
-          href="/calendar"
+          href="/schedule"
           icon={CalendarDays}
           title="일정 관리"
           description="나의 일정을 추가하고 계획을 관리할 수 있어요."
         />
       </div>
 
-      <div className="w-full rounded-[8px] bg-white p-4">
+      <div className="w-full rounded-lg bg-white p-4">
         <div className="text-small mb-3 px-1 font-bold text-black">연결 및 지원</div>
 
         <ManagementLinkCard
@@ -91,11 +91,14 @@ export default function LoggedInCard() {
       </div>
 
       {isAdmin ? (
-        <div className="w-full rounded-[8px] bg-white px-4 py-2">
+        <div className="w-full rounded-lg bg-white px-4 py-2">
           <div className="space-y-1">
             <MyActivityItem label="신고 관리" onClick={() => selectMenu('admin-report')} />
             <MyActivityItem label="과팅 오픈" onClick={() => selectMenu('admin-blind-date')} />
-            <MyActivityItem label="사용자 피드백 결과" onClick={() => selectMenu('admin-feedback')} />
+            <MyActivityItem
+              label="사용자 피드백 결과"
+              onClick={() => selectMenu('admin-feedback')}
+            />
           </div>
         </div>
       ) : null}
