@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { ChevronRight, BookOpen } from 'lucide-react';
 
 export default function StudyRoomBanner() {
-  // TODO: 다음 브랜치에서 학교 스터디룸 예약 페이지로 연결
   return (
     <Link
-      href="/library"
+      href="https://lib.dongyang.ac.kr/studyroom/groupReserveStat"
+      target="_blank"
+      rel="noopener noreferrer"
       className="flex h-full min-h-14 items-center justify-between rounded-lg bg-white p-4 shadow-sm"
     >
       <div className="flex items-center gap-6">
