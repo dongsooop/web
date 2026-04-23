@@ -16,7 +16,7 @@ export default function NewNotices({ notices }: NewNoticesProps) {
       title="새로운 공지"
       right={
         <Link
-          href="/board/notices"
+          href="/notices"
           target="_blank"
           rel="noopener noreferrer"
           className="text-normal text-gray5 inline-flex min-h-11 items-center gap-2 px-2 font-semibold hover:text-black"
