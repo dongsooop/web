@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function RestaurantBanner() {
+  // TODO: 다음 브랜치에서 `restaurant` 라우트에 맞춰 링크 정리
   return (
     <Link
       href="/restaurant"
