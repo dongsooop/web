@@ -46,26 +46,19 @@ export default function MyPageContent({ session, previewMode }: MyPageContentPro
         selectSocialAccount: handleSelectSocialAccount,
       }}
     >
-      <div className="bg-gray7 min-h-[calc(100dvh-6rem)]">
-        <div className="mx-auto w-full max-w-[760px] px-4 py-5 sm:px-6 sm:py-7">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h1 className="text-title font-bold text-black">마이페이지</h1>
-              <p className="text-small text-gray5 mt-1">내 정보와 활동을 한 곳에서 관리해보세요.</p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => handleSelectMenu('setting')}
-              aria-label="설정"
-              className="flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-black"
-            >
-              <Settings className="h-6 w-6" />
-            </button>
-          </div>
-
-          {session.isLoggedIn && session.user ? <LoggedInCard /> : <LoggedOutCard />}
+      <div className="mx-auto w-full max-w-[760px] px-4 py-5 sm:px-6 sm:py-7">
+        <div className="mb-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => handleSelectMenu('setting')}
+            aria-label="설정"
+            className="flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-black"
+          >
+            <Settings className="h-6 w-6" />
+          </button>
         </div>
+
+        {session.isLoggedIn && session.user ? <LoggedInCard /> : <LoggedOutCard />}
       </div>
     </MyPageProvider>
   );

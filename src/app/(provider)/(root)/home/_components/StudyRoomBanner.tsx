@@ -4,7 +4,9 @@ import { ChevronRight, BookOpen } from 'lucide-react';
 export default function StudyRoomBanner() {
   return (
     <Link
-      href="/library"
+      href="https://lib.dongyang.ac.kr/studyroom/groupReserveStat"
+      target="_blank"
+      rel="noopener noreferrer"
       className="flex h-full min-h-14 items-center justify-between rounded-lg bg-white p-4 shadow-sm"
     >
       <div className="flex items-center gap-6">
