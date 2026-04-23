@@ -1,8 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
-import { CalendarDays, Link2, MessageCircleMore, Settings, Table2 } from 'lucide-react';
+import { CalendarDays, KeyRound, Link2, MessageCircleMore, Table2 } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
 import { getDepartmentDisplayName } from '@/constants/department';
@@ -37,14 +36,6 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
               <span className="truncate">{departmentLabel}</span>
             </div>
           </div>
-
-          <Link
-            href="/setting"
-            aria-label="설정"
-            className="flex h-11 min-h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl text-black"
-          >
-            <Settings className="h-6 w-6" />
-          </Link>
         </div>
       </div>
 
@@ -69,7 +60,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       </div>
 
       <div className="w-full rounded-lg bg-white p-4">
-        <div className="text-small mb-3 px-1 font-bold text-black">연결 및 지원</div>
+        <div className="text-small mb-3 px-1 font-bold text-black">계정 관리</div>
 
         <ManagementLinkCard
           href="/mypage/social-connections"
@@ -80,6 +71,15 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
 
         <div className="bg-gray2 m-3 h-px" />
 
+        <ManagementLinkCard
+          href="/password-reset"
+          icon={KeyRound}
+          title="비밀번호 변경"
+          description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
+        />
+      </div>
+
+      <div className="w-full rounded-lg bg-white p-4">
         <ManagementLinkCard
           href="/mypage/feedback"
           icon={MessageCircleMore}
