@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { CalendarDays, KeyRound, Link2, MessageCircleMore, Table2 } from 'lucide-react';
+import { CalendarDays, KeyRound, Link2, Table2 } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
 import { getDepartmentDisplayName } from '@/constants/department';
@@ -76,15 +76,6 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           icon={KeyRound}
           title="비밀번호 변경"
           description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
-        />
-      </div>
-
-      <div className="w-full rounded-lg bg-white p-4">
-        <ManagementLinkCard
-          href="/mypage/feedback"
-          icon={MessageCircleMore}
-          title="피드백 하러가기"
-          description="서비스 이용 중 불편한 점이나 개선 사항을 알려주세요."
         />
       </div>
     </div>

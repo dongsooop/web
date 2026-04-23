@@ -21,7 +21,7 @@ export default function MyPageContent() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4 px-4">
+      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4">
         <PageHeader
           title="마이페이지"
           description="내 정보와 서비스 이용 내역을 한곳에서 관리할 수 있어요."

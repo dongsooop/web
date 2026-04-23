@@ -1,11 +1,9 @@
 'use client';
 
-import { LogIn, MessageCircleMore } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import Button from '@/components/ui/Button';
-
-import ManagementLinkCard from './ManagementLinkCard';
 
 export default function LoggedOutCard() {
   const router = useRouter();
@@ -28,15 +26,6 @@ export default function LoggedOutCard() {
             </span>
           </Button>
         </div>
-      </div>
-
-      <div className="w-full rounded-lg bg-white py-4 pr-2 pl-4">
-        <ManagementLinkCard
-          href="/mypage/feedback"
-          icon={MessageCircleMore}
-          title="피드백 하러가기"
-          description="서비스 이용 중 불편한 점이나 개선 사항을 알려주세요."
-        />
       </div>
     </div>
   );
