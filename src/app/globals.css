@@ -41,3 +41,10 @@ body {
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.6s linear infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-base {
+    animation: none;
+    background-position: 0 0;
+  }
+}
