@@ -20,14 +20,17 @@ function SkeletonRow({ descriptionWidth }: { descriptionWidth: string }) {
   );
 }
 
-function SkeletonSection({ descriptionWidths }: { descriptionWidths: [string, string] }) {
+function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] }) {
   return (
     <section className="space-y-3">
       <div className="rounded-lg bg-white p-4">
         <SkeletonText className="mb-4 h-5 w-20 px-1" />
-        <SkeletonRow descriptionWidth={descriptionWidths[0]} />
-        <div className="bg-gray2 m-3 h-px" />
-        <SkeletonRow descriptionWidth={descriptionWidths[1]} />
+        {descriptionWidths.map((descriptionWidth, index) => (
+          <div key={`${descriptionWidth}-${index}`}>
+            {index > 0 ? <div className="bg-gray2 m-3 h-px" /> : null}
+            <SkeletonRow descriptionWidth={descriptionWidth} />
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -48,8 +51,8 @@ export default function MyPageSkeleton() {
         </div>
       </div>
 
-      <SkeletonSection descriptionWidths={['w-52', 'w-48']} />
-      <SkeletonSection descriptionWidths={['w-52', 'w-44']} />
+      <SkeletonSection descriptionWidths={['w-52', 'w-52']} />
+      <SkeletonSection descriptionWidths={['w-52', 'w-52', 'w-52']} />
     </div>
   );
 }

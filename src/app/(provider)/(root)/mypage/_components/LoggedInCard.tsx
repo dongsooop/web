@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { CalendarDays, KeyRound, Link2, Table2 } from 'lucide-react';
+import { CalendarDays, KeyRound, Link2, Table2, UserX } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
 import { getDepartmentDisplayName } from '@/constants/department';
@@ -75,6 +75,14 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           icon={KeyRound}
           title="비밀번호 변경"
           description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
+        />
+
+        <div className="bg-gray2 m-3 h-px" />
+
+        <ManagementLinkCard
+          icon={UserX}
+          title="계정 탈퇴"
+          description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."
         />
       </div>
     </div>
