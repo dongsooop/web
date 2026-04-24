@@ -8,6 +8,7 @@ import type { User } from '@/features/auth/types/ui-model';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { getDepartmentDisplayName } from '@/constants/department';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
 
 import ManagementLinkCard from './ManagementLinkCard';
@@ -23,8 +24,14 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   const showToast = useToastStore((state) => state.showToast);
 
   const handleDelete = async () => {
-    await deleteAccount();
-    showToast('회원 탈퇴가 완료되었어요.', 'success');
+    try {
+      await deleteAccount();
+      setIsDeleteOpen(false);
+      showToast('회원 탈퇴가 완료되었어요.', 'success');
+    } catch (error) {
+      setIsDeleteOpen(false);
+      showToast(getErrorMessage('auth', error, 'deleteAccount'), 'error');
+    }
   };
 
   return (
