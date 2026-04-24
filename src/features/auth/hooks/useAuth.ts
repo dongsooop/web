@@ -8,6 +8,8 @@ import { useAuthStore } from '../stores/useAuthStore';
 
 import type { SignInRequest } from '../types/request';
 
+const AUTH_INIT_MIN_DELAY_MS = 300;
+
 export function useAuth() {
   const initInFlightRef = useRef(false);
 
@@ -27,6 +29,7 @@ export function useAuth() {
     }
 
     initInFlightRef.current = true;
+    const startTime = Date.now();
 
     try {
       const appCheckToken = useAppCheckStore.getState().token;
@@ -46,6 +49,13 @@ export function useAuth() {
     } catch {
       clearAuth();
     } finally {
+      const elapsed = Date.now() - startTime;
+      const remainingDelay = AUTH_INIT_MIN_DELAY_MS - elapsed;
+
+      if (remainingDelay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remainingDelay));
+      }
+
       setReady();
       initInFlightRef.current = false;
     }

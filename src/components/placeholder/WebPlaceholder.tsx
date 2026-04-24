@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight, MonitorSmartphone } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 type WebPlaceholderProps = {
   title: string;
@@ -66,15 +67,7 @@ export default function WebPlaceholder({
   return (
     <div className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 lg:px-6">
-        <section className="flex flex-col gap-3 px-1 pt-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-title mr-1 font-bold text-black">{title}</h1>
-            <span className="border-primary/15 bg-primary/5 text-normal text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 font-semibold">
-              <MonitorSmartphone className="text-large h-4 w-4" />웹 준비 중
-            </span>
-          </div>
-          <p className="text-large text-gray6">{description}</p>
-        </section>
+        <PageHeader title={title} description={description} isPreparing />
 
         <section className="border-gray2/70 flex rounded-xl border bg-white p-4 shadow-[0_10px_30px_rgba(31,41,55,0.04)] md:p-8 lg:px-12 lg:py-16">
           <div className="mx-auto flex w-full max-w-[760px] flex-col items-center text-center">
