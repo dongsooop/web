@@ -5,16 +5,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import LoggedInCard from './LoggedInCard';
 import LoggedOutCard from './LoggedOutCard';
-
-function MyPageSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="bg-gray1 h-24 animate-pulse rounded-lg" />
-      <div className="bg-gray1 h-44 animate-pulse rounded-lg" />
-      <div className="bg-gray1 h-44 animate-pulse rounded-lg" />
-    </div>
-  );
-}
+import MyPageSkeleton from './MyPageSkeleton';
 
 export default function MyPageContent() {
   const { isLoggedIn, isReady, user } = useAuth();

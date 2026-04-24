@@ -8,32 +8,7 @@ import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
 import StudyRoomBanner from './StudyRoomBanner';
 import { useHomePageDataQuery } from '@/features/home/hooks/useHomePageDataQuery';
-
-function HomePageLoading() {
-  return (
-    <div className="w-full">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4">
-        <HomeHeader />
-
-        <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:row-span-2" />
-
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
-
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:row-span-3" />
-
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl" />
-
-          <div className="border-gray2 bg-gray1 h-full animate-pulse rounded-2xl lg:col-span-2" />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4">
-          <div className="bg-gray1 h-72 animate-pulse rounded-2xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
+import HomePageSkeleton from './HomePageSkeleton';
 
 export default function HomePageContent() {
   const { data, isLoading, isError, displayErrorMessage } = useHomePageDataQuery();
@@ -47,7 +22,7 @@ export default function HomePageContent() {
   }
 
   if (isLoading || !data) {
-    return <HomePageLoading />;
+    return <HomePageSkeleton />;
   }
 
   return (
