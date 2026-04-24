@@ -5,6 +5,34 @@ import {
   SkeletonText,
 } from '@/components/ui/Skeleton';
 
+function SkeletonRow({ descriptionWidth }: { descriptionWidth: string }) {
+  return (
+    <div className="flex min-h-14 items-center justify-between gap-4">
+      <div className="flex items-center gap-4">
+        <SkeletonIconBox />
+        <div className="space-y-2">
+          <SkeletonText className="h-6 w-22" />
+          <SkeletonText className={`hidden ${descriptionWidth} sm:block`} />
+        </div>
+      </div>
+      <SkeletonButton />
+    </div>
+  );
+}
+
+function SkeletonSection({ descriptionWidths }: { descriptionWidths: [string, string] }) {
+  return (
+    <section className="space-y-3">
+      <div className="rounded-lg bg-white p-4">
+        <SkeletonText className="mb-4 h-5 w-20 px-1" />
+        <SkeletonRow descriptionWidth={descriptionWidths[0]} />
+        <div className="bg-gray2 m-3 h-px" />
+        <SkeletonRow descriptionWidth={descriptionWidths[1]} />
+      </div>
+    </section>
+  );
+}
+
 export default function MyPageSkeleton() {
   return (
     <div className="space-y-4">
@@ -20,63 +48,8 @@ export default function MyPageSkeleton() {
         </div>
       </div>
 
-      <section className="space-y-3">
-        <div className="rounded-lg bg-white p-4">
-          <SkeletonText className="mb-4 h-5 w-20 px-1" />
-          <div className="flex min-h-14 items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <SkeletonIconBox />
-              <div className="space-y-2">
-                <SkeletonText className="h-6 w-22" />
-                <SkeletonText className="hidden w-52 sm:block" />
-              </div>
-            </div>
-            <SkeletonButton />
-          </div>
-
-          <div className="bg-gray2 m-3 h-px" />
-
-          <div className="flex min-h-14 items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <SkeletonIconBox />
-              <div className="space-y-2">
-                <SkeletonText className="h-6 w-22" />
-                <SkeletonText className="hidden w-48 sm:block" />
-              </div>
-            </div>
-            <SkeletonButton />
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <div className="rounded-lg bg-white p-4">
-          <SkeletonText className="mb-4 h-5 w-20 px-1" />
-          <div className="flex min-h-14 items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <SkeletonIconBox />
-              <div className="space-y-2">
-                <SkeletonText className="h-6 w-22" />
-                <SkeletonText className="hidden w-52 sm:block" />
-              </div>
-            </div>
-            <SkeletonButton />
-          </div>
-
-          <div className="bg-gray2 m-3 h-px" />
-
-          <div className="flex min-h-14 items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <SkeletonIconBox />
-              <div className="space-y-2">
-                <SkeletonText className="h-6 w-22" />
-                <SkeletonText className="hidden w-44 sm:block" />
-              </div>
-            </div>
-            <SkeletonButton />
-          </div>
-        </div>
-      </section>
+      <SkeletonSection descriptionWidths={['w-52', 'w-48']} />
+      <SkeletonSection descriptionWidths={['w-52', 'w-44']} />
     </div>
   );
 }
