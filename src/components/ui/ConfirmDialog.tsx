@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { AlertCircle, Info, X } from 'lucide-react';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -67,11 +68,37 @@ export default function ConfirmDialog({
 
   const confirmTextClass =
     confirmVariant === 'danger'
-      ? 'text-warning hover:bg-warning/5'
-      : 'text-primary hover:bg-primary/5';
+      ? 'bg-warning text-white hover:opacity-95'
+      : 'bg-primary text-white hover:opacity-95';
 
   const cancelTextClass =
-    cancelVariant === 'danger' ? 'text-warning hover:bg-warning/5' : 'text-gray6 hover:bg-gray1';
+    cancelVariant === 'danger'
+      ? 'border-warning/30 text-warning'
+      : 'border-gray2 text-gray6';
+
+  const iconConfig =
+    confirmVariant === 'danger'
+      ? {
+          icon: AlertCircle,
+          wrapperClassName: 'bg-warning/10 text-warning-100',
+        }
+      : {
+          icon: Info,
+          wrapperClassName: 'bg-primary/5 text-primary',
+        };
+
+  const Icon = iconConfig.icon;
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+
+    if (isSingleAction) {
+      onConfirm();
+    }
+  };
 
   return createPortal(
     <div
@@ -81,23 +108,38 @@ export default function ConfirmDialog({
       role="dialog"
     >
       <div
-        className="animate-in fade-in zoom-in-95 w-full max-w-[440px] overflow-hidden rounded-[16px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.15)] duration-200"
+        className="animate-in fade-in zoom-in-95 relative w-full max-w-[340px] overflow-hidden rounded-xl bg-white px-6 py-7 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-left">
+        <button
+          type="button"
+          onClick={handleClose}
+          className="text-gray5 hover:bg-gray7 absolute top-4 right-4 inline-flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-colors"
+          aria-label="다이얼로그 닫기"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="flex flex-col items-center text-center">
+          <div
+            className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full ${iconConfig.wrapperClassName}`}
+          >
+            <Icon className="h-8 w-8" strokeWidth={2.2} />
+          </div>
+
           <h2 className="text-large font-bold text-black">{title}</h2>
 
-          <p className="text-normal mt-3 leading-relaxed whitespace-pre-line text-black">
+          <p className="text-normal text-gray5 mt-4 leading-relaxed whitespace-pre-line">
             {content}
           </p>
         </div>
 
-        <div className="mt-8 flex justify-end gap-1">
+        <div className={`mt-8 flex gap-3 ${isSingleAction ? 'flex-col' : 'flex-row'}`}>
           {!isSingleAction && (
             <button
               type="button"
-              onClick={onClose}
-              className={`text-normal min-h-[44px] cursor-pointer rounded-lg px-4 py-2 font-semibold transition-colors ${cancelTextClass}`}
+              onClick={handleClose}
+              className={`text-normal min-h-11 flex-1 cursor-pointer rounded-xl border bg-white px-4 py-3 font-semibold ${cancelTextClass}`}
             >
               {cancelText}
             </button>
@@ -106,7 +148,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className={`text-normal min-h-[44px] cursor-pointer rounded-lg px-4 py-2 text-[15px] font-semibold transition-all active:scale-[0.97] ${confirmTextClass}`}
+            className={`text-normal min-h-11 ${isSingleAction ? 'w-full' : 'flex-1'} cursor-pointer rounded-xl px-4 py-3 font-semibold transition-all active:scale-[0.98] ${confirmTextClass}`}
           >
             {confirmText}
           </button>
