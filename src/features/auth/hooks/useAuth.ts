@@ -2,7 +2,12 @@ import { useCallback, useRef } from 'react';
 
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
-import { getSession, logout as logoutRequest, signIn as signInRequest } from '../client/auth.api';
+import {
+  deleteAccount as deleteRequest,
+  getSession,
+  logout as logoutRequest,
+  signIn as signInRequest,
+} from '../client/auth.api';
 import { toUserModel } from '../mapper';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -85,6 +90,11 @@ export function useAuth() {
     }
   }, [clearAuth]);
 
+  const deleteAccount = useCallback(async () => {
+    await deleteRequest();
+    clearAuth();
+  }, [clearAuth]);
+
   return {
     user,
     isLoggedIn: !!user,
@@ -93,6 +103,7 @@ export function useAuth() {
     initSession,
     signIn,
     logout,
+    deleteAccount,
     expireSession,
     clearExpired,
   };

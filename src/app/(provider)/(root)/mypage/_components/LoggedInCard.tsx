@@ -7,6 +7,7 @@ import type { User } from '@/features/auth/types/ui-model';
 
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { getDepartmentDisplayName } from '@/constants/department';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import ManagementLinkCard from './ManagementLinkCard';
 
@@ -16,7 +17,13 @@ type LoggedInCardProps = {
 
 export default function LoggedInCard({ user }: LoggedInCardProps) {
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
-  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { deleteAccount } = useAuth();
+
+  const handleDelete = async () => {
+    await deleteAccount();
+    setIsDeleteOpen(false);
+  };
 
   return (
     <>
@@ -87,18 +94,18 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             icon={UserX}
             title="회원 탈퇴"
             description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."
-            onClick={() => setIsWithdrawalDialogOpen(true)}
+            onClick={() => setIsDeleteOpen(true)}
           />
         </div>
       </div>
       <ConfirmDialog
-        open={isWithdrawalDialogOpen}
+        open={isDeleteOpen}
         title="동숲 회원 탈퇴"
         content={'탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?'}
         cancelText="취소"
         confirmText="탈퇴"
-        onConfirm={() => setIsWithdrawalDialogOpen(false)}
-        onClose={() => setIsWithdrawalDialogOpen(false)}
+        onConfirm={handleDelete}
+        onClose={() => setIsDeleteOpen(false)}
         confirmVariant="danger"
       />
     </>
