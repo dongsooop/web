@@ -8,6 +8,7 @@ import type { User } from '@/features/auth/types/ui-model';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { getDepartmentDisplayName } from '@/constants/department';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useToastStore } from '@/store/useToastStore';
 
 import ManagementLinkCard from './ManagementLinkCard';
 
@@ -19,10 +20,11 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { deleteAccount } = useAuth();
+  const showToast = useToastStore((state) => state.showToast);
 
   const handleDelete = async () => {
     await deleteAccount();
-    setIsDeleteOpen(false);
+    showToast('회원 탈퇴가 완료되었어요.', 'success');
   };
 
   return (
@@ -103,7 +105,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
         title="동숲 회원 탈퇴"
         content={'탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?'}
         cancelText="취소"
-        confirmText="탈퇴"
+        confirmText="확인"
         onConfirm={handleDelete}
         onClose={() => setIsDeleteOpen(false)}
         confirmVariant="danger"
