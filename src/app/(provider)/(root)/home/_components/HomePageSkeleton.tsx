@@ -1,10 +1,6 @@
-'use client';
-
 import {
   Skeleton,
   SkeletonButton,
-  SkeletonCircle,
-  SkeletonIconBox,
   SkeletonText,
 } from '@/components/ui/Skeleton';
 import HomeHeader from './HomeHeader';

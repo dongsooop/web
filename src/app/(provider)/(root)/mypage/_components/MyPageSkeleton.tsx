@@ -1,7 +1,4 @@
-'use client';
-
 import {
-  Skeleton,
   SkeletonButton,
   SkeletonCircle,
   SkeletonIconBox,
