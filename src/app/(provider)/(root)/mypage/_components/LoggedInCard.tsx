@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { CalendarDays, KeyRound, Link2, Table2, UserX } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
@@ -18,6 +19,7 @@ type LoggedInCardProps = {
 };
 
 export default function LoggedInCard({ user }: LoggedInCardProps) {
+  const router = useRouter();
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { deleteAccount } = useAuth();
@@ -28,6 +30,9 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       await deleteAccount();
       setIsDeleteOpen(false);
       showToast('회원 탈퇴가 완료되었어요.', 'success');
+      window.setTimeout(() => {
+        router.replace('/');
+      }, 1200);
     } catch (error) {
       setIsDeleteOpen(false);
       showToast(getErrorMessage('auth', error, 'deleteAccount'), 'error');
