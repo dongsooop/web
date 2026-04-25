@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import {
   SkeletonButton,
   SkeletonCircle,
@@ -26,10 +27,10 @@ function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] })
       <div className="rounded-lg bg-white p-4">
         <SkeletonText className="mb-4 h-5 w-20 px-1" />
         {descriptionWidths.map((descriptionWidth, index) => (
-          <div key={`${descriptionWidth}-${index}`}>
+          <Fragment key={index}>
             {index > 0 ? <div className="bg-gray2 m-3 h-px" /> : null}
             <SkeletonRow descriptionWidth={descriptionWidth} />
-          </div>
+          </Fragment>
         ))}
       </div>
     </section>
