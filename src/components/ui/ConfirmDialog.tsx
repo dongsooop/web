@@ -81,17 +81,10 @@ export default function ConfirmDialog({
         };
 
   const Icon = iconConfig.icon;
-  const canClose = isSingleAction || Boolean(onClose);
-  
-  const handleClose = () => {
-    if (onClose) {
-      onClose();
-      return;
-    }
+  const canClose = Boolean(onClose);
 
-    if (isSingleAction) {
-      onConfirm();
-    }
+  const handleClose = () => {
+    onClose?.();
   };
 
   return createPortal(
