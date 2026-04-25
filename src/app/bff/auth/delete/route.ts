@@ -37,7 +37,7 @@ export async function DELETE(request: NextRequest) {
       appCheckToken,
     });
 
-    if (result.shouldClearAuthCookies) {
+    if (result.clearAuthCookies) {
       const response = createSessionExpiredResponse();
       clearDeviceCookies(response);
       clearUserMetadataCookies(response);
