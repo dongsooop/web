@@ -11,3 +11,11 @@ export interface UserState {
   isLoggedIn: boolean;
   user: User | null;
 }
+
+export type LoginPlatform = 'kakao' | 'google' | 'apple';
+
+export interface SocialConnectItem {
+  platform: LoginPlatform;
+  isConnected: boolean;
+  date: string | null;
+}

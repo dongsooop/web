@@ -14,3 +14,7 @@ export interface SessionResponse {
   isLoggedIn: boolean;
   user: UserResponse | null;
 }
+
+export interface SocialStateResponse {
+  list: import('./backend').SocialState[];
+}

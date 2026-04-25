@@ -13,7 +13,7 @@ import type {
   VerifyCodeRequest,
 } from '../types/request';
 
-import type { BackendReissueResponse, BackendSignInResponse } from '../types/backend';
+import type { BackendReissueResponse, BackendSignInResponse, SocialState } from '../types/backend';
 import { buildAuthHeaders } from './auth.header';
 
 type SpringRequestOptions = {
@@ -24,6 +24,12 @@ type SpringRequestOptions = {
 type SpringAuthRequestOptions = SpringRequestOptions & {
   accessToken: string;
   refreshToken?: string;
+};
+
+type SocialStateResult = {
+  list: SocialState[];
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
 };
 
 function getRequiredEndpoint(name: string): string {
@@ -106,6 +112,28 @@ export async function signUpWithSpring(
     headers,
     appCheckToken: options.appCheckToken,
   });
+}
+
+export async function getSocialStateWithSpring(
+  options: SpringAuthRequestOptions,
+): Promise<SocialStateResult> {
+  const endpoint = getRequiredEndpoint('SOCIAL_STATE_ENDPOINT');
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'GET',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  const list =
+    result.response.status === 204 ? [] : ((await result.response.json()) as SocialState[]);
+
+  return {
+    list: Array.isArray(list) ? list : [],
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
 }
 
 export async function logoutWithSpring(

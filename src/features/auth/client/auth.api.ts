@@ -11,7 +11,12 @@ import type {
   VerifyCodeRequest,
 } from '../types/request';
 
-import type { SessionResponse, SignInResponse, UserResponse } from '../types/response';
+import type {
+  SessionResponse,
+  SignInResponse,
+  SocialStateResponse,
+  UserResponse,
+} from '../types/response';
 
 {/* 브라우저 -> Next API */}
 export async function signIn(payload: SignInRequest) {
@@ -42,6 +47,12 @@ export async function deleteAccount() {
 
 export async function getSession() {
   return clientRequestAuth<SessionResponse>('/bff/auth/session', {
+    method: 'GET',
+  });
+}
+
+export async function getSocialState() {
+  return clientRequestAuth<SocialStateResponse>('/bff/auth/social/state', {
     method: 'GET',
   });
 }
