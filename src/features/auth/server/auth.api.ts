@@ -127,6 +127,17 @@ export async function logoutWithSpring(
   });
 }
 
+export async function deleteWithSpring(options: SpringAuthRequestOptions) {
+  const endpoint = getRequiredEndpoint('DELETE_USER_ENDPOINT');
+
+  return serverFetchAuth(endpoint, {
+    method: 'DELETE',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
 export async function checkEmailDuplicateWithSpring(
   payload: EmailValidateRequest,
   options: SpringRequestOptions = {},

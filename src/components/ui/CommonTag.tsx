@@ -9,7 +9,7 @@ const TONE_MAP: Record<TagTone, string> = {
   outline: 'border border-gray2 bg-white text-gray6',
   blue: 'border border-primary/20 bg-primary/5 text-primary',
   gray: 'border border-gray2 bg-gray1 text-gray6',
-  red: 'border border-label-red-10 bg-label-red-10 text-label-red-100',
+  red: 'border border-warning/10 bg-warning/10 text-warning-100',
   yellow: 'border border-label-yellow-10 bg-label-yellow-10 text-label-yellow-100',
 };
 

@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '../api/apiError';
 
-type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule';
+type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule' | 'mypage';
 
 function common(err: unknown): string | null {
   if (err instanceof ApiError) {
@@ -46,6 +46,9 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
+  mypage: (err) => {
+    return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+  },
   auth: (err, context) => {
     if (context) {
       if (typeof err === 'string') {
@@ -63,6 +66,9 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
         }
       }
       if (err instanceof ApiError) {
+        if (context === 'deleteAccount') {
+          return common(err) ?? '회원 탈퇴 중 오류가 발생했어요.';
+        }
         if (context === 'verifyCode' && err.status === HttpStatusCode.BAD_REQUEST) {
           return '인증 코드가 일치하지 않아요.';
         }

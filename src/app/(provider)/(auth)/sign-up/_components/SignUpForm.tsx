@@ -300,7 +300,7 @@ export default function SignUpForm() {
         open={!!status.dialogMessage}
         title="알림"
         content={status.dialogMessage ?? ''}
-        confirmText="확인"
+        confirm="확인"
         isSingleAction
         onConfirm={handleDialogConfirm}
       />

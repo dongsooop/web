@@ -34,6 +34,12 @@ export async function logout() {
   });
 }
 
+export async function deleteAccount() {
+  return clientRequestAuth<void>('/bff/auth/delete', {
+    method: 'DELETE',
+  });
+}
+
 export async function getSession() {
   return clientRequestAuth<SessionResponse>('/bff/auth/session', {
     method: 'GET',

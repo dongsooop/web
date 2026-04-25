@@ -2,34 +2,41 @@
 
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { AlertCircle, Info, X } from 'lucide-react';
 
-interface ConfirmDialogProps {
+interface DialogBaseProps {
   open: boolean;
   title: string;
   content: string;
-  cancelText?: string;
-  confirmText?: string;
+  cancel?: string;
+  confirm?: string;
   onConfirm: () => void;
-  onClose?: () => void;
-  isSingleAction?: boolean;
-  closeOnConfirm?: boolean;
-  closeOnCancel?: boolean;
-  confirmVariant?: 'primary' | 'danger';
-  cancelVariant?: 'default' | 'danger';
+  variant?: 'primary' | 'danger';
 }
+
+interface SingleActionDialogProps extends DialogBaseProps {
+  isSingleAction: true;
+  onClose?: () => void;
+}
+
+interface MultiActionDialogProps extends DialogBaseProps {
+  isSingleAction?: false;
+  onClose: () => void;
+}
+
+type DialogProps = SingleActionDialogProps | MultiActionDialogProps;
 
 export default function ConfirmDialog({
   open,
   title,
   content,
-  cancelText = '취소',
-  confirmText = '확인',
+  cancel = '취소',
+  confirm = '확인',
   onConfirm,
   onClose,
   isSingleAction = false,
-  confirmVariant = 'primary',
-  cancelVariant = 'default',
-}: ConfirmDialogProps) {
+  variant = 'primary',
+}: DialogProps) {
   useEffect(() => {
     if (!open) return;
 
@@ -57,13 +64,28 @@ export default function ConfirmDialog({
     onClose?.();
   };
 
-  const confirmTextClass =
-    confirmVariant === 'danger'
-      ? 'text-warning hover:bg-warning/5'
-      : 'text-primary hover:bg-primary/5';
+  const confirmClass =
+    variant === 'danger'
+      ? 'bg-warning text-white hover:opacity-95'
+      : 'bg-primary text-white hover:opacity-95';
 
-  const cancelTextClass =
-    cancelVariant === 'danger' ? 'text-warning hover:bg-warning/5' : 'text-gray6 hover:bg-gray1';
+  const iconConfig =
+    variant === 'danger'
+      ? {
+          icon: AlertCircle,
+          wrapperClassName: 'bg-warning/10 text-warning-100',
+        }
+      : {
+          icon: Info,
+          wrapperClassName: 'bg-primary/5 text-primary',
+        };
+
+  const Icon = iconConfig.icon;
+  const canClose = Boolean(onClose);
+
+  const handleClose = () => {
+    onClose?.();
+  };
 
   return createPortal(
     <div
@@ -73,34 +95,51 @@ export default function ConfirmDialog({
       role="dialog"
     >
       <div
-        className="animate-in fade-in zoom-in-95 w-full max-w-[440px] overflow-hidden rounded-[16px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.15)] duration-200"
+        className="animate-in fade-in zoom-in-95 relative w-full max-w-[340px] overflow-hidden rounded-xl bg-white px-6 py-7 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-left">
+        {canClose && (
+          <button
+            type="button"
+            onClick={handleClose}
+            className="text-gray5 hover:bg-gray7 absolute top-4 right-4 inline-flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-colors"
+            aria-label="다이얼로그 닫기"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
+
+        <div className="flex flex-col items-center text-center">
+          <div
+            className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full ${iconConfig.wrapperClassName}`}
+          >
+            <Icon className="h-8 w-8" strokeWidth={2.2} />
+          </div>
+
           <h2 className="text-large font-bold text-black">{title}</h2>
 
-          <p className="text-normal mt-3 leading-relaxed whitespace-pre-line text-black">
+          <p className="text-normal text-gray5 mt-4 leading-relaxed whitespace-pre-line">
             {content}
           </p>
         </div>
 
-        <div className="mt-8 flex justify-end gap-1">
+        <div className={`mt-8 flex gap-3 ${isSingleAction ? 'flex-col' : 'flex-row'}`}>
           {!isSingleAction && (
             <button
               type="button"
-              onClick={onClose}
-              className={`text-normal min-h-[44px] rounded-lg px-4 py-2 font-semibold transition-colors ${cancelTextClass}`}
+              onClick={handleClose}
+              className="text-normal border-gray2 text-gray6 min-h-11 flex-1 cursor-pointer rounded-xl border bg-white px-4 py-3 font-semibold"
             >
-              {cancelText}
+              {cancel}
             </button>
           )}
 
           <button
             type="button"
             onClick={onConfirm}
-            className={`text-normal min-h-[44px] rounded-lg px-4 py-2 text-[15px] font-semibold transition-all active:scale-[0.97] ${confirmTextClass}`}
+            className={`text-normal min-h-11 ${isSingleAction ? 'w-full' : 'flex-1'} cursor-pointer rounded-xl px-4 py-3 font-semibold transition-all active:scale-[0.98] ${confirmClass}`}
           >
-            {confirmText}
+            {confirm}
           </button>
         </div>
       </div>
