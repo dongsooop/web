@@ -95,7 +95,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           <div className="text-small mb-3 font-bold text-black">계정 관리</div>
 
           <ManagementLinkCard
-            href="/mypage/social-connections"
+            href="/mypage/social"
             icon={Link2}
             title="소셜 계정 연동"
             description="원하는 소셜 계정을 연동하거나 해제할 수 있어요."
