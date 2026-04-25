@@ -41,13 +41,6 @@ export default function ConfirmDialog({
     if (!open) return;
 
     const originalOverflow = document.body.style.overflow;
-    const originalPaddingRight = document.body.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,7 +53,6 @@ export default function ConfirmDialog({
 
     return () => {
       document.body.style.overflow = originalOverflow;
-      document.body.style.paddingRight = originalPaddingRight;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, isSingleAction, onClose]);
