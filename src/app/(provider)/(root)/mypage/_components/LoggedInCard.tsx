@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { CalendarDays, KeyRound, Link2, Table2, UserX } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { getDepartmentDisplayName } from '@/constants/department';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useDialogStore } from '@/store/useDialogStore';
 import { useToastStore } from '@/store/useToastStore';
 
 import ManagementLinkCard from './ManagementLinkCard';
@@ -21,22 +20,31 @@ type LoggedInCardProps = {
 export default function LoggedInCard({ user }: LoggedInCardProps) {
   const router = useRouter();
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { deleteAccount } = useAuth();
+  const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
 
   const handleDelete = async () => {
     try {
       await deleteAccount();
-      setIsDeleteOpen(false);
       showToast('회원 탈퇴가 완료되었어요.', 'success');
       window.setTimeout(() => {
         router.replace('/');
       }, 1200);
     } catch (error) {
-      setIsDeleteOpen(false);
       showToast(getErrorMessage('auth', error, 'deleteAccount'), 'error');
     }
+  };
+
+  const handleOpenDialog = () => {
+    showDialog({
+      title: '동숲 회원 탈퇴',
+      content: '탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?',
+      cancel: '취소',
+      confirm: '확인',
+      variant: 'danger',
+      onConfirm: handleDelete,
+    });
   };
 
   return (
@@ -108,20 +116,10 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             icon={UserX}
             title="회원 탈퇴"
             description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."
-            onClick={() => setIsDeleteOpen(true)}
+            onClick={handleOpenDialog}
           />
         </div>
       </div>
-      <ConfirmDialog
-        open={isDeleteOpen}
-        title="동숲 회원 탈퇴"
-        content={'탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?'}
-        cancelText="취소"
-        confirmText="확인"
-        onConfirm={handleDelete}
-        onClose={() => setIsDeleteOpen(false)}
-        confirmVariant="danger"
-      />
     </>
   );
 }

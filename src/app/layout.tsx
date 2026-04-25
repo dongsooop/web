@@ -7,6 +7,7 @@ import QueryProvider from '@/providers/QueryProvider';
 import FirebaseProvider from '@/providers/FirebaseProvider';
 import AuthInitializer from '@/features/auth/components/AuthInitializer';
 import SessionExpiredHandler from '@/features/auth/components/SessionExpiredHandler';
+import DialogView from '@/components/ui/DialogView';
 import ToastView from '@/components/ui/ToastView';
 
 const pretendard = localFont({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthInitializer />
             <SessionExpiredHandler />
             <Header />
+            <DialogView />
             <ToastView />
             <main className="flex-1">{children}</main>
             <Footer />
