@@ -43,7 +43,10 @@ export default function ToastView() {
   const Icon = style.icon;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-16 z-[80] flex justify-center px-4">
+    <div
+      key={toast.id}
+      className="pointer-events-none fixed inset-x-0 top-16 z-[80] flex justify-center px-4"
+    >
       <div
         className={`animate-in fade-in slide-in-from-top-2 pointer-events-auto flex w-full max-w-[420px] items-center gap-3 rounded-2xl border px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${style.className}`}
         role="status"
