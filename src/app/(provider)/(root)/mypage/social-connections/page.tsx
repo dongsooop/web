@@ -1,12 +1,29 @@
-import WebPlaceholder from '@/components/placeholder/WebPlaceholder';
+import SocialConnectionsPageClient from '../_components/SocialConnectionsPageClient';
+import type { SocialPlatform } from '../_components/SocialLoginCard';
+
+const socialAccounts: {
+  platform: SocialPlatform;
+  isConnected: boolean;
+}[] = [
+  {
+    platform: 'KAKAO',
+    isConnected: false,
+  },
+  {
+    platform: 'GOOGLE',
+    isConnected: false,
+  },
+  {
+    platform: 'APPLE',
+    isConnected: false,
+  },
+];
 
 export default function SocialConnectionsPage() {
+
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center py-4 lg:min-h-[calc(100dvh-3rem)]">
-      <WebPlaceholder
-        title="소셜 계정 연동"
-        description="연결된 계정을 확인하고 로그인 연동 상태를 관리할 수 있어요."
-      />
+    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center py-6 lg:min-h-[calc(100dvh-3rem)]">
+      <SocialConnectionsPageClient accounts={socialAccounts} />
     </div>
   );
 }

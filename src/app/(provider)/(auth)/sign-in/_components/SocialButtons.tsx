@@ -31,7 +31,7 @@ export default function SocialLoginButtons({ onLogin }: SocialLoginButtonsProps)
           type="button"
           onClick={() => onLogin(item.key)}
           aria-label={item.label}
-          className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full"
+          className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full"
         >
           <Image
             src={item.src}

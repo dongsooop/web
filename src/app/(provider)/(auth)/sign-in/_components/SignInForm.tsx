@@ -21,7 +21,6 @@ export default function SignInForm() {
 
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
     if (isSigningIn) return;
@@ -116,16 +115,11 @@ export default function SignInForm() {
       <button
         type="button"
         onClick={handlePasswordReset}
-        className="text-normal text-gray4 min-h-[44px] font-bold"
+        className="text-normal text-gray4 min-h-[44px] cursor-pointer font-bold"
       >
         비밀번호 변경
       </button>
-
-      {dialogMessage && (
-        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
-          {dialogMessage}
-        </p>
-      )}
+      <SocialLoginButtons onLogin={() => undefined} />
     </section>
   );
 }
