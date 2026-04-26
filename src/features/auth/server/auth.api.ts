@@ -14,6 +14,7 @@ import type {
 } from '../types/request';
 
 import type { BackendReissueResponse, BackendSignInResponse, SocialState } from '../types/backend';
+import type { SocialLinkResponse } from '../types/response';
 import { buildAuthHeaders } from './auth.header';
 
 type SpringRequestOptions = {
@@ -28,6 +29,12 @@ type SpringAuthRequestOptions = SpringRequestOptions & {
 
 type SocialStateResult = {
   list: SocialState[];
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
+};
+
+type SocialLinkResult = {
+  data: SocialLinkResponse;
   reissuedTokens?: BackendReissueResponse;
   clearAuthCookies?: boolean;
 };
@@ -131,6 +138,27 @@ export async function getSocialStateWithSpring(
 
   return {
     list: Array.isArray(list) ? list : [],
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
+export async function linkGoogleSocialWithSpring(
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialLinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LINK_ENDPOINT')}/google`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
+    data: (await result.response.json()) as SocialLinkResponse,
     reissuedTokens: result.reissuedTokens,
     clearAuthCookies: result.clearAuthCookies,
   };

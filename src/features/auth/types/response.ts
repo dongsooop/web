@@ -18,3 +18,7 @@ export interface SessionResponse {
 export interface SocialStateResponse {
   list: import('./backend').SocialState[];
 }
+
+export interface SocialLinkResponse {
+  createdAt: string;
+}

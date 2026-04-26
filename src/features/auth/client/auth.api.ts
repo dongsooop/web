@@ -14,6 +14,7 @@ import type {
 import type {
   SessionResponse,
   SignInResponse,
+  SocialLinkResponse,
   SocialStateResponse,
   UserResponse,
 } from '../types/response';
@@ -54,6 +55,13 @@ export async function getSession() {
 export async function getSocialState() {
   return clientRequestAuth<SocialStateResponse>('/bff/auth/social/state', {
     method: 'GET',
+  });
+}
+
+export async function linkGoogleSocial(token: string) {
+  return clientRequestAuth<SocialLinkResponse>('/bff/auth/social/google', {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
   });
 }
 
