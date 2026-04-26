@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import type { LoginPlatform } from '@/features/auth/types/ui-model';
 
@@ -7,6 +5,8 @@ type SocialLoginCardProps = {
   platform: LoginPlatform;
   isConnected: boolean;
   date: string | null;
+  onClick?: () => void;
+  isLoading?: boolean;
 };
 
 const platformMeta: Record<LoginPlatform, { label: string; imageSrc: string; imageAlt: string }> = {
@@ -27,9 +27,16 @@ const platformMeta: Record<LoginPlatform, { label: string; imageSrc: string; ima
   },
 };
 
-export default function SocialLoginCard({ platform, isConnected, date }: SocialLoginCardProps) {
+export default function SocialLoginCard({
+  platform,
+  isConnected,
+  date,
+  onClick,
+  isLoading = false,
+}: SocialLoginCardProps) {
   const meta = platformMeta[platform];
-  const statusText = date ? `${date}. 연동됨` : '';
+  const statusText = date ? `${date}. 연동됨` : '미연동';
+  const text = isConnected ? '연동 해제' : '연동하기';
 
   return (
     <div className="flex min-h-12 w-full items-center gap-4 py-2 py-4">
@@ -50,11 +57,13 @@ export default function SocialLoginCard({ platform, isConnected, date }: SocialL
 
       <button
         type="button"
-        className={`text-small min-w-11 cursor-pointer rounded-3xl px-4 py-2 font-semibold ${
-          isConnected ? 'border-warning-100 text-warning-100 border' : 'bg-primary text-white'
-        }`}
+        onClick={onClick}
+        disabled={isLoading}
+        className={`text-small min-w-11 rounded-3xl px-4 py-2 font-semibold ${
+          isLoading ? 'cursor-wait opacity-70' : 'cursor-pointer'
+        } ${isConnected ? 'border-warning-100 text-warning-100 border' : 'bg-primary text-white'}`}
       >
-        {isConnected ? '연동 해제' : '연동하기'}
+        {text}
       </button>
     </div>
   );

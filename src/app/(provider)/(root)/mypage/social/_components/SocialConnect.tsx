@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
 
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { getSocialState } from '@/features/auth/client/auth.api';
+import { getSocialState, linkGoogleSocial } from '@/features/auth/client/auth.api';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { buildSocialConnectItems } from '@/features/auth/social';
 import type { SocialConnectItem } from '@/features/auth/types/ui-model';
-import { useAppCheckStore } from '@/store/useAppCheckStore';
 import SocialLoginCard from './SocialLoginCard';
 
 const defaultItems: SocialConnectItem[] = buildSocialConnectItems([]);
@@ -25,21 +25,60 @@ function SocialConnectSkeleton() {
 
 export default function SocialConnect() {
   const { isReady } = useAuth();
-  const token = useAppCheckStore((state) => state.token);
-  const isAppCheckReady = useAppCheckStore((state) => state.isInitialized);
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isGoogleLinking, setIsGoogleLinking] = useState(false);
+
+  const refreshSocialState = async () => {
+    const data = await getSocialState();
+    setItems(buildSocialConnectItems(data.list));
+  };
+
+  const openGoogleLogin = useGoogleLogin({
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ].join(' '),
+    onSuccess: async (tokenResponse) => {
+      const providerToken = tokenResponse.access_token?.trim();
+
+      if (!providerToken) {
+        setIsGoogleLinking(false);
+        return;
+      }
+
+      try {
+        await linkGoogleSocial(providerToken);
+        await refreshSocialState();
+        setErrorMessage(null);
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error && error.message
+            ? error.message
+            : '소셜 계정 연동 중 오류가 발생했습니다.',
+        );
+      } finally {
+        setIsGoogleLinking(false);
+      }
+    },
+    onError: () => {
+      setIsGoogleLinking(false);
+      setErrorMessage('소셜 계정 연동 중 오류가 발생했습니다.');
+    },
+    onNonOAuthError: (error) => {
+      setIsGoogleLinking(false);
+
+      if (error.type === 'popup_closed') {
+        return;
+      }
+
+      setErrorMessage('소셜 계정 연동 중 오류가 발생했습니다.');
+    },
+  });
 
   useEffect(() => {
-    if (!isAppCheckReady || !isReady) {
-      return;
-    }
-
-    if (!token) {
-      setItems(buildSocialConnectItems([]));
-      setErrorMessage('소셜 계정 연동 정보를 불러오는 중\n오류가 발생했습니다.');
-      setIsLoading(false);
+    if (!isReady) {
       return;
     }
 
@@ -50,13 +89,11 @@ export default function SocialConnect() {
         setIsLoading(true);
         setErrorMessage(null);
 
-        const data = await getSocialState();
-
         if (!active) {
           return;
         }
 
-        setItems(buildSocialConnectItems(data.list));
+        await refreshSocialState();
       } catch {
         if (!active) {
           return;
@@ -76,7 +113,23 @@ export default function SocialConnect() {
     return () => {
       active = false;
     };
-  }, [isAppCheckReady, isReady, token]);
+  }, [isReady]);
+
+  const linkGoogle = () => {
+    if (isGoogleLinking) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setIsGoogleLinking(true);
+    openGoogleLogin();
+  };
+
+  const clickGoogleLink = (item: SocialConnectItem) => {
+    if (item.platform === 'google' && !item.isConnected) {
+      linkGoogle();
+    }
+  };
 
   return (
     <div className="w-full">
@@ -98,6 +151,8 @@ export default function SocialConnect() {
                       platform={item.platform}
                       isConnected={item.isConnected}
                       date={item.date}
+                      onClick={() => clickGoogleLink(item)}
+                      isLoading={item.platform === 'google' && isGoogleLinking}
                     />
                   </div>
                 ))}
