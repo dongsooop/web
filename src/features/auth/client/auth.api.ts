@@ -65,6 +65,13 @@ export async function linkGoogleSocial(token: string) {
   });
 }
 
+export async function linkKakaoSocial(code: string) {
+  return clientRequestAuth<SocialLinkResponse>('/bff/auth/social/kakao/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+}
+
 export async function checkEmailDuplicate(payload: EmailValidateRequest) {
   const fullEmail = payload.email.includes('@') ? payload.email : `${payload.email}@dongyang.ac.kr`;
 

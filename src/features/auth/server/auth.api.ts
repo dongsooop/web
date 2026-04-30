@@ -164,6 +164,27 @@ export async function linkGoogleSocialWithSpring(
   };
 }
 
+export async function linkKakaoSocialWithSpring(
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialLinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LINK_ENDPOINT')}/kakao`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
+    data: (await result.response.json()) as SocialLinkResponse,
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
 export async function logoutWithSpring(
   options: SpringAuthRequestOptions & {
     deviceToken: string;
