@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 import { useGoogleLogin } from '@react-oauth/google';
 
 import PageHeader from '@/components/ui/PageHeader';
@@ -8,10 +10,12 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { getSocialState, linkGoogleSocial } from '@/features/auth/client/auth.api';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { buildSocialConnectItems } from '@/features/auth/social';
-import type { SocialConnectItem } from '@/features/auth/types/ui-model';
+import type { LoginPlatform, SocialConnectItem } from '@/features/auth/types/ui-model';
 import SocialLoginCard from './SocialLoginCard';
 
 const defaultItems: SocialConnectItem[] = buildSocialConnectItems([]);
+const kakaoStateKey = 'kakao_oauth_state';
+const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
 
 function SocialConnectSkeleton() {
   return (
@@ -23,12 +27,41 @@ function SocialConnectSkeleton() {
   );
 }
 
-export default function SocialConnect() {
+export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { isReady } = useAuth();
+  const [isKakaoReady, setIsKakaoReady] = useState(false);
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isGoogleLinking, setIsGoogleLinking] = useState(false);
+  const [loadingPlatform, setLoadingPlatform] = useState<LoginPlatform | null>(null);
+
+  const initKakao = () => {
+    const sdk = window.Kakao;
+
+    if (!sdk || !kakaoJsKey) {
+      return;
+    }
+
+    if (!sdk.isInitialized()) {
+      sdk.init(kakaoJsKey);
+    }
+
+    setIsKakaoReady(true);
+  };
+
+  useEffect(() => {
+    if (!window.Kakao || !kakaoJsKey) {
+      return;
+    }
+
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(kakaoJsKey);
+    }
+
+    setIsKakaoReady(true);
+  }, [kakaoJsKey]);
 
   const refreshSocialState = async () => {
     const data = await getSocialState();
@@ -44,7 +77,7 @@ export default function SocialConnect() {
       const providerToken = tokenResponse.access_token?.trim();
 
       if (!providerToken) {
-        setIsGoogleLinking(false);
+        setLoadingPlatform(null);
         return;
       }
 
@@ -59,15 +92,15 @@ export default function SocialConnect() {
             : '소셜 계정 연동 중 오류가 발생했습니다.',
         );
       } finally {
-        setIsGoogleLinking(false);
+        setLoadingPlatform(null);
       }
     },
     onError: () => {
-      setIsGoogleLinking(false);
+      setLoadingPlatform(null);
       setErrorMessage('소셜 계정 연동 중 오류가 발생했습니다.');
     },
     onNonOAuthError: (error) => {
-      setIsGoogleLinking(false);
+      setLoadingPlatform(null);
 
       if (error.type === 'popup_closed') {
         return;
@@ -76,6 +109,15 @@ export default function SocialConnect() {
       setErrorMessage('소셜 계정 연동 중 오류가 발생했습니다.');
     },
   });
+
+  useEffect(() => {
+    const message = searchParams.get('error');
+
+    if (message) {
+      setErrorMessage(message);
+      router.replace('/mypage/social', { scroll: false });
+    }
+  }, [router, searchParams]);
 
   useEffect(() => {
     if (!isReady) {
@@ -87,7 +129,6 @@ export default function SocialConnect() {
     const load = async () => {
       try {
         setIsLoading(true);
-        setErrorMessage(null);
 
         if (!active) {
           return;
@@ -116,23 +157,61 @@ export default function SocialConnect() {
   }, [isReady]);
 
   const linkGoogle = () => {
-    if (isGoogleLinking) {
+    if (loadingPlatform) {
       return;
     }
 
     setErrorMessage(null);
-    setIsGoogleLinking(true);
+    setLoadingPlatform('google');
     openGoogleLogin();
   };
 
-  const clickGoogleLink = (item: SocialConnectItem) => {
-    if (item.platform === 'google' && !item.isConnected) {
+  const linkKakao = () => {
+    if (loadingPlatform) {
+      return;
+    }
+
+    if (!isKakaoReady || !window.Kakao) {
+      setErrorMessage('카카오 로그인 설정을 확인해주세요.');
+      return;
+    }
+
+    setErrorMessage(null);
+    setLoadingPlatform('kakao');
+
+    try {
+      const state = window.crypto.randomUUID();
+      sessionStorage.setItem(kakaoStateKey, state);
+
+      window.Kakao.Auth.authorize({
+        redirectUri: `${window.location.origin}/bff/auth/social/kakao/callback`,
+        state,
+      });
+    } catch {
+      setLoadingPlatform(null);
+      setErrorMessage('카카오 로그인 설정을 확인해주세요.');
+    }
+  };
+
+  const clickLink = (item: SocialConnectItem) => {
+    if (item.isConnected) {
+      return;
+    }
+
+    if (item.platform === 'google') {
       linkGoogle();
+      return;
+    }
+
+    if (item.platform === 'kakao') {
+      linkKakao();
     }
   };
 
   return (
     <div className="w-full">
+      <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={initKakao} />
+
       <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4">
         <PageHeader
           title="소셜 계정 연동"
@@ -151,8 +230,8 @@ export default function SocialConnect() {
                       platform={item.platform}
                       isConnected={item.isConnected}
                       date={item.date}
-                      onClick={() => clickGoogleLink(item)}
-                      isLoading={item.platform === 'google' && isGoogleLinking}
+                      onClick={() => clickLink(item)}
+                      isLoading={item.platform === loadingPlatform}
                     />
                   </div>
                 ))}
