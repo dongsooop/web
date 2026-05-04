@@ -1,10 +1,11 @@
 import { useGoogleLogin } from '@react-oauth/google';
+import { getErrorMessage } from '@/lib/errors/messages';
 
 type UseGoogleLinkOptions = {
   onToken: (token: string) => Promise<void>;
   onError: (message: string) => void;
   onFinish: () => void;
-  cancelMessage?: string;
+  context: 'link' | 'unlink';
 };
 
 const googleScope = [
@@ -16,7 +17,7 @@ export function useGoogleLink({
   onToken,
   onError,
   onFinish,
-  cancelMessage,
+  context,
 }: UseGoogleLinkOptions) {
   const open = useGoogleLogin({
     scope: googleScope,
@@ -24,7 +25,7 @@ export function useGoogleLink({
       const token = tokenResponse.access_token?.trim();
 
       if (!token) {
-        onError('구글 인증 토큰을 확인할 수 없습니다.');
+        onError(getErrorMessage('social', new Error(), 'sdk'));
         onFinish();
         return;
       }
@@ -32,31 +33,23 @@ export function useGoogleLink({
       try {
         await onToken(token);
       } catch (error) {
-        onError(
-          error instanceof Error && error.message
-            ? error.message
-            : '소셜 계정 연동 중 오류가 발생했습니다.',
-        );
+        onError(getErrorMessage('social', error, context));
       } finally {
         onFinish();
       }
     },
     onError: () => {
       onFinish();
-      onError('소셜 계정 연동 중 오류가 발생했습니다.');
+      onError(getErrorMessage('social', new Error(), 'sdk'));
     },
     onNonOAuthError: (error) => {
       onFinish();
 
       if (error.type === 'popup_closed') {
-        if (cancelMessage) {
-          onError(cancelMessage);
-        }
-
         return;
       }
 
-      onError('소셜 계정 연동 중 오류가 발생했습니다.');
+      onError(getErrorMessage('social', new Error(), 'sdk'));
     },
   });
 

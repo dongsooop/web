@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { linkKakaoSocial } from '@/features/auth/client/auth.api';
+import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
 const kakaoStateKey = 'kakao_oauth_state';
@@ -14,10 +15,10 @@ function resolveErrorMessage(error: string, description: string) {
   }
 
   if (error === 'access_denied') {
-    return '카카오 로그인이 취소되었습니다.';
+    return null;
   }
 
-  return '카카오 인증 정보를 확인할 수 없습니다.';
+  return getErrorMessage('social', new Error(), 'sdk');
 }
 
 export default function KakaoCallbackPage() {
@@ -39,8 +40,15 @@ export default function KakaoCallbackPage() {
 
       if (error) {
         sessionStorage.removeItem(kakaoStateKey);
+        const message = resolveErrorMessage(error, errorDescription);
+
+        if (!message) {
+          router.replace('/mypage/social', { scroll: false });
+          return;
+        }
+
         router.replace(
-          `/mypage/social?error=${encodeURIComponent(resolveErrorMessage(error, errorDescription))}`,
+          `/mypage/social?error=${encodeURIComponent(message)}`,
           { scroll: false },
         );
         return;
@@ -49,7 +57,7 @@ export default function KakaoCallbackPage() {
       if (!code || !state || !savedState || state !== savedState) {
         sessionStorage.removeItem(kakaoStateKey);
         router.replace(
-          `/mypage/social?error=${encodeURIComponent('카카오 인증 정보를 확인할 수 없습니다.')}`,
+          `/mypage/social?error=${encodeURIComponent(getErrorMessage('social', new Error(), 'sdk'))}`,
           { scroll: false },
         );
         return;
@@ -82,10 +90,7 @@ export default function KakaoCallbackPage() {
         router.replace('/mypage/social', { scroll: false });
       } catch (error) {
         sessionStorage.removeItem(kakaoStateKey);
-        const nextMessage =
-          error instanceof Error && error.message
-            ? error.message
-            : '소셜 계정 연동 중 오류가 발생했습니다.';
+        const nextMessage = getErrorMessage('social', error, 'link');
 
         router.replace(`/mypage/social?error=${encodeURIComponent(nextMessage)}`, {
           scroll: false,

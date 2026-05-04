@@ -1,9 +1,18 @@
+import { getErrorMessage } from '@/lib/errors/messages';
+
 const kakaoStateKey = 'kakao_oauth_state';
 
 type UseKakaoLinkOptions = {
   jsKey: string;
   onError: (message: string) => void;
 };
+
+function isRateLimit(error: unknown) {
+  return (
+    error instanceof Error &&
+    /(too many requests|rate limit|429|too many)/i.test(error.message)
+  );
+}
 
 export function useKakaoLink({ jsKey, onError }: UseKakaoLinkOptions) {
   const ready = () => {
@@ -26,7 +35,7 @@ export function useKakaoLink({ jsKey, onError }: UseKakaoLinkOptions) {
 
   const start = () => {
     if (!ready() || !window.Kakao) {
-      onError('카카오 로그인 설정을 확인해주세요.');
+      onError(getErrorMessage('social', new Error(), 'sdk'));
       return false;
     }
 
@@ -40,8 +49,12 @@ export function useKakaoLink({ jsKey, onError }: UseKakaoLinkOptions) {
       });
 
       return true;
-    } catch {
-      onError('카카오 로그인 설정을 확인해주세요.');
+    } catch (error) {
+      onError(
+        isRateLimit(error)
+          ? getErrorMessage('social', error, 'kakaoRateLimit')
+          : getErrorMessage('social', error, 'sdk'),
+      );
       return false;
     }
   };

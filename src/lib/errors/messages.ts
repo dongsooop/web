@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '../api/apiError';
 
-type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule' | 'mypage';
+type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule' | 'mypage' | 'social';
 
 function common(err: unknown): string | null {
   if (err instanceof ApiError) {
@@ -48,6 +48,34 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
   },
   mypage: (err) => {
     return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+  },
+  social: (err, context) => {
+    if (context === 'kakaoRateLimit') {
+      return '카카오 로그인 요청이 너무 자주 발생했습니다.\n잠시 후 다시 시도해 주세요.';
+    }
+
+    if (context === 'sdk') {
+      return '소셜 로그인 중 오류가 발생했습니다.\n잠시 후에 다시 시도해 주세요';
+    }
+
+    if (err instanceof ApiError) {
+      if (context === 'login' && err.status === HttpStatusCode.BAD_REQUEST) {
+        return (
+          '회원가입 또는 소셜 로그인 연결 정보가 없습니다.\n' +
+          '로그인 후 마이페이지에서 소셜 로그인 연결을 먼저 해주세요'
+        );
+      }
+
+      if (context === 'unlink' && err.status === HttpStatusCode.UNAUTHORIZED) {
+        return '회원 정보를 확인하는 데 실패했어요\n잠시 후에 다시 시도해 주세요';
+      }
+    }
+
+    if (context === 'login' || context === 'link' || context === 'unlink') {
+      return '소셜 로그인 처리 중\n알 수 없는 오류가 발생했습니다.';
+    }
+
+    return '소셜 로그인 중 오류가 발생했습니다.\n잠시 후에 다시 시도해 주세요';
   },
   auth: (err, context) => {
     if (context) {

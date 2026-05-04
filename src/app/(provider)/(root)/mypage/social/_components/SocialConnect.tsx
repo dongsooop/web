@@ -12,6 +12,7 @@ import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
 import { useSocialError } from '@/features/auth/hooks/useSocialError';
 import { buildSocialConnectItems } from '@/features/auth/social';
 import type { LoginPlatform, SocialConnectItem } from '@/features/auth/types/ui-model';
+import { getErrorMessage } from '@/lib/errors/messages';
 import SocialLoginCard from './SocialLoginCard';
 
 const defaultItems: SocialConnectItem[] = buildSocialConnectItems([]);
@@ -82,6 +83,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     },
     onError: setErrorMessage,
     onFinish: stopLoading,
+    context: 'link',
   });
 
   const googleUnlink = useGoogleLink({
@@ -92,7 +94,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     },
     onError: setErrorMessage,
     onFinish: stopLoading,
-    cancelMessage: '구글 인증이 취소되었습니다.',
+    context: 'unlink',
   });
 
   useEffect(() => {
@@ -170,11 +172,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
 
       await unlinkKakao();
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error && error.message
-          ? error.message
-          : '소셜 계정 연동 해제 중 오류가 발생했습니다.',
-      );
+      setErrorMessage(getErrorMessage('social', error, 'unlink'));
     } finally {
       if (item.platform !== 'google') {
         stopLoading();
