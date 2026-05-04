@@ -18,6 +18,7 @@ import type {
   SocialStateResponse,
   UserResponse,
 } from '../types/response';
+import type { LoginPlatform } from '../types/ui-model';
 
 {/* 브라우저 -> Next API */}
 export async function signIn(payload: SignInRequest) {
@@ -69,6 +70,13 @@ export async function linkKakaoSocial(code: string) {
   return clientRequestAuth<SocialLinkResponse>('/bff/auth/social/kakao/callback', {
     method: 'POST',
     body: JSON.stringify({ code }),
+  });
+}
+
+export async function unlinkSocial(platform: LoginPlatform, token?: string) {
+  return clientRequestAuth<void>(`/bff/auth/social/${platform}`, {
+    method: 'DELETE',
+    body: JSON.stringify(token ? { token } : {}),
   });
 }
 

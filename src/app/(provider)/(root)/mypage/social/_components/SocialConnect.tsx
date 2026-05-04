@@ -5,7 +5,7 @@ import Script from 'next/script';
 
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { getSocialState } from '@/features/auth/client/auth.api';
+import { getSocialState, linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
 import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
@@ -48,15 +48,51 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     setItems(buildSocialConnectItems(data.list));
   };
 
+  const clearError = () => {
+    setErrorMessage(null);
+  };
+
+  const startLoading = (platform: LoginPlatform) => {
+    if (loadingPlatform) {
+      return false;
+    }
+
+    clearError();
+    setLoadingPlatform(platform);
+    return true;
+  };
+
+  const stopLoading = () => {
+    setLoadingPlatform(null);
+  };
+
+  const applyUnlink = (platform: LoginPlatform) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.platform === platform ? { ...item, isConnected: false, date: null } : item,
+      ),
+    );
+  };
+
   const google = useGoogleLink({
-    onLinked: async () => {
+    onToken: async (token) => {
+      await linkGoogleSocial(token);
       await refreshSocialState();
-      setErrorMessage(null);
+      clearError();
     },
     onError: setErrorMessage,
-    onFinish: () => {
-      setLoadingPlatform(null);
+    onFinish: stopLoading,
+  });
+
+  const googleUnlink = useGoogleLink({
+    onToken: async (token) => {
+      await unlinkSocial('google', token);
+      applyUnlink('google');
+      clearError();
     },
+    onError: setErrorMessage,
+    onFinish: stopLoading,
+    cancelMessage: '구글 인증이 취소되었습니다.',
   });
 
   useEffect(() => {
@@ -97,32 +133,58 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   }, [isReady]);
 
   const linkGoogle = () => {
-    if (loadingPlatform) {
+    if (!startLoading('google')) {
       return;
     }
 
-    setErrorMessage(null);
-    setLoadingPlatform('google');
     google.start();
   };
 
   const linkKakao = () => {
-    if (loadingPlatform) {
+    if (!startLoading('kakao')) {
       return;
     }
-
-    setErrorMessage(null);
-    setLoadingPlatform('kakao');
 
     const started = kakao.start();
 
     if (!started) {
-      setLoadingPlatform(null);
+      stopLoading();
     }
   };
 
-  const clickLink = (item: SocialConnectItem) => {
+  const unlinkKakao = async () => {
+    await unlinkSocial('kakao');
+    applyUnlink('kakao');
+  };
+
+  const unlinkItem = async (item: SocialConnectItem) => {
+    if (!startLoading(item.platform)) {
+      return;
+    }
+
+    try {
+      if (item.platform === 'google') {
+        googleUnlink.start();
+        return;
+      }
+
+      await unlinkKakao();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error && error.message
+          ? error.message
+          : '소셜 계정 연동 해제 중 오류가 발생했습니다.',
+      );
+    } finally {
+      if (item.platform !== 'google') {
+        stopLoading();
+      }
+    }
+  };
+
+  const clickItem = (item: SocialConnectItem) => {
     if (item.isConnected) {
+      void unlinkItem(item);
       return;
     }
 
@@ -158,7 +220,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
                       platform={item.platform}
                       isConnected={item.isConnected}
                       date={item.date}
-                      onClick={() => clickLink(item)}
+                      onClick={() => clickItem(item)}
                       isLoading={item.platform === loadingPlatform}
                     />
                   </div>

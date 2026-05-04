@@ -39,6 +39,11 @@ type SocialLinkResult = {
   clearAuthCookies?: boolean;
 };
 
+type SocialUnlinkResult = {
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
+};
+
 function getRequiredEndpoint(name: string): string {
   const value = process.env[name];
 
@@ -180,6 +185,27 @@ export async function linkKakaoSocialWithSpring(
 
   return {
     data: (await result.response.json()) as SocialLinkResponse,
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
+export async function unlinkSocialWithSpring(
+  platform: 'google' | 'kakao',
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialUnlinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LOGIN_ENDPOINT')}/${platform}`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'DELETE',
+    body: JSON.stringify({ token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
     reissuedTokens: result.reissuedTokens,
     clearAuthCookies: result.clearAuthCookies,
   };

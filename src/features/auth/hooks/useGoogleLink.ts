@@ -1,13 +1,10 @@
-'use client';
-
 import { useGoogleLogin } from '@react-oauth/google';
 
-import { linkGoogleSocial } from '@/features/auth/client/auth.api';
-
 type UseGoogleLinkOptions = {
-  onLinked: () => Promise<void>;
+  onToken: (token: string) => Promise<void>;
   onError: (message: string) => void;
   onFinish: () => void;
+  cancelMessage?: string;
 };
 
 const googleScope = [
@@ -15,20 +12,25 @@ const googleScope = [
   'https://www.googleapis.com/auth/userinfo.profile',
 ].join(' ');
 
-export function useGoogleLink({ onLinked, onError, onFinish }: UseGoogleLinkOptions) {
+export function useGoogleLink({
+  onToken,
+  onError,
+  onFinish,
+  cancelMessage,
+}: UseGoogleLinkOptions) {
   const open = useGoogleLogin({
     scope: googleScope,
     onSuccess: async (tokenResponse) => {
       const token = tokenResponse.access_token?.trim();
 
       if (!token) {
+        onError('구글 인증 토큰을 확인할 수 없습니다.');
         onFinish();
         return;
       }
 
       try {
-        await linkGoogleSocial(token);
-        await onLinked();
+        await onToken(token);
       } catch (error) {
         onError(
           error instanceof Error && error.message
@@ -47,6 +49,10 @@ export function useGoogleLink({ onLinked, onError, onFinish }: UseGoogleLinkOpti
       onFinish();
 
       if (error.type === 'popup_closed') {
+        if (cancelMessage) {
+          onError(cancelMessage);
+        }
+
         return;
       }
 
