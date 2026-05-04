@@ -2,7 +2,7 @@ import type { SocialState } from './types/backend';
 import type { LoginPlatform, SocialConnectItem } from './types/ui-model';
 import { formatYmdDot } from '@/utils/formatter/date';
 
-const socialOrder: LoginPlatform[] = ['kakao', 'google', 'apple'];
+const socialOrder: LoginPlatform[] = ['kakao', 'google'];
 
 export function providerKey(platform: LoginPlatform) {
   switch (platform) {
@@ -10,8 +10,6 @@ export function providerKey(platform: LoginPlatform) {
       return 'KAKAO';
     case 'google':
       return 'GOOGLE';
-    case 'apple':
-      return 'APPLE';
   }
 }
 

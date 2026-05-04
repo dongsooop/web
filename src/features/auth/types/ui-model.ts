@@ -12,7 +12,7 @@ export interface UserState {
   user: User | null;
 }
 
-export type LoginPlatform = 'kakao' | 'google' | 'apple';
+export type LoginPlatform = 'kakao' | 'google';
 
 export interface SocialConnectItem {
   platform: LoginPlatform;

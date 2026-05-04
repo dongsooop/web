@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 interface SocialLoginButtonsProps {
-  onLogin: (platform: 'kakao' | 'google' | 'apple') => void | Promise<void>;
+  onLogin: (platform: 'kakao' | 'google') => void | Promise<void>;
 }
 
 const socialItems = [
@@ -14,11 +14,6 @@ const socialItems = [
     key: 'google' as const,
     label: '구글 로그인',
     src: '/img/google_symbol.png',
-  },
-  {
-    key: 'apple' as const,
-    label: '애플 로그인',
-    src: '/img/apple_symbol.png',
   },
 ];
 

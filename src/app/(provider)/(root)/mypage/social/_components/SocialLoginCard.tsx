@@ -20,11 +20,6 @@ const platformMeta: Record<LoginPlatform, { label: string; imageSrc: string; ima
     imageSrc: '/img/google_symbol.png',
     imageAlt: '구글 로고',
   },
-  apple: {
-    label: '애플',
-    imageSrc: '/img/apple_symbol.png',
-    imageAlt: '애플 로고',
-  },
 };
 
 export default function SocialLoginCard({
