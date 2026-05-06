@@ -1,4 +1,4 @@
-import { toDateKey, toTimeKey } from './lib/date';
+import { toDateKey, toTimeKey } from '@/utils/date';
 import type { Schedule } from './types/model';
 import type { ScheduleResponse, ScheduleResponseItem, ScheduleType } from './types/response';
 

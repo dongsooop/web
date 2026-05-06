@@ -1,4 +1,4 @@
-import { getTodayLabel } from '@/utils/formatter/date';
+import { getTodayLabel } from '@/utils/date';
 
 export default function HomeHeader() {
   const dateLabel = getTodayLabel();

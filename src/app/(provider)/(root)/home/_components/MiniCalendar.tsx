@@ -11,8 +11,7 @@ import {
   shiftCalendarMonth,
   WEEK_LABELS,
 } from '@/features/schedule/lib/calendar';
-import { toDateKey, toMonthKey } from '@/features/schedule/lib/date';
-import { formatDateLabel, formatMonthLabel } from '@/utils/formatter/date';
+import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 
 export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
