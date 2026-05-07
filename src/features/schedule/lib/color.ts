@@ -9,9 +9,11 @@ function toneIndex(schedule: Schedule, count: number) {
 
 export function memberScheduleTone(schedule: Schedule) {
   const colors = [
-    'bg-schedule-member-blueBg text-schedule-member-blueText',
-    'bg-schedule-member-greenBg text-schedule-member-greenText',
+    'bg-schedule-member-redBg text-schedule-member-redText',
     'bg-schedule-member-yellowBg text-schedule-member-yellowText',
+    'bg-schedule-member-greenBg text-schedule-member-greenText',
+    'bg-schedule-member-blueBg text-schedule-member-blueText',
+    'bg-schedule-member-purpleBg text-schedule-member-purpleText',
   ];
 
   return colors[toneIndex(schedule, colors.length)];
@@ -41,9 +43,11 @@ export function scheduleLineColor(schedule: Schedule) {
   }
 
   const colors = [
-    'bg-schedule-member-blueLine',
-    'bg-schedule-member-greenLine',
+    'bg-schedule-member-redLine',
     'bg-schedule-member-yellowLine',
+    'bg-schedule-member-greenLine',
+    'bg-schedule-member-blueLine',
+    'bg-schedule-member-purpleLine',
   ];
 
   return colors[toneIndex(schedule, colors.length)];

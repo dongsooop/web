@@ -48,6 +48,13 @@ const config: Config = {
         schedule: {
           sunday: '#C62828',
           muted: '#B7BDCC',
+          create: {
+            redLine: '#F28B82',
+            yellowLine: '#F4D03F',
+            greenLine: '#79C89D',
+            blueLine: '#8BB8FF',
+            purpleLine: '#B9A2F3',
+          },
           official: {
             purpleBg: '#EEE7FF',
             purpleLine: '#B9A2F3',
@@ -63,15 +70,21 @@ const config: Config = {
             orangeText: '#B45309',
           },
           member: {
-            blueBg: '#EBF3FF',
-            blueLine: '#8BB8FF',
-            blueText: '#00439C',
+            redBg: '#FCEEED',
+            redLine: '#F28B82',
+            redText: '#804640',
+            yellowBg: '#FFF7CC',
+            yellowLine: '#F4D03F',
+            yellowText: '#8A6D00',
             greenBg: '#E7F5EF',
             greenLine: '#79C89D',
             greenText: '#166534',
-            yellowBg: '#FFF6DB',
-            yellowLine: '#E3B85A',
-            yellowText: '#8A5A00',
+            blueBg: '#EBF3FF',
+            blueLine: '#8BB8FF',
+            blueText: '#00439C',
+            purpleBg: '#EEE7FF',
+            purpleLine: '#B9A2F3',
+            purpleText: '#5B21B6',
           },
         },
       },
@@ -83,6 +96,7 @@ const config: Config = {
       spacing: {
         18: '4.5rem',
         23: '5.75rem',
+        28: '7rem',
         30: '7.5rem',
         33: '8.25rem',
         35: '8.75rem',
@@ -94,6 +108,7 @@ const config: Config = {
 
       gridAutoRows: {
         18: '4.5rem',
+        28: '7rem',
         35: '8.75rem',
       },
 
