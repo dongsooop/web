@@ -31,19 +31,19 @@ export function officialScheduleTone(schedule: Schedule) {
 export function scheduleLineColor(schedule: Schedule) {
   if (schedule.type === 'OFFICIAL') {
     const colors = [
-      'bg-schedule-official-purpleText',
-      'bg-schedule-official-greenText',
-      'bg-schedule-official-blueText',
-      'bg-schedule-official-orangeText',
+      'bg-schedule-official-purpleLine',
+      'bg-schedule-official-greenLine',
+      'bg-schedule-official-blueLine',
+      'bg-schedule-official-orangeLine',
     ];
 
     return colors[toneIndex(schedule, colors.length)];
   }
 
   const colors = [
-    'bg-schedule-member-blueText',
-    'bg-schedule-member-greenText',
-    'bg-schedule-member-yellowText',
+    'bg-schedule-member-blueLine',
+    'bg-schedule-member-greenLine',
+    'bg-schedule-member-yellowLine',
   ];
 
   return colors[toneIndex(schedule, colors.length)];

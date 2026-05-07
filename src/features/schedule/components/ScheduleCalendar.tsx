@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 import { memberScheduleTone, officialScheduleTone } from '@/features/schedule/lib/color';
 import type { Schedule } from '@/features/schedule/types/ui-model';
@@ -145,42 +145,42 @@ export default function ScheduleCalendar({
           memberScheduleTone,
         )
       : [];
-  const dayBox = 'absolute left-1.5 top-2 sm:left-4 sm:top-4';
+  const dayBox = 'absolute top-2 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
   const memberContentBox =
     'absolute left-1.5 right-1.5 top-8 bottom-1.5 sm:left-4 sm:right-4 sm:top-12 sm:bottom-4';
   const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
 
   return (
     <div className="py-4 sm:px-7 sm:py-6">
-      <div className="border-gray2 flex items-center justify-between pb-4 sm:flex-row sm:gap-4 sm:pb-5">
-        <div className="mx-auto flex items-center gap-2 sm:mx-0 sm:gap-3">
+      <div className="border-gray2 relative flex items-center justify-between pb-4">
+        <div className="grid w-full grid-cols-[2.25rem_minmax(7.5rem,max-content)_2.25rem] items-center justify-center gap-4 sm:w-auto sm:grid-cols-[2.5rem_minmax(8.25rem,max-content)_2.5rem]">
           <button
             type="button"
             onClick={() => onMoveMonth(-1)}
-            className="hover:bg-gray7 sm:border-gray2 inline-flex h-9 w-9 items-center justify-center rounded-full text-black transition sm:h-10 sm:w-10 sm:border"
+            className="hover:bg-gray7 sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="이전 달"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="text-normal min-w-30 text-center font-bold text-black sm:min-w-33 sm:text-left sm:text-title">
+          <div className="text-normal sm:text-title text-center font-bold text-black">
             {currentMonth}
           </div>
           <button
             type="button"
             onClick={() => onMoveMonth(1)}
-            className="hover:bg-gray7 sm:border-gray2 inline-flex h-9 w-9 items-center justify-center rounded-full text-black transition sm:h-10 sm:w-10 sm:border"
+            className="hover:bg-gray7 sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="다음 달"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="hidden items-center gap-2 sm:flex sm:self-auto">
+        <div className="hidden items-center gap-2 sm:absolute sm:top-0 sm:right-0 sm:flex">
           {tab === 'MEMBER' ? (
             <button
               type="button"
               disabled
-              className="border-primary/20 bg-primary/5 text-primary inline-flex h-10 items-center gap-2 rounded-xl border px-4 text-sm font-semibold opacity-70"
+              className="border-primary/20 bg-primary/5 text-primary-foreground inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-sm font-semibold"
               aria-label="일정 추가 준비 중"
             >
               <Plus className="h-4 w-4" />
@@ -190,15 +190,16 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={onToday}
-            className="border-gray2 text-gray6 hover:bg-gray7 inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold transition"
+            className="border-gray2 text-gray6 hover:bg-gray7 inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-sm font-semibold transition"
           >
-            오늘
+            <CalendarDays className="h-4 w-4" />
+            오늘 날짜로 이동
           </button>
         </div>
       </div>
 
-      <div className="mt-3 sm:mt-4">
-        <div className="text-small grid grid-cols-7 gap-1.5 pb-2 text-center font-semibold sm:gap-2 sm:pb-3">
+      <div className="mt-2">
+        <div className="text-normal grid grid-cols-7 gap-2 pb-2 text-center font-semibold">
           {WEEK_LABELS.map((week, index) => (
             <div
               key={week}
@@ -211,7 +212,7 @@ export default function ScheduleCalendar({
           ))}
         </div>
 
-        <div className="sm:border-gray2 relative grid auto-rows-18 grid-cols-7 overflow-hidden rounded-calendar bg-white [--bar-gap:0.125rem] [--bar-step:1.125rem] sm:auto-rows-35 sm:rounded-card sm:border sm:[--bar-gap:0.25rem] sm:[--bar-step:1.5rem]">
+        <div className="sm:border-gray2 auto-rows-24 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.125rem] [--bar-step:1.125rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.25rem] sm:[--bar-step:1.5rem]">
           {tab === 'OFFICIAL' || memberRangeSegments.length > 0 ? (
             <div className="pointer-events-none absolute inset-0 z-10 grid grid-cols-7 grid-rows-6">
               {(tab === 'OFFICIAL' ? officialSegments : memberRangeSegments).map(
@@ -270,7 +271,7 @@ export default function ScheduleCalendar({
                 type="button"
                 onClick={() => onSelect(key, cell.inMonth, cell.date)}
                 className={[
-                  'sm:border-gray2 relative z-0 h-22 text-left transition sm:h-35 sm:border-r sm:border-b',
+                  'sm:border-gray2 relative z-0 h-24 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
                   index % 7 === 6 ? 'sm:border-r-0' : '',
                   index >= 35 ? 'sm:border-b-0' : '',
                   isSelected ? 'bg-primary/5' : 'hover:bg-gray7/60',
@@ -280,7 +281,7 @@ export default function ScheduleCalendar({
                 <div className={dayBox}>
                   <span
                     className={[
-                      'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8 sm:text-small',
+                      'sm:text-small inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8',
                       textColor,
                       isSelected ? 'bg-primary text-white' : '',
                       !isSelected && isToday ? 'ring-primary/25 ring-2' : '',
@@ -292,13 +293,9 @@ export default function ScheduleCalendar({
 
                 {tab === 'MEMBER' ? (
                   <div
-                    className={[
-                      memberContentBox,
-                      'pointer-events-none',
-                      extra > 0 ? 'pb-3 sm:pb-4' : '',
-                    ].join(' ')}
+                    className={[memberContentBox, 'pointer-events-none flex flex-col'].join(' ')}
                   >
-                    <div className="flex flex-col gap-0.5 sm:gap-1">
+                    <div className="flex flex-col gap-1">
                       {visible.map((schedule, barIndex) => (
                         <div
                           key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
@@ -314,23 +311,19 @@ export default function ScheduleCalendar({
                       ))}
                     </div>
                     {extra > 0 ? (
-                      <div className="text-gray5 text-xs absolute right-0 bottom-0 leading-3 font-semibold sm:text-small sm:leading-4">
+                      <div className="text-gray5 sm:text-small mt-auto text-right text-xs font-semibold">
                         +{extra}
                       </div>
                     ) : null}
                   </div>
                 ) : tab === 'OFFICIAL' ? (
                   <div
-                    className={[
-                      memberContentBox,
-                      'pointer-events-none',
-                      extra > 0 ? 'pb-3 sm:pb-4' : '',
-                    ].join(' ')}
+                    className={[memberContentBox, 'pointer-events-none flex flex-col'].join(' ')}
                     style={{
                       transform: `translateY(calc(var(--bar-step) * ${officialLaneOffsetMap[key] ?? 0}))`,
                     }}
                   >
-                    <div className="flex flex-col gap-0.5 sm:gap-1">
+                    <div className="flex flex-col gap-1">
                       {visible.map((schedule, barIndex) => (
                         <div
                           key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
@@ -346,7 +339,7 @@ export default function ScheduleCalendar({
                       ))}
                     </div>
                     {extra > 0 ? (
-                      <div className="text-gray5 text-xs absolute right-0 bottom-0 leading-3 font-semibold sm:text-small sm:leading-4">
+                      <div className="text-gray5 sm:text-small mt-auto text-right text-xs leading-3 font-semibold sm:leading-4">
                         +{extra}
                       </div>
                     ) : null}

@@ -24,6 +24,7 @@ const config: Config = {
           DEFAULT: '#006DFF',
           5: '#EBF3FF',
           gray: '#00439C',
+          foreground: '#0066EB',
         },
 
         label: {
@@ -48,20 +49,27 @@ const config: Config = {
           muted: '#B7BDCC',
           official: {
             purpleBg: '#EEE7FF',
+            purpleLine: '#B9A2F3',
             purpleText: '#5B21B6',
             greenBg: '#E7F5EF',
+            greenLine: '#8ECFA9',
             greenText: '#166534',
             blueBg: '#EAF2FF',
+            blueLine: '#9FC3FF',
             blueText: '#1D4ED8',
             orangeBg: '#FFF3E8',
+            orangeLine: '#F2BE7A',
             orangeText: '#B45309',
           },
           member: {
             blueBg: '#EBF3FF',
+            blueLine: '#8BB8FF',
             blueText: '#00439C',
             greenBg: '#E7F5EF',
+            greenLine: '#79C89D',
             greenText: '#166534',
             yellowBg: '#FFF6DB',
+            yellowLine: '#E3B85A',
             yellowText: '#8A5A00',
           },
         },
@@ -90,12 +98,6 @@ const config: Config = {
 
       gridTemplateColumns: {
         schedule: 'minmax(0, 1fr) 20rem',
-      },
-
-      borderRadius: {
-        calendar: '1.125rem',
-        card: '1.5rem',
-        panel: '1.75rem',
       },
 
       fontSize: {

@@ -8,24 +8,28 @@ type ScheduleTabsProps = {
 
 export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps) {
   return (
-    <div className="border-gray2 flex border-b px-4 pt-3 sm:px-7 sm:pt-5">
-      {items.map((item) => {
-        const isActive = item.id === tab;
+    <div className="border-gray2 border-b">
+      <div className="flex">
+        {items.map((item) => {
+          const isActive = item.id === tab;
 
-        return (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onChange(item.id)}
-            className={[
-              'text-small flex flex-1 items-center justify-center border-b-2 px-2 pb-3 font-semibold transition sm:flex-none sm:justify-start sm:px-3 sm:pb-4 sm:text-normal',
-              isActive ? 'border-primary text-primary' : 'border-transparent text-gray5 hover:text-black',
-            ].join(' ')}
-          >
-            {item.label}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onChange(item.id)}
+              className={[
+                'flex h-12 flex-1 cursor-pointer items-center justify-center border-b-2 px-0 py-0 text-sm font-semibold transition sm:h-14 sm:min-w-28 sm:flex-none',
+                isActive
+                  ? 'border-primary text-primary'
+                  : 'text-gray5 border-transparent hover:text-black',
+              ].join(' ')}
+            >
+              <span className="block px-4">{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

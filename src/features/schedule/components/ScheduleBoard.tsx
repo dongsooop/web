@@ -18,6 +18,7 @@ const tabs = [
   { id: 'MEMBER', label: '개인 일정' },
   { id: 'OFFICIAL', label: '학사 일정' },
 ] as const;
+const noop = () => {};
 
 type TabId = (typeof tabs)[number]['id'];
 
@@ -74,27 +75,20 @@ export default function ScheduleBoard() {
 
   if (!mounted) {
     return (
-      <div className="mx-auto flex w-full max-w-layout flex-col gap-4 px-0 py-0 sm:px-4 sm:py-4">
-        <div className="px-1 sm:px-0">
+      <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
+        <div className="px-1">
           <PageHeader title="일정" description={descriptionText()} />
         </div>
 
-        <section className="sm:border-gray2 overflow-hidden rounded-panel bg-white sm:border sm:shadow-schedule-panel">
-          <div className="border-gray2 flex border-b px-4 pt-3 sm:px-7 sm:pt-5">
-            <div className="text-small border-primary text-primary flex flex-1 items-center justify-center border-b-2 px-2 pb-3 font-semibold sm:flex-none sm:justify-start sm:px-3 sm:pb-4 sm:text-normal">
-              개인 일정
-            </div>
-            <div className="text-small text-gray5 flex flex-1 items-center justify-center border-b-2 border-transparent px-2 pb-3 font-semibold sm:flex-none sm:justify-start sm:px-3 sm:pb-4 sm:text-normal">
-              학사 일정
-            </div>
-          </div>
+        <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
+          <ScheduleTabs tab={tab} items={tabs} onChange={noop} />
 
-          <div className="grid gap-0 lg:grid-cols-schedule">
-            <div className="px-4 py-4 sm:px-7 sm:py-6">
-              <div className="bg-gray7 h-90 animate-pulse rounded-card sm:h-130" />
+          <div className="lg:grid-cols-schedule grid gap-0">
+            <div className="p-4 sm:px-7 sm:py-6">
+              <div className="bg-gray7 h-90 animate-pulse rounded-2xl sm:h-130" />
             </div>
-            <div className="border-gray2 border-t px-4 py-4 sm:px-6 sm:py-6 lg:border-t-0 lg:border-l">
-              <div className="bg-gray7 h-65 animate-pulse rounded-card" />
+            <div className="border-gray2 border-t p-4 sm:p-6 lg:border-t-0 lg:border-l">
+              <div className="bg-gray7 h-65 animate-pulse rounded-2xl" />
             </div>
           </div>
         </section>
@@ -103,15 +97,15 @@ export default function ScheduleBoard() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-layout flex-col gap-4 px-0 py-0 sm:px-4 sm:py-4">
-      <div className="px-1 sm:px-0">
+    <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
+      <div className="px-1">
         <PageHeader title="일정" description={descriptionText()} />
       </div>
 
-      <section className="sm:border-gray2 overflow-hidden rounded-panel bg-white sm:border sm:shadow-schedule-panel">
+      <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
         <ScheduleTabs tab={tab} items={tabs} onChange={setTab} />
 
-        <div className="grid gap-0 lg:grid-cols-schedule">
+        <div className="lg:grid-cols-schedule grid gap-0">
           <ScheduleCalendar
             cells={cells}
             currentMonth={currentMonth}
