@@ -161,7 +161,7 @@ export default function PasswordResetForm() {
 
                 return (
                   <p
-                    className={`text-caption text-regular ${
+                    className={`text-caption font-regular ${
                       !analysis.isValid && !isPassEmpty ? 'text-warning' : 'text-gray4'
                     }`}
                   >
