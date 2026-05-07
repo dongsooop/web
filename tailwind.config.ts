@@ -42,6 +42,60 @@ const config: Config = {
           10: '#F3DADA',
           DEFAULT: '#D90000',
         },
+
+        schedule: {
+          sunday: '#C62828',
+          muted: '#B7BDCC',
+          official: {
+            purpleBg: '#EEE7FF',
+            purpleText: '#5B21B6',
+            greenBg: '#E7F5EF',
+            greenText: '#166534',
+            blueBg: '#EAF2FF',
+            blueText: '#1D4ED8',
+            orangeBg: '#FFF3E8',
+            orangeText: '#B45309',
+          },
+          member: {
+            blueBg: '#EBF3FF',
+            blueText: '#00439C',
+            greenBg: '#E7F5EF',
+            greenText: '#166534',
+            yellowBg: '#FFF6DB',
+            yellowText: '#8A5A00',
+          },
+        },
+      },
+
+      maxWidth: {
+        layout: '90rem',
+      },
+
+      spacing: {
+        18: '4.5rem',
+        23: '5.75rem',
+        30: '7.5rem',
+        33: '8.25rem',
+        35: '8.75rem',
+        45: '11.25rem',
+        65: '16.25rem',
+        90: '22.5rem',
+        130: '32.5rem',
+      },
+
+      gridAutoRows: {
+        18: '4.5rem',
+        35: '8.75rem',
+      },
+
+      gridTemplateColumns: {
+        schedule: 'minmax(0, 1fr) 20rem',
+      },
+
+      borderRadius: {
+        calendar: '1.125rem',
+        card: '1.5rem',
+        panel: '1.75rem',
       },
 
       fontSize: {
@@ -55,6 +109,12 @@ const config: Config = {
         regular: '400',
         semibold: '600',
         bold: '700',
+      },
+
+      boxShadow: {
+        'schedule-panel': '0 18px 60px rgba(37, 37, 37, 0.05)',
+        'schedule-card': '0 10px 30px rgba(37, 37, 37, 0.04)',
+        'schedule-icon': '0 12px 28px rgba(37, 37, 37, 0.08)',
       },
     },
   },
