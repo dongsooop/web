@@ -1,5 +1,5 @@
 import { toDateKey, toTimeKey } from '@/utils/date';
-import type { Schedule } from './types/model';
+import type { Schedule } from './types/ui-model';
 import type { ScheduleResponse, ScheduleResponseItem, ScheduleType } from './types/response';
 
 function parseDate(value: string) {
@@ -21,6 +21,20 @@ function getDateKey(item: ScheduleResponseItem) {
   const endDate = parseDate(item.endAt);
   if (endDate) {
     return toDateKey(endDate);
+  }
+
+  return '';
+}
+
+function getEndDateKey(item: ScheduleResponseItem) {
+  const endDate = parseDate(item.endAt);
+  if (endDate) {
+    return toDateKey(endDate);
+  }
+
+  const startDate = parseDate(item.startAt);
+  if (startDate) {
+    return toDateKey(startDate);
   }
 
   return '';
@@ -53,9 +67,10 @@ function getTitle(item: ScheduleResponseItem) {
 
 function toModel(item: ScheduleResponseItem): Schedule | null {
   const type = parseType(item.type);
-  const dateKey = getDateKey(item);
+  const startDateKey = getDateKey(item);
+  const endDateKey = getEndDateKey(item);
 
-  if (!dateKey) {
+  if (!startDateKey || !endDateKey) {
     return null;
   }
 
@@ -66,7 +81,8 @@ function toModel(item: ScheduleResponseItem): Schedule | null {
     id: item.id,
     title: getTitle(item),
     location: item.location,
-    dateKey,
+    startDateKey,
+    endDateKey,
     startAt,
     endAt,
     type,

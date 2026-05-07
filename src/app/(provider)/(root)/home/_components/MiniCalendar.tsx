@@ -175,7 +175,7 @@ export default function MiniCalendar() {
             <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
                 <button
-                  key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
+                  key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
                   type="button"
                   onClick={() => setOpenedScheduleIndex(index)}
                   className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"

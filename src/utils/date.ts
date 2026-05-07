@@ -16,6 +16,20 @@ export function toTimeKey(date: Date) {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+export function dateKeysBetween(startKey: string, endKey: string) {
+  const [startYear, startMonth, startDay] = startKey.split('-').map(Number);
+  const [endYear, endMonth, endDay] = endKey.split('-').map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay);
+  const end = new Date(endYear, endMonth - 1, endDay);
+  const keys: string[] = [];
+
+  for (const current = new Date(start); current <= end; current.setDate(current.getDate() + 1)) {
+    keys.push(toDateKey(current));
+  }
+
+  return keys;
+}
+
 export function getWeekNumber(date: Date): number {
   const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = utcDate.getUTCDay() || 7;
