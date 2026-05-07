@@ -16,7 +16,7 @@ export default function HomePageContent() {
   if (isError) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4 text-center">
-        <p className="text-normal text-gray5">{displayErrorMessage}</p>
+        <p className="text-body text-gray5">{displayErrorMessage}</p>
       </div>
     );
   }

@@ -65,7 +65,7 @@ export default function PasswordResetForm() {
       <section className="flex flex-col gap-8">
         <header className="flex flex-col gap-2">
           <h1 className="text-title font-bold text-black">비밀번호 재설정</h1>
-          <p className="text-normal text-gray-500">
+          <p className="text-body text-gray-500">
             {step === 'email'
               ? '학교 이메일과 인증 코드를 입력해 주세요.'
               : '새로운 비밀번호를 입력해 주세요.'}
@@ -143,7 +143,7 @@ export default function PasswordResetForm() {
                   {status.isCodeVerified ? '완료' : '확인'}
                 </Button>
               </div>
-              {errorMessage && <p className="text-warning text-normal pt-2">{errorMessage}</p>}
+              {errorMessage && <p className="text-warning text-body pt-2">{errorMessage}</p>}
             </div>
           </div>
         ) : (
@@ -161,7 +161,7 @@ export default function PasswordResetForm() {
 
                 return (
                   <p
-                    className={`text-small text-regular ${
+                    className={`text-caption text-regular ${
                       !analysis.isValid && !isPassEmpty ? 'text-warning' : 'text-gray4'
                     }`}
                   >

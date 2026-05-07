@@ -30,7 +30,7 @@ export default function ListItem({
       rel={rel}
       className={`group block ${minHeightClassName} py-4`}
     >
-      <div className="text-normal line-clamp-2 font-semibold text-black underline-offset-2 group-hover:underline">
+      <div className="text-body line-clamp-2 font-semibold text-black underline-offset-2 group-hover:underline">
         {title}
       </div>
 

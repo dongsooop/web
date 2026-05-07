@@ -45,7 +45,7 @@ export default function Sidebar() {
                   {item.icon}
                 </div>
 
-                <div className={`text-small ${active ? 'text-primary' : 'text-gray4'}`}>
+                <div className={`text-caption ${active ? 'text-primary' : 'text-gray4'}`}>
                   {item.label}
                 </div>
               </Link>

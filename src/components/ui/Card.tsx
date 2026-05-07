@@ -13,7 +13,7 @@ export default function Card({ title, right, children, className }: CardProps) {
     <section className={mergedClassName}>
       {(title || right) && (
         <div className="border-gray2 flex items-center justify-between px-2 py-3">
-          <div className="text-large font-semibold text-black">{title}</div>
+          <div className="text-heading font-semibold text-black">{title}</div>
           {right}
         </div>
       )}

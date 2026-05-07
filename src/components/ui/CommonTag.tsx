@@ -19,7 +19,7 @@ export default function CommonTag({
 }: CommonTagProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-1 text-small font-semibold ${TONE_MAP[tone]}`}
+      className={`inline-flex items-center rounded-full px-2 py-1 text-caption font-semibold ${TONE_MAP[tone]}`}
     >
       {label}
     </span>
