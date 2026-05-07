@@ -100,7 +100,7 @@ export default function SignInForm() {
       </div>
 
       {errorMessage && (
-        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+        <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
           {errorMessage}
         </p>
       )}
@@ -116,13 +116,13 @@ export default function SignInForm() {
       <button
         type="button"
         onClick={handlePasswordReset}
-        className="text-normal text-gray4 min-h-[44px] font-bold"
+        className="text-body text-gray4 min-h-11 font-bold"
       >
         비밀번호 변경
       </button>
 
       {dialogMessage && (
-        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+        <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
           {dialogMessage}
         </p>
       )}

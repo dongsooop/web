@@ -29,8 +29,8 @@ export default function Footer() {
     <footer className="border-gray1 w-full border-t bg-white">
       <div className="w-full px-4 py-8">
         <div className="mb-6">
-          <p className="text-normal font-semibold text-black">동양미래대숲</p>
-          <p className="text-small text-gray4 mt-1">
+          <p className="text-body font-semibold text-black">동양미래대숲</p>
+          <p className="text-caption text-gray4 mt-1">
             본 서비스는 동양미래대학교의 비공식 서비스로 <br />
             제공 정보는 학교 홈페이지/공식 안내를 기반으로 합니다.
           </p>
@@ -38,7 +38,7 @@ export default function Footer() {
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <nav aria-label="Footer">
-            <ul className="text-small font-regular text-gray4 flex flex-wrap items-center gap-y-2">
+            <ul className="text-caption font-regular text-gray4 flex flex-wrap items-center gap-y-2">
               {FOOTER_LINKS.map((item, index) => (
                 <li key={item.label} className="flex items-center">
                   {item.external ? (
@@ -62,7 +62,7 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <p className="text-small font-regular text-gray5">
+          <p className="text-caption font-regular text-gray5">
             © {new Date().getFullYear()} Dongsoop. All rights reserved.
           </p>
         </div>

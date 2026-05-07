@@ -76,13 +76,13 @@ export default function SignUpForm() {
       <section className="flex w-full max-w-[480px] flex-col gap-10 bg-white py-6">
         <div className="flex flex-col gap-3 px-4">
           <h1 className="text-title font-bold text-black">동숲 회원가입</h1>
-          <p className="text-small font-regular text-gray4">
+          <p className="text-caption font-regular text-gray4">
             동양미래대학교 Gmail(@dongyang.ac.kr)로만 가입 가능합니다.
           </p>
           <Link
             href={CREATE_EMAIL_URL}
             target="_blank"
-            className="text-small font-bold text-black underline underline-offset-2"
+            className="text-caption font-bold text-black underline underline-offset-2"
           >
             학교 이메일 발급하러 가기
           </Link>
@@ -111,7 +111,7 @@ export default function SignUpForm() {
             </div>
             <Button
               variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
-              className="h-[44px] shrink-0 px-4"
+              className="h-11 shrink-0 px-4"
               onClick={handleCheckEmail}
               disabled={!inputs.email.trim() || status.isEmailChecked || isLoading}
             >
@@ -139,7 +139,7 @@ export default function SignUpForm() {
                     ? 'primary'
                     : 'gray'
                 }
-                className="h-[44px] min-w-[80px] shrink-0 px-4"
+                className="h-11 min-w-[80px] shrink-0 px-4"
                 onClick={handleSendCode}
                 disabled={
                   !status.isEmailChecked ||
@@ -165,7 +165,7 @@ export default function SignUpForm() {
                     ? 'primary'
                     : 'gray'
                 }
-                className="h-[44px] shrink-0 px-4"
+                className="h-11 shrink-0 px-4"
                 onClick={handleVerifyCode}
                 disabled={
                   !status.isCodeSent ||
@@ -179,7 +179,7 @@ export default function SignUpForm() {
             </div>
 
             {status.isCodeVerified && (
-              <p className="text-small text-primary font-regular px-1">
+              <p className="text-caption text-primary font-regular px-1">
                 이메일 인증이 완료되었습니다.
               </p>
             )}
@@ -237,7 +237,7 @@ export default function SignUpForm() {
             </div>
             <Button
               variant={isNicknameValid && !status.isNicknameChecked ? 'primary' : 'gray'}
-              className="h-[44px] shrink-0 px-4"
+              className="h-11 shrink-0 px-4"
               onClick={handleCheckNickname}
               disabled={!isNicknameValid || status.isNicknameChecked || isLoading}
             >
@@ -272,7 +272,7 @@ export default function SignUpForm() {
 
         <div className="mt-4 px-4">
           {status.error && (
-            <p className="text-small text-warning animate-in fade-in slide-in-from-bottom-1 font-regular mb-3 px-1 text-center">
+            <p className="text-caption text-warning animate-in fade-in slide-in-from-bottom-1 font-regular mb-3 px-1 text-center">
               {status.error}
             </p>
           )}
@@ -319,12 +319,12 @@ function SectionLabel({
 }) {
   return (
     <div className="flex items-end gap-2">
-      <p className="text-normal font-bold text-black">
+      <p className="text-body font-bold text-black">
         {title}
         <span className="text-primary"> *</span>
       </p>
       {description && (
-        <p className={`text-small transition-colors ${descriptionColor}`}>{description}</p>
+        <p className={`text-caption transition-colors ${descriptionColor}`}>{description}</p>
       )}
     </div>
   );

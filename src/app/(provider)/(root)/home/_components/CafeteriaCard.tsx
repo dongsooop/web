@@ -31,7 +31,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
             <ChevronLeft size={20} />
           </button>
 
-          <span className="text-normal font-bold text-black">{title}</span>
+          <span className="text-body font-bold text-black">{title}</span>
 
           <button
             onClick={handleNext}
@@ -43,7 +43,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
         </div>
 
         <div className="min-h-20 pb-1">
-          <p className="text-normal line-clamp-3 leading-relaxed break-words text-black">
+          <p className="text-body line-clamp-3 leading-relaxed break-words text-black">
             {bodyText}
           </p>
         </div>
