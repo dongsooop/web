@@ -36,7 +36,7 @@ function StoreButton({ href, src, alt, label }: StoreButtonProps) {
           height={32}
           className="h-8 w-8 object-contain"
         />
-        <span className="text-large font-semibold text-black">{label}</span>
+        <span className="text-heading font-semibold text-black">{label}</span>
       </span>
       <ChevronRight className="text-gray5 h-5 w-5" />
     </Link>
@@ -81,10 +81,10 @@ export default function WebPlaceholder({
             />
 
             <div className="mt-4 flex flex-col items-center gap-4">
-              <h2 className="md:text-title text-lg font-bold text-black">
+              <h2 className="md:text-title text-heading font-bold text-black">
                 웹에서는 아직 사용할 수 없는 기능이에요
               </h2>
-              <p className="text-normal md:text-large text-gray6 whitespace-pre-line">
+              <p className="text-body md:text-heading text-gray6 whitespace-pre-line">
                 이 기능은 앱에서 먼저 이용할 수 있어요.{'\n'}웹 버전에서도 순차적으로 지원될
                 예정이에요.
               </p>

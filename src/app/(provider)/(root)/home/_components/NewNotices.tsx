@@ -19,7 +19,7 @@ export default function NewNotices({ notices }: NewNoticesProps) {
           href="/notices"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-normal text-gray5 inline-flex min-h-11 items-center gap-2 px-2 font-semibold hover:text-black"
+          className="text-body text-gray5 inline-flex min-h-11 items-center gap-2 px-2 font-semibold hover:text-black"
         >
           더보기
           <ChevronRight className="h-4 w-4" />

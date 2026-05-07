@@ -11,7 +11,7 @@ export default function LoggedOutCard() {
   return (
     <div className="space-y-4">
       <div className="w-full rounded-lg bg-white px-6 py-6">
-        <p className="text-normal font-regular text-black">로그인으로 더 많은 동숲을 즐겨봐요</p>
+        <p className="text-body font-regular text-black">로그인으로 더 많은 동숲을 즐겨봐요</p>
 
         <div className="mt-4">
           <Button
@@ -20,7 +20,7 @@ export default function LoggedOutCard() {
             fontWeight="regular"
             onClick={() => router.push('/sign-in')}
           >
-            <span className="text-normal flex items-center justify-center gap-2">
+            <span className="text-body flex items-center justify-center gap-2">
               <LogIn className="h-5 w-5" />
               <span>동숲 로그인하기</span>
             </span>
