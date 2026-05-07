@@ -162,7 +162,7 @@ export default function ScheduleCalendar({
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="text-normal sm:text-title text-center font-bold text-black">
+          <div className="text-body sm:text-title text-center font-bold text-black">
             {currentMonth}
           </div>
           <button
@@ -180,7 +180,7 @@ export default function ScheduleCalendar({
             <button
               type="button"
               disabled
-              className="border-primary/20 bg-primary/5 text-primary-foreground inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-sm font-semibold"
+              className="border-primary/20 bg-primary/5 text-primary-foreground inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-bodySm font-semibold"
               aria-label="일정 추가 준비 중"
             >
               <Plus className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={onToday}
-            className="border-gray2 text-gray6 hover:bg-gray7 inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-sm font-semibold transition"
+            className="border-gray2 text-gray6 hover:bg-gray7 inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-bodySm font-semibold transition"
           >
             <CalendarDays className="h-4 w-4" />
             오늘 날짜로 이동
@@ -199,7 +199,7 @@ export default function ScheduleCalendar({
       </div>
 
       <div className="mt-2">
-        <div className="text-normal grid grid-cols-7 gap-2 pb-2 text-center font-semibold">
+        <div className="text-body grid grid-cols-7 gap-2 pb-2 text-center font-semibold">
           {WEEK_LABELS.map((week, index) => (
             <div
               key={week}
@@ -227,7 +227,7 @@ export default function ScheduleCalendar({
                   >
                     <div
                       className={[
-                        'mt-8 flex h-4 items-center rounded-full px-1.5 text-xs font-semibold sm:mt-12 sm:h-5 sm:px-2.5',
+                        'text-caption mt-8 flex h-4 items-center rounded-full px-1.5 font-semibold sm:mt-12 sm:h-5 sm:px-2.5',
                         segment.style,
                       ].join(' ')}
                       style={{
@@ -281,7 +281,7 @@ export default function ScheduleCalendar({
                 <div className={dayBox}>
                   <span
                     className={[
-                      'sm:text-small inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8',
+                      'sm:text-caption text-caption inline-flex h-6 w-6 items-center justify-center rounded-full font-semibold sm:h-8 sm:w-8',
                       textColor,
                       isSelected ? 'bg-primary text-white' : '',
                       !isSelected && isToday ? 'ring-primary/25 ring-2' : '',
@@ -300,7 +300,7 @@ export default function ScheduleCalendar({
                         <div
                           key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
                           className={[
-                            'flex h-4 items-center rounded-full px-1.5 text-xs leading-3 font-medium sm:h-5 sm:px-2.5 sm:font-semibold',
+                            'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-medium sm:h-5 sm:px-2.5 sm:font-semibold',
                             cell.inMonth
                               ? memberScheduleTone(schedule)
                               : 'bg-gray7 text-schedule-muted',
@@ -311,7 +311,7 @@ export default function ScheduleCalendar({
                       ))}
                     </div>
                     {extra > 0 ? (
-                      <div className="text-gray5 sm:text-small mt-auto text-right text-xs font-semibold">
+                      <div className="text-gray5 sm:text-caption text-caption mt-auto text-right font-semibold">
                         +{extra}
                       </div>
                     ) : null}
@@ -328,7 +328,7 @@ export default function ScheduleCalendar({
                         <div
                           key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
                           className={[
-                            'flex h-4 items-center rounded-full px-1.5 text-xs leading-3 font-semibold sm:h-5 sm:px-2.5 sm:leading-4',
+                            'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-semibold sm:h-5 sm:px-2.5',
                             cell.inMonth
                               ? officialScheduleTone(schedule)
                               : 'bg-gray7 text-schedule-muted',
@@ -339,7 +339,7 @@ export default function ScheduleCalendar({
                       ))}
                     </div>
                     {extra > 0 ? (
-                      <div className="text-gray5 sm:text-small mt-auto text-right text-xs leading-3 font-semibold sm:leading-4">
+                      <div className="text-gray5 sm:text-caption text-caption mt-auto text-right leading-3 font-semibold">
                         +{extra}
                       </div>
                     ) : null}

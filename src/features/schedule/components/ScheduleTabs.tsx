@@ -19,7 +19,7 @@ export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps
               type="button"
               onClick={() => onChange(item.id)}
               className={[
-                'flex h-12 flex-1 cursor-pointer items-center justify-center border-b-2 px-0 py-0 text-sm font-semibold transition sm:h-14 sm:min-w-28 sm:flex-none',
+                'text-bodySm flex h-12 flex-1 cursor-pointer items-center justify-center border-b-2 px-0 py-0 font-semibold transition sm:h-14 sm:min-w-28 sm:flex-none',
                 isActive
                   ? 'border-primary text-primary'
                   : 'text-gray5 border-transparent hover:text-black',

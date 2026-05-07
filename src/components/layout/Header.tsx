@@ -55,7 +55,7 @@ export default function Header() {
 
           <div className="flex items-center">
             {!isReady ? (
-              <div className="inline-flex min-h-11 items-center justify-center px-3 text-sm text-gray-400">
+              <div className="inline-flex min-h-11 items-center justify-center px-3 text-bodySm text-gray-400">
                 ...
               </div>
             ) : isLoggedIn ? (

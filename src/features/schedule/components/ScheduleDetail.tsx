@@ -52,8 +52,8 @@ export default function ScheduleDetail({
     <aside className="border-gray2 border-t p-4 sm:p-6 lg:border-t-0 lg:border-l">
       <div className="border-gray2 flex items-center justify-between pb-2">
         <div>
-          <div className="text-normal font-bold text-black sm:text-xl">{selectedDay}</div>
-          <p className="text-gray5 mt-1 hidden text-sm sm:block">{helperText(tab)}</p>
+          <div className="text-body sm:text-heading font-bold text-black">{selectedDay}</div>
+          <p className="text-gray5 text-bodySm mt-1 hidden sm:block">{helperText(tab)}</p>
         </div>
         {tab === 'MEMBER' ? (
           <button
@@ -69,7 +69,7 @@ export default function ScheduleDetail({
 
       <div className="flex flex-col gap-3 sm:mt-9">
         {isError ? (
-          <div className="border-warning/10 bg-warning/10 text-warning rounded-2xl border px-4 py-5 text-sm">
+          <div className="border-warning/10 bg-warning/10 text-warning text-bodySm rounded-2xl border px-4 py-5">
             {displayErrorMessage}
           </div>
         ) : selectedList.length > 0 ? (
@@ -84,12 +84,14 @@ export default function ScheduleDetail({
                 )}
               />
               <div className="min-w-0 flex-1">
-                <div className="text-small text-gray6 font-semibold">{metaText(schedule, tab)}</div>
-                <div className="sm:text-normal mt-1 text-sm font-semibold text-black">
+                <div className="text-caption text-gray6 font-semibold">
+                  {metaText(schedule, tab)}
+                </div>
+                <div className="sm:text-body text-bodySm mt-1 font-semibold text-black">
                   {schedule.title}
                 </div>
                 {schedule.location ? (
-                  <div className="text-small text-gray5 mt-2 flex items-center gap-1.5">
+                  <div className="text-caption text-gray5 mt-2 flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{schedule.location}</span>
                   </div>
@@ -102,10 +104,10 @@ export default function ScheduleDetail({
             <div className="shadow-schedule-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white sm:h-16 sm:w-16">
               <CalendarDays className="text-gray5 h-7 w-7 sm:h-8 sm:w-8" />
             </div>
-            <div className="sm:text-normal mt-4 text-sm font-semibold text-black sm:mt-5">
+            <div className="sm:text-body text-bodySm mt-4 font-semibold text-black sm:mt-5">
               {emptyText(tab)}
             </div>
-            <p className="text-small text-gray5 mt-2 leading-5 sm:leading-6">
+            <p className="text-caption text-gray5 mt-2 leading-5 sm:leading-6">
               다른 날짜를 선택해서 일정을 확인해보세요.
             </p>
           </div>
