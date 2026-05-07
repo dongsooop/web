@@ -146,8 +146,9 @@ export default function ScheduleCalendar({
         )
       : [];
   const dayBox = 'absolute top-2 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
-  const memberContentBox =
-    'absolute left-1.5 right-1.5 top-8 bottom-1.5 sm:left-4 sm:right-4 sm:top-12 sm:bottom-4';
+  const memberBarBox = 'absolute left-0.5 right-0.5 top-9 sm:left-1 sm:right-1 sm:top-12';
+  const extraBox =
+    'text-gray5 text-caption pointer-events-none absolute left-0.5 right-0.5 bottom-1.5 text-right font-semibold sm:left-1 sm:right-1 sm:bottom-4';
   const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
 
   return (
@@ -180,7 +181,7 @@ export default function ScheduleCalendar({
             <button
               type="button"
               disabled
-              className="border-primary/20 bg-primary/5 text-primary-foreground inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-bodySm font-semibold"
+              className="border-primary/20 bg-primary/5 text-primary-foreground text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold"
               aria-label="일정 추가 준비 중"
             >
               <Plus className="h-4 w-4" />
@@ -190,7 +191,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={onToday}
-            className="border-gray2 text-gray6 hover:bg-gray7 inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 text-bodySm font-semibold transition"
+            className="border-gray2 text-gray6 hover:bg-gray7 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
           >
             <CalendarDays className="h-4 w-4" />
             오늘 날짜로 이동
@@ -281,7 +282,7 @@ export default function ScheduleCalendar({
                 <div className={dayBox}>
                   <span
                     className={[
-                      'sm:text-caption text-caption inline-flex h-6 w-6 items-center justify-center rounded-full font-semibold sm:h-8 sm:w-8',
+                      'sm:text-caption text-caption inline-flex h-6 w-6 items-center justify-center rounded-full font-semibold',
                       textColor,
                       isSelected ? 'bg-primary text-white' : '',
                       !isSelected && isToday ? 'ring-primary/25 ring-2' : '',
@@ -292,58 +293,54 @@ export default function ScheduleCalendar({
                 </div>
 
                 {tab === 'MEMBER' ? (
-                  <div
-                    className={[memberContentBox, 'pointer-events-none flex flex-col'].join(' ')}
-                  >
-                    <div className="flex flex-col gap-1">
-                      {visible.map((schedule, barIndex) => (
-                        <div
-                          key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
-                          className={[
-                            'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-medium sm:h-5 sm:px-2.5 sm:font-semibold',
-                            cell.inMonth
-                              ? memberScheduleTone(schedule)
-                              : 'bg-gray7 text-schedule-muted',
-                          ].join(' ')}
-                        >
-                          <span className="truncate">{schedule.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {extra > 0 ? (
-                      <div className="text-gray5 sm:text-caption text-caption mt-auto text-right font-semibold">
-                        +{extra}
+                  <>
+                    <div className={[memberBarBox, 'pointer-events-none'].join(' ')}>
+                      <div className="flex flex-col gap-1">
+                        {visible.map((schedule, barIndex) => (
+                          <div
+                            key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
+                            className={[
+                              'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-medium sm:h-5 sm:px-2.5 sm:font-semibold',
+                              cell.inMonth
+                                ? memberScheduleTone(schedule)
+                                : 'bg-gray7 text-schedule-muted',
+                            ].join(' ')}
+                          >
+                            <span className="truncate">{schedule.title}</span>
+                          </div>
+                        ))}
                       </div>
-                    ) : null}
-                  </div>
+                    </div>
+                    {extra > 0 ? <div className={extraBox}>+{extra}</div> : null}
+                  </>
                 ) : tab === 'OFFICIAL' ? (
-                  <div
-                    className={[memberContentBox, 'pointer-events-none flex flex-col'].join(' ')}
-                    style={{
-                      transform: `translateY(calc(var(--bar-step) * ${officialLaneOffsetMap[key] ?? 0}))`,
-                    }}
-                  >
-                    <div className="flex flex-col gap-1">
-                      {visible.map((schedule, barIndex) => (
-                        <div
-                          key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
-                          className={[
-                            'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-semibold sm:h-5 sm:px-2.5',
-                            cell.inMonth
-                              ? officialScheduleTone(schedule)
-                              : 'bg-gray7 text-schedule-muted',
-                          ].join(' ')}
-                        >
-                          <div className="truncate">{schedule.title}</div>
-                        </div>
-                      ))}
+                  <>
+                    <div
+                      className={[memberBarBox, 'pointer-events-none'].join(' ')}
+                      style={{
+                        transform: `translateY(calc(var(--bar-step) * ${officialLaneOffsetMap[key] ?? 0}))`,
+                      }}
+                    >
+                      <div className="flex flex-col gap-1">
+                        {visible.map((schedule, barIndex) => (
+                          <div
+                            key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
+                            className={[
+                              'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-semibold sm:h-5 sm:px-2.5',
+                              cell.inMonth
+                                ? officialScheduleTone(schedule)
+                                : 'bg-gray7 text-schedule-muted',
+                            ].join(' ')}
+                          >
+                            <div className="truncate">{schedule.title}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     {extra > 0 ? (
-                      <div className="text-gray5 sm:text-caption text-caption mt-auto text-right leading-3 font-semibold">
-                        +{extra}
-                      </div>
+                      <div className={[extraBox, 'leading-3'].join(' ')}>+{extra}</div>
                     ) : null}
-                  </div>
+                  </>
                 ) : null}
               </button>
             );

@@ -67,11 +67,8 @@ export default function ScheduleBoard() {
     setSelected(toDateKey(today));
   };
 
-  const selectDate = (key: string, inMonth: boolean, date: Date) => {
+  const selectDate = (key: string, _inMonth: boolean, _date: Date) => {
     setSelected(key);
-    if (!inMonth) {
-      setView(new Date(date.getFullYear(), date.getMonth(), 1));
-    }
   };
 
   if (showSkeleton) {
