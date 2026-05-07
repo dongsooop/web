@@ -39,6 +39,7 @@ const config: Config = {
 
         warning: {
           100: '#C70000',
+          80: '#804640',
           10: '#F3DADA',
           DEFAULT: '#D90000',
         },
