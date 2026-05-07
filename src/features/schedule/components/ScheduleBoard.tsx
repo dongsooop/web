@@ -37,7 +37,7 @@ export default function ScheduleBoard() {
   const [selected, setSelected] = useState(() => toDateKey(today));
   const [tab, setTab] = useState<TabId>('MEMBER');
   const monthKey = toMonthKey(view);
-  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
+  const { data, isLoading, isError, isQueryReady, displayErrorMessage } = useScheduleQuery(monthKey);
   const source = useMemo(() => data ?? [], [data]);
 
   const list = useMemo(
@@ -49,7 +49,7 @@ export default function ScheduleBoard() {
   const selectedList = map[selected] ?? [];
   const selectedDay = formatDateWithDayLabel(selected);
   const currentMonth = `${view.getFullYear()}년 ${formatMonthLabel(view)}`;
-  const showSkeleton = !mounted || isLoading;
+  const showSkeleton = !mounted || (!data && (!isQueryReady || isLoading));
 
   const moveMonth = (delta: number) => {
     const next = new Date(view.getFullYear(), view.getMonth() + delta, 1);
