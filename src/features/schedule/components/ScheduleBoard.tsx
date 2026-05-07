@@ -12,13 +12,13 @@ import {
 import { formatDateWithDayLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 import ScheduleCalendar from './ScheduleCalendar';
 import ScheduleDetail from './ScheduleDetail';
+import ScheduleSkeleton from './ScheduleSkeleton';
 import ScheduleTabs from './ScheduleTabs';
 
 const tabs = [
   { id: 'MEMBER', label: '개인 일정' },
   { id: 'OFFICIAL', label: '학사 일정' },
 ] as const;
-const noop = () => {};
 
 type TabId = (typeof tabs)[number]['id'];
 
@@ -49,6 +49,7 @@ export default function ScheduleBoard() {
   const selectedList = map[selected] ?? [];
   const selectedDay = formatDateWithDayLabel(selected);
   const currentMonth = `${view.getFullYear()}년 ${formatMonthLabel(view)}`;
+  const showSkeleton = !mounted || isLoading;
 
   const moveMonth = (delta: number) => {
     const next = new Date(view.getFullYear(), view.getMonth() + delta, 1);
@@ -73,25 +74,14 @@ export default function ScheduleBoard() {
     }
   };
 
-  if (!mounted) {
+  if (showSkeleton) {
     return (
       <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
         <div className="px-1">
           <PageHeader title="일정" description={descriptionText()} />
         </div>
 
-        <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
-          <ScheduleTabs tab={tab} items={tabs} onChange={noop} />
-
-          <div className="lg:grid-cols-schedule grid gap-0">
-            <div className="p-4 sm:px-7 sm:py-6">
-              <div className="bg-gray7 h-90 animate-pulse rounded-2xl sm:h-130" />
-            </div>
-            <div className="border-gray2 border-t p-4 sm:p-6 lg:border-t-0 lg:border-l">
-              <div className="bg-gray7 h-65 animate-pulse rounded-2xl" />
-            </div>
-          </div>
-        </section>
+        <ScheduleSkeleton />
       </div>
     );
   }
@@ -123,7 +113,6 @@ export default function ScheduleBoard() {
             tab={tab}
             selectedDay={selectedDay}
             selectedList={selectedList}
-            isLoading={isLoading}
             isError={isError}
             displayErrorMessage={displayErrorMessage}
           />

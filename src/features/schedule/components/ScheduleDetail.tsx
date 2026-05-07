@@ -7,7 +7,6 @@ type ScheduleDetailProps = {
   tab: 'MEMBER' | 'OFFICIAL';
   selectedDay: string;
   selectedList: Schedule[];
-  isLoading: boolean;
   isError: boolean;
   displayErrorMessage: string | null;
 };
@@ -46,7 +45,6 @@ export default function ScheduleDetail({
   tab,
   selectedDay,
   selectedList,
-  isLoading,
   isError,
   displayErrorMessage,
 }: ScheduleDetailProps) {
@@ -74,13 +72,6 @@ export default function ScheduleDetail({
           <div className="border-warning/10 bg-warning/10 text-warning rounded-2xl border px-4 py-5 text-sm">
             {displayErrorMessage}
           </div>
-        ) : isLoading ? (
-          Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="border-gray2 bg-gray7 h-23 animate-pulse rounded-2xl border"
-            />
-          ))
         ) : selectedList.length > 0 ? (
           selectedList.map((schedule, index) => (
             <article
