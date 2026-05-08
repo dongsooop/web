@@ -89,6 +89,14 @@ export default function ScheduleBoard() {
     setSelected(key);
   };
 
+  const changeTab = (next: TabId) => {
+    setTab(next);
+
+    if (next === 'OFFICIAL') {
+      setCreateOpen(false);
+    }
+  };
+
   const openCreate = () => {
     setCreateOpen(true);
   };
@@ -126,7 +134,7 @@ export default function ScheduleBoard() {
       </div>
 
       <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
-        <ScheduleTabs tab={tab} items={tabs} onChange={setTab} />
+        <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
         <div className="lg:grid-cols-schedule grid gap-0">
           <ScheduleCalendar
