@@ -1,4 +1,4 @@
-import ScheduleBoard from '@/features/schedule/components/ScheduleBoard';
+import ScheduleBoard from './_components/ScheduleBoard';
 
 export default function SchedulePage() {
   return (
