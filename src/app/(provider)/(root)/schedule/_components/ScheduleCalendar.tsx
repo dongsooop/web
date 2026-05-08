@@ -1,6 +1,11 @@
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
-import { memberScheduleTone, officialScheduleTone } from '@/features/schedule/lib/color';
+import {
+  dateColorClass,
+  memberScheduleTone,
+  officialScheduleTone,
+  weekColorClass,
+} from '@/features/schedule/lib/color';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import { WEEK_LABELS, type MonthlyCalendarCell } from '@/features/schedule/lib/calendar';
 import { toDateKey } from '@/utils/date';
@@ -160,7 +165,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={() => onMoveMonth(-1)}
-            className="hover:bg-gray7 sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
+            className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="이전 달"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -171,7 +176,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={() => onMoveMonth(1)}
-            className="hover:bg-gray7 sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
+            className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="다음 달"
           >
             <ChevronRight className="h-4 w-4" />
@@ -193,7 +198,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={onToday}
-            className="border-gray2 text-gray6 hover:bg-gray7 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
+            className="border-gray2 text-gray6 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
           >
             <CalendarDays className="h-4 w-4" />
             오늘 날짜로 이동
@@ -204,12 +209,7 @@ export default function ScheduleCalendar({
       <div className="mt-2">
         <div className="text-body grid grid-cols-7 gap-2 pb-2 text-center font-semibold">
           {WEEK_LABELS.map((week, index) => (
-            <div
-              key={week}
-              className={
-                index === 0 ? 'text-schedule-sunday' : index === 6 ? 'text-primary' : 'text-black'
-              }
-            >
+            <div key={week} className={weekColorClass(index)}>
               {week}
             </div>
           ))}
@@ -260,13 +260,7 @@ export default function ScheduleCalendar({
             const extra = Math.max(dailySchedules.length - visible.length, 0);
             const isSelected = key === selected;
             const isToday = key === toDateKey(today);
-            const textColor = !cell.inMonth
-              ? 'text-schedule-muted'
-              : index % 7 === 0
-                ? 'text-schedule-sunday'
-                : index % 7 === 6
-                  ? 'text-primary'
-                  : 'text-black';
+            const textColor = dateColorClass(cell.date, cell.inMonth);
 
             return (
               <button
@@ -277,7 +271,7 @@ export default function ScheduleCalendar({
                   'sm:border-gray2 relative z-0 h-28 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
                   index % 7 === 6 ? 'sm:border-r-0' : '',
                   index >= 35 ? 'sm:border-b-0' : '',
-                  isSelected ? 'bg-primary/5' : 'hover:bg-gray7/60',
+                  isSelected ? 'bg-primary/5' : '',
                 ].join(' ')}
                 aria-label={`${cell.date.getMonth() + 1}월 ${day}일`}
               >

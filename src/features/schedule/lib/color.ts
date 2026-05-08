@@ -52,3 +52,19 @@ export function scheduleLineColor(schedule: Schedule) {
 
   return colors[toneIndex(schedule, colors.length)];
 }
+
+export function weekColorClass(index: number) {
+  if (index === 0) return 'text-warning-100';
+  if (index === 6) return 'text-primary';
+  return 'text-black';
+}
+
+export function dateColorClass(date: Date, inMonth: boolean) {
+  if (!inMonth) return 'text-schedule-muted';
+
+  const day = date.getDay();
+
+  if (day === 0) return 'text-warning-100';
+  if (day === 6) return 'text-primary';
+  return 'text-black';
+}

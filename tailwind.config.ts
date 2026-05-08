@@ -46,7 +46,6 @@ const config: Config = {
         },
 
         schedule: {
-          sunday: '#C62828',
           muted: '#B7BDCC',
           create: {
             redLine: '#F28B82',
