@@ -16,6 +16,7 @@ type ScheduleCalendarProps = {
   onSelect: (key: string, inMonth: boolean, date: Date) => void;
   onMoveMonth: (delta: number) => void;
   onToday: () => void;
+  onCreate: () => void;
 };
 
 function rangeText(schedule: Schedule) {
@@ -129,6 +130,7 @@ export default function ScheduleCalendar({
   onSelect,
   onMoveMonth,
   onToday,
+  onCreate,
 }: ScheduleCalendarProps) {
   const officialSegments =
     tab === 'OFFICIAL'
@@ -146,9 +148,9 @@ export default function ScheduleCalendar({
         )
       : [];
   const dayBox = 'absolute top-2 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
-  const memberBarBox = 'absolute left-0.5 right-0.5 top-9 sm:left-1 sm:right-1 sm:top-12';
+  const memberBarBox = 'absolute left-0.5 right-0.5 top-9 bottom-0 sm:left-1 sm:right-1 sm:top-12';
   const extraBox =
-    'text-gray5 text-caption pointer-events-none absolute left-0.5 right-0.5 bottom-1.5 text-right font-semibold sm:left-1 sm:right-1 sm:bottom-4';
+    'text-gray5 text-caption pointer-events-none absolute right-2 bottom-1 text-right leading-none font-semibold';
   const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
 
   return (
@@ -180,9 +182,9 @@ export default function ScheduleCalendar({
           {tab === 'MEMBER' ? (
             <button
               type="button"
-              disabled
+              onClick={onCreate}
               className="border-primary/20 bg-primary/5 text-primary-foreground text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold"
-              aria-label="일정 추가 준비 중"
+              aria-label="일정 추가"
             >
               <Plus className="h-4 w-4" />
               일정 추가
@@ -213,7 +215,7 @@ export default function ScheduleCalendar({
           ))}
         </div>
 
-        <div className="sm:border-gray2 auto-rows-24 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.125rem] [--bar-step:1.125rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.25rem] sm:[--bar-step:1.5rem]">
+        <div className="sm:border-gray2 auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.125rem] [--bar-step:1.125rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.25rem] sm:[--bar-step:1.5rem]">
           {tab === 'OFFICIAL' || memberRangeSegments.length > 0 ? (
             <div className="pointer-events-none absolute inset-0 z-10 grid grid-cols-7 grid-rows-6">
               {(tab === 'OFFICIAL' ? officialSegments : memberRangeSegments).map(
@@ -272,7 +274,7 @@ export default function ScheduleCalendar({
                 type="button"
                 onClick={() => onSelect(key, cell.inMonth, cell.date)}
                 className={[
-                  'sm:border-gray2 relative z-0 h-24 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
+                  'sm:border-gray2 relative z-0 h-28 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
                   index % 7 === 6 ? 'sm:border-r-0' : '',
                   index >= 35 ? 'sm:border-b-0' : '',
                   isSelected ? 'bg-primary/5' : 'hover:bg-gray7/60',
@@ -337,9 +339,7 @@ export default function ScheduleCalendar({
                         ))}
                       </div>
                     </div>
-                    {extra > 0 ? (
-                      <div className={[extraBox, 'leading-3'].join(' ')}>+{extra}</div>
-                    ) : null}
+                    {extra > 0 ? <div className={extraBox}>+{extra}</div> : null}
                   </>
                 ) : null}
               </button>

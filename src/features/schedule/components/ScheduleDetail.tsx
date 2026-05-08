@@ -9,6 +9,7 @@ type ScheduleDetailProps = {
   selectedList: Schedule[];
   isError: boolean;
   displayErrorMessage: string | null;
+  onCreate: () => void;
 };
 
 function emptyText(tab: 'MEMBER' | 'OFFICIAL') {
@@ -47,9 +48,10 @@ export default function ScheduleDetail({
   selectedList,
   isError,
   displayErrorMessage,
+  onCreate,
 }: ScheduleDetailProps) {
   return (
-    <aside className="border-gray2 border-t p-4 sm:p-6 lg:border-t-0 lg:border-l">
+    <aside className="border-gray2 border-t p-4 sm:p-6 lg:border-t-0">
       <div className="border-gray2 flex items-center justify-between pb-2">
         <div>
           <div className="text-body sm:text-heading font-bold text-black">{selectedDay}</div>
@@ -58,9 +60,9 @@ export default function ScheduleDetail({
         {tab === 'MEMBER' ? (
           <button
             type="button"
-            disabled
+            onClick={onCreate}
             className="text-gray4 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full sm:hidden"
-            aria-label="일정 추가 준비 중"
+            aria-label="일정 추가"
           >
             <SquarePlus className="h-6 w-6" />
           </button>
