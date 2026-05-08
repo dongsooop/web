@@ -5,6 +5,21 @@ import { CheckCircle2, CircleAlert, Info } from 'lucide-react';
 
 import { useToastStore } from '@/store/useToastStore';
 
+type ToastTone = 'default' | 'success' | 'error';
+
+type ToastItem = {
+  id?: number;
+  message: string;
+  tone: ToastTone;
+};
+
+type ToastViewProps = {
+  toast?: ToastItem | null;
+  onHideAction?: () => void;
+  containerClassName?: string;
+  toastClassName?: string;
+};
+
 const TOAST_STYLE_MAP = {
   default: {
     icon: Info,
@@ -23,19 +38,26 @@ const TOAST_STYLE_MAP = {
   },
 } as const;
 
-export default function ToastView() {
-  const toast = useToastStore((state) => state.toast);
+export default function ToastView({
+  toast: externalToast,
+  onHideAction,
+  containerClassName = 'pointer-events-none fixed inset-x-0 top-16 z-[80] flex justify-center px-4',
+  toastClassName = 'animate-in fade-in slide-in-from-top-2 pointer-events-auto duration-200',
+}: ToastViewProps) {
+  const storeToast = useToastStore((state) => state.toast);
   const hideToast = useToastStore((state) => state.hideToast);
+  const toast = externalToast ?? storeToast;
+  const closeToast = onHideAction ?? hideToast;
 
   useEffect(() => {
     if (!toast) return;
 
     const timeout = window.setTimeout(() => {
-      hideToast();
+      closeToast();
     }, 2000);
 
     return () => window.clearTimeout(timeout);
-  }, [toast, hideToast]);
+  }, [toast, closeToast]);
 
   if (!toast) return null;
 
@@ -43,12 +65,9 @@ export default function ToastView() {
   const Icon = style.icon;
 
   return (
-    <div
-      key={toast.id}
-      className="pointer-events-none fixed inset-x-0 top-16 z-[80] flex justify-center px-4"
-    >
+    <div key={toast.id ?? toast.message} className={containerClassName}>
       <div
-        className={`animate-in fade-in slide-in-from-top-2 pointer-events-auto flex w-full max-w-[420px] items-center gap-3 rounded-2xl border px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${style.className}`}
+        className={`flex w-full max-w-[420px] items-center gap-3 rounded-2xl border px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] ${style.className} ${toastClassName}`.trim()}
         role="status"
         aria-live="polite"
       >

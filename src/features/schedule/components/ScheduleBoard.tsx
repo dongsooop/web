@@ -1,16 +1,20 @@
 'use client';
 
-import { useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 import PageHeader from '@/components/ui/PageHeader';
+import ToastView from '@/components/ui/ToastView';
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
 import {
   buildMonthlyCalendarCells,
   groupSchedulesByDate,
   sortSchedules,
 } from '@/features/schedule/lib/calendar';
+import { useToastStore } from '@/store/useToastStore';
 import { formatDateWithDayLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 import ScheduleCalendar from './ScheduleCalendar';
+import ScheduleCreateDialog from './ScheduleCreateDialog';
+import ScheduleCreatePanel from './ScheduleCreatePanel';
 import ScheduleDetail from './ScheduleDetail';
 import ScheduleSkeleton from './ScheduleSkeleton';
 import ScheduleTabs from './ScheduleTabs';
@@ -36,8 +40,12 @@ export default function ScheduleBoard() {
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => toDateKey(today));
   const [tab, setTab] = useState<TabId>('MEMBER');
+  const [createOpen, setCreateOpen] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const showToast = useToastStore((state) => state.showToast);
   const monthKey = toMonthKey(view);
-  const { data, isLoading, isError, isQueryReady, displayErrorMessage } = useScheduleQuery(monthKey);
+  const { data, isLoading, isError, isQueryReady, displayErrorMessage } =
+    useScheduleQuery(monthKey);
   const source = useMemo(() => data ?? [], [data]);
 
   const list = useMemo(
@@ -50,6 +58,16 @@ export default function ScheduleBoard() {
   const selectedDay = formatDateWithDayLabel(selected);
   const currentMonth = `${view.getFullYear()}년 ${formatMonthLabel(view)}`;
   const showSkeleton = !mounted || (!data && (!isQueryReady || isLoading));
+
+  useEffect(() => {
+    if (!showBanner) return;
+
+    const timer = window.setTimeout(() => {
+      setShowBanner(false);
+    }, 2000);
+
+    return () => window.clearTimeout(timer);
+  }, [showBanner]);
 
   const moveMonth = (delta: number) => {
     const next = new Date(view.getFullYear(), view.getMonth() + delta, 1);
@@ -67,8 +85,26 @@ export default function ScheduleBoard() {
     setSelected(toDateKey(today));
   };
 
-  const selectDate = (key: string, _inMonth: boolean, _date: Date) => {
+  const selectDate = (key: string) => {
     setSelected(key);
+  };
+
+  const openCreate = () => {
+    setCreateOpen(true);
+  };
+
+  const closeCreate = () => {
+    setCreateOpen(false);
+  };
+
+  const saveCreate = () => {
+    setCreateOpen(false);
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      setShowBanner(true);
+      return;
+    }
+
+    showToast('일정이 추가되었어요!', 'success');
   };
 
   if (showSkeleton) {
@@ -104,17 +140,41 @@ export default function ScheduleBoard() {
             onSelect={selectDate}
             onMoveMonth={moveMonth}
             onToday={moveToday}
+            onCreate={openCreate}
           />
 
-          <ScheduleDetail
-            tab={tab}
-            selectedDay={selectedDay}
-            selectedList={selectedList}
-            isError={isError}
-            displayErrorMessage={displayErrorMessage}
-          />
+          <div className="bg-white lg:border-gray2 lg:flex lg:flex-col lg:border-l">
+            {showBanner ? (
+              <ToastView
+                toast={{ message: '일정이 추가되었어요!', tone: 'success' }}
+                onHideAction={() => setShowBanner(false)}
+                containerClassName="mx-6 mt-6 hidden lg:flex"
+                toastClassName="animate-in fade-in slide-in-from-top-2 duration-200"
+              />
+            ) : null}
+            {createOpen ? (
+              <ScheduleCreatePanel onCloseAction={closeCreate} onSaveAction={saveCreate} />
+            ) : (
+              <ScheduleDetail
+                tab={tab}
+                selectedDay={selectedDay}
+                selectedList={selectedList}
+                isError={isError}
+                displayErrorMessage={displayErrorMessage}
+                onCreate={openCreate}
+              />
+            )}
+          </div>
         </div>
       </section>
+
+      {createOpen ? (
+        <ScheduleCreateDialog
+          open={createOpen}
+          onCloseAction={closeCreate}
+          onSaveAction={saveCreate}
+        />
+      ) : null}
     </div>
   );
 }
