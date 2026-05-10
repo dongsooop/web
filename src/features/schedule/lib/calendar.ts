@@ -118,5 +118,13 @@ export function getVisibleSchedules(
 }
 
 export function formatScheduleTimeLabel(schedule: Schedule) {
-  return schedule.type === 'OFFICIAL' ? '학사일정' : `${schedule.startAt} - ${schedule.endAt}`;
+  if (schedule.type === 'OFFICIAL') {
+    return '학사일정';
+  }
+
+  if (schedule.startAt === '00:00' && schedule.endAt === '23:59') {
+    return '종일';
+  }
+
+  return `${schedule.startAt} - ${schedule.endAt}`;
 }

@@ -1,4 +1,9 @@
-import { fetchGuestScheduleWithSpring, fetchScheduleWithSpring } from './schedule.api';
+import type { ScheduleCreateRequest } from '../types/request';
+import {
+  createScheduleWithSpring,
+  fetchGuestScheduleWithSpring,
+  fetchScheduleWithSpring,
+} from './schedule.api';
 
 type FetchScheduleOptions = {
   accessToken?: string;
@@ -23,5 +28,20 @@ export async function fetchSchedule(options: FetchScheduleOptions) {
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
     yearMonth: options.yearMonth,
+  });
+}
+
+type CreateScheduleOptions = {
+  accessToken?: string;
+  refreshToken?: string;
+  appCheckToken?: string;
+  payload: ScheduleCreateRequest;
+};
+
+export async function createSchedule(options: CreateScheduleOptions) {
+  return createScheduleWithSpring(options.payload, {
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
   });
 }
