@@ -160,7 +160,33 @@ export default function ScheduleCalendar({
 
   return (
     <div className="py-4 sm:px-7 sm:py-6">
-      <div className="border-gray2 relative flex items-center justify-between pb-4">
+      <div className="border-gray2 pb-4 md:hidden">
+        <div className="flex items-center">
+          <div className="grid grid-cols-[2.75rem_minmax(7.5rem,max-content)_2.75rem] items-center justify-center gap-0">
+            <button
+              type="button"
+              onClick={() => onMoveMonth(-1)}
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center justify-self-center rounded-full text-black transition"
+              aria-label="이전 달"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="text-body justify-self-center text-center font-bold text-black">
+              {currentMonth}
+            </div>
+            <button
+              type="button"
+              onClick={() => onMoveMonth(1)}
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center justify-self-center rounded-full text-black transition"
+              aria-label="다음 달"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-gray2 relative hidden items-center justify-between pb-4 md:flex">
         <div className="grid w-full grid-cols-[2.25rem_minmax(7.5rem,max-content)_2.25rem] items-center justify-center gap-4 sm:w-auto sm:grid-cols-[2.5rem_minmax(8.25rem,max-content)_2.5rem]">
           <button
             type="button"
@@ -183,7 +209,7 @@ export default function ScheduleCalendar({
           </button>
         </div>
 
-        <div className="hidden items-center gap-2 sm:absolute sm:top-0 sm:right-0 sm:flex">
+        <div className="hidden items-center gap-2 md:absolute md:top-0 md:right-0 md:flex">
           {tab === 'MEMBER' ? (
             <button
               type="button"

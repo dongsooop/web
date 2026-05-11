@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
+import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
+import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
 import {
   buildMonthlyCalendarCells,
   groupSchedulesByDate,
   sortSchedules,
 } from '@/features/schedule/lib/calendar';
+import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
 import { formatDateWithDayLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 import ScheduleCalendar from './ScheduleCalendar';
@@ -41,8 +44,12 @@ export default function ScheduleBoard() {
   const [selected, setSelected] = useState(() => toDateKey(today));
   const [tab, setTab] = useState<TabId>('MEMBER');
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const showToast = useToastStore((state) => state.showToast);
+
+  const create = useCreateSchedule();
+
   const monthKey = toMonthKey(view);
   const { data, isLoading, isError, isQueryReady, displayErrorMessage } =
     useScheduleQuery(monthKey);
@@ -69,6 +76,20 @@ export default function ScheduleBoard() {
     return () => window.clearTimeout(timer);
   }, [showBanner]);
 
+  useEffect(() => {
+    if (!detailOpen) return;
+
+    if (window.matchMedia('(min-width: 768px)').matches) return;
+
+    const originalOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [detailOpen]);
+
   const moveMonth = (delta: number) => {
     const next = new Date(view.getFullYear(), view.getMonth() + delta, 1);
     const lastDate = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
@@ -87,10 +108,16 @@ export default function ScheduleBoard() {
 
   const selectDate = (key: string) => {
     setSelected(key);
+
+    if (!window.matchMedia('(min-width: 640px)').matches && !createOpen) {
+      setDetailOpen(true);
+    }
   };
 
   const changeTab = (next: TabId) => {
     setTab(next);
+
+    setDetailOpen(false);
 
     if (next === 'OFFICIAL') {
       setCreateOpen(false);
@@ -98,6 +125,8 @@ export default function ScheduleBoard() {
   };
 
   const openCreate = () => {
+    setDetailOpen(false);
+
     setCreateOpen(true);
   };
 
@@ -105,14 +134,22 @@ export default function ScheduleBoard() {
     setCreateOpen(false);
   };
 
-  const saveCreate = () => {
-    setCreateOpen(false);
-    if (window.matchMedia('(min-width: 1024px)').matches) {
-      setShowBanner(true);
-      return;
-    }
+  const saveCreate = async (payload: ScheduleCreateRequest) => {
+    try {
+      await create.mutateAsync(payload);
 
-    showToast('일정이 추가되었어요!', 'success');
+      setCreateOpen(false);
+
+      if (window.matchMedia('(min-width: 1024px)').matches) {
+        setShowBanner(true);
+
+        return;
+      }
+
+      showToast('일정이 추가되었어요!', 'success');
+    } catch (error) {
+      showToast(getErrorMessage('schedule', error), 'error');
+    }
   };
 
   if (showSkeleton) {
@@ -128,7 +165,12 @@ export default function ScheduleBoard() {
   }
 
   return (
-    <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
+    <div
+      className={[
+        'max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4',
+        createOpen ? '' : 'sm:pb-0',
+      ].join(' ')}
+    >
       <div className="px-1">
         <PageHeader title="일정" description={descriptionText()} />
       </div>
@@ -136,7 +178,7 @@ export default function ScheduleBoard() {
       <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
         <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
-        <div className="lg:grid-cols-schedule grid gap-0">
+        <div className="md:grid-cols-schedule grid gap-0">
           <ScheduleCalendar
             cells={cells}
             currentMonth={currentMonth}
@@ -151,12 +193,15 @@ export default function ScheduleBoard() {
             onCreate={openCreate}
           />
 
-          <div className="bg-white lg:border-gray2 lg:flex lg:flex-col lg:border-l">
+          <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
             {showBanner ? (
               <ToastView
-                toast={{ message: '일정이 추가되었어요!', tone: 'success' }}
+                toast={{
+                  message: '일정이 추가되었어요!',
+                  tone: 'success',
+                }}
                 onHideAction={() => setShowBanner(false)}
-                containerClassName="mx-6 mt-6 hidden lg:flex"
+                containerClassName="mx-6 mt-6 hidden md:flex"
                 toastClassName="animate-in fade-in slide-in-from-top-2 duration-200"
               />
             ) : null}
@@ -169,12 +214,35 @@ export default function ScheduleBoard() {
                 selectedList={selectedList}
                 isError={isError}
                 displayErrorMessage={displayErrorMessage}
-                onCreate={openCreate}
               />
             )}
           </div>
         </div>
       </section>
+
+      {!createOpen && detailOpen ? (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="상세 일정 닫기"
+            onClick={() => setDetailOpen(false)}
+          />
+
+          <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-white">
+            <ScheduleDetail
+              mode="sheet"
+              tab={tab}
+              selectedDay={selectedDay}
+              selectedList={selectedList}
+              isError={isError}
+              displayErrorMessage={displayErrorMessage}
+              onCloseAction={() => setDetailOpen(false)}
+              onCreateAction={openCreate}
+            />
+          </div>
+        </div>
+      ) : null}
 
       {createOpen ? (
         <ScheduleCreateDialog
