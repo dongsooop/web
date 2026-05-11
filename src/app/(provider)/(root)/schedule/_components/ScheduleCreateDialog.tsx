@@ -2,12 +2,13 @@
 
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import ScheduleCreateForm from './ScheduleCreateForm';
 
 type ScheduleCreateDialogProps = {
   open: boolean;
   onCloseAction: () => void;
-  onSaveAction: () => void;
+  onSaveAction: (payload: ScheduleCreateRequest) => void | Promise<void>;
 };
 
 export default function ScheduleCreateDialog({
@@ -17,7 +18,7 @@ export default function ScheduleCreateDialog({
 }: ScheduleCreateDialogProps) {
   useEffect(() => {
     if (!open) return;
-    if (window.matchMedia('(min-width: 640px)').matches) return;
+    if (window.matchMedia('(min-width: 768px)').matches) return;
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -31,7 +32,7 @@ export default function ScheduleCreateDialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:hidden"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 md:hidden"
       onClick={onCloseAction}
     >
       <div
