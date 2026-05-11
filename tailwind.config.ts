@@ -89,7 +89,7 @@ const config: Config = {
       },
 
       maxWidth: {
-        layout: '90rem',
+        layout: '150rem',
       },
 
       spacing: {

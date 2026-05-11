@@ -1,4 +1,4 @@
-const dayLabels = ['일', '월', '화', '수', '목', '금', '토'] as const;
+export const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const;
 
 function pad(value: number) {
   return String(value).padStart(2, '0');
@@ -47,7 +47,7 @@ export function getTodayLabel() {
   const today = new Date();
   const month = today.getMonth() + 1;
   const date = today.getDate();
-  const dayOfWeek = dayLabels[today.getDay()];
+  const dayOfWeek = DAY_LABELS[today.getDay()];
 
   return `${month}월 ${date}일 (${dayOfWeek})`;
 }
@@ -59,7 +59,7 @@ export function formatDateLabel(dateKey: string) {
 
 export function formatDateWithDayLabel(dateKey: string) {
   const [year, month, day] = dateKey.split('-').map(Number);
-  const dayOfWeek = dayLabels[new Date(year, month - 1, day).getDay()];
+  const dayOfWeek = DAY_LABELS[new Date(year, month - 1, day).getDay()];
 
   return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
 }
