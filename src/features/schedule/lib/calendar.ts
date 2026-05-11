@@ -1,7 +1,7 @@
-import { dateKeysBetween, toDateKey } from '@/utils/date';
+import { DAY_LABELS, dateKeysBetween, toDateKey } from '@/utils/date';
 import type { Schedule } from '../types/ui-model';
 
-export const WEEK_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const;
+export const WEEK_LABELS = DAY_LABELS;
 
 export type CalendarCell = {
   date: number | null;
