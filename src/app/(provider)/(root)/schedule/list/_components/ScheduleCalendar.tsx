@@ -6,22 +6,23 @@ import {
   officialScheduleTone,
   weekColorClass,
 } from '@/features/schedule/lib/color';
-import type { Schedule } from '@/features/schedule/types/ui-model';
 import { WEEK_LABELS, type MonthlyCalendarCell } from '@/features/schedule/lib/calendar';
+import type { Schedule } from '@/features/schedule/types/ui-model';
 import { toDateKey } from '@/utils/date';
+import type { TabId } from './ScheduleTabs';
 
 type ScheduleCalendarProps = {
   cells: MonthlyCalendarCell[];
   currentMonth: string;
-  selected: string;
-  schedules: Schedule[];
+  onCreateAction: () => void;
+  onMoveMonthAction: (delta: number) => void;
+  onSelectAction: (key: string) => void;
+  onTodayAction: () => void;
   scheduleMap: Record<string, Schedule[]>;
-  tab: 'MEMBER' | 'OFFICIAL';
+  schedules: Schedule[];
+  selected: string;
+  tab: TabId;
   today: Date;
-  onSelect: (key: string, inMonth: boolean, date: Date) => void;
-  onMoveMonth: (delta: number) => void;
-  onToday: () => void;
-  onCreate: () => void;
 };
 
 function rangeText(schedule: Schedule) {
@@ -127,15 +128,15 @@ function buildLaneOffsetMap(
 export default function ScheduleCalendar({
   cells,
   currentMonth,
-  selected,
-  schedules,
+  onCreateAction,
+  onMoveMonthAction,
+  onSelectAction,
+  onTodayAction,
   scheduleMap,
+  schedules,
+  selected,
   tab,
   today,
-  onSelect,
-  onMoveMonth,
-  onToday,
-  onCreate,
 }: ScheduleCalendarProps) {
   const officialSegments =
     tab === 'OFFICIAL'
@@ -161,36 +162,34 @@ export default function ScheduleCalendar({
   return (
     <div className="py-4 sm:px-7 sm:py-6">
       <div className="border-gray2 pb-4 md:hidden">
-        <div className="flex items-center">
-          <div className="grid grid-cols-[2.75rem_minmax(7.5rem,max-content)_2.75rem] items-center justify-center gap-0">
-            <button
-              type="button"
-              onClick={() => onMoveMonth(-1)}
-              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center justify-self-center rounded-full text-black transition"
-              aria-label="이전 달"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="text-body justify-self-center text-center font-bold text-black">
-              {currentMonth}
-            </div>
-            <button
-              type="button"
-              onClick={() => onMoveMonth(1)}
-              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center justify-self-center rounded-full text-black transition"
-              aria-label="다음 달"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+        <div className="relative flex items-center justify-center">
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(-1)}
+            className="absolute left-0 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            aria-label="이전 달"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+
+          <div className="text-body text-center font-bold text-black">{currentMonth}</div>
+
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(1)}
+            className="absolute right-0 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            aria-label="다음 달"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
-      <div className="border-gray2 relative hidden items-center justify-between pb-4 md:flex">
-        <div className="grid w-full grid-cols-[2.25rem_minmax(7.5rem,max-content)_2.25rem] items-center justify-center gap-4 sm:w-auto sm:grid-cols-[2.5rem_minmax(8.25rem,max-content)_2.5rem]">
+      <div className="border-gray2 hidden flex-col gap-3 pb-4 md:flex lg:flex-row lg:items-center lg:justify-between">
+        <div className="grid w-full grid-cols-[2.25rem_minmax(7.5rem,max-content)_2.25rem] items-center justify-center gap-4 lg:w-auto lg:grid-cols-[2.5rem_minmax(8.25rem,max-content)_2.5rem]">
           <button
             type="button"
-            onClick={() => onMoveMonth(-1)}
+            onClick={() => onMoveMonthAction(-1)}
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="이전 달"
           >
@@ -201,7 +200,7 @@ export default function ScheduleCalendar({
           </div>
           <button
             type="button"
-            onClick={() => onMoveMonth(1)}
+            onClick={() => onMoveMonthAction(1)}
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="다음 달"
           >
@@ -209,11 +208,11 @@ export default function ScheduleCalendar({
           </button>
         </div>
 
-        <div className="hidden items-center gap-2 md:absolute md:top-0 md:right-0 md:flex">
+        <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
           {tab === 'MEMBER' ? (
             <button
               type="button"
-              onClick={onCreate}
+              onClick={onCreateAction}
               className="border-primary/20 bg-primary/5 text-primary-foreground text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold"
               aria-label="일정 추가"
             >
@@ -223,7 +222,7 @@ export default function ScheduleCalendar({
           ) : null}
           <button
             type="button"
-            onClick={onToday}
+            onClick={onTodayAction}
             className="border-gray2 text-gray6 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
           >
             <CalendarDays className="h-4 w-4" />
@@ -292,7 +291,7 @@ export default function ScheduleCalendar({
               <button
                 key={cell.key}
                 type="button"
-                onClick={() => onSelect(key, cell.inMonth, cell.date)}
+                onClick={() => onSelectAction(key)}
                 className={[
                   'sm:border-gray2 relative z-0 h-28 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
                   index % 7 === 6 ? 'sm:border-r-0' : '',

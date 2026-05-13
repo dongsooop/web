@@ -1,4 +1,4 @@
-type TabId = 'MEMBER' | 'OFFICIAL';
+export type TabId = 'MEMBER' | 'OFFICIAL';
 
 type ScheduleTabsProps = {
   tab: TabId;
