@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
 
 import {
   dateColorClass,
@@ -160,16 +160,16 @@ export default function ScheduleCalendar({
   const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
 
   return (
-    <div className="py-4 sm:px-7 sm:py-6">
-      <div className="border-gray2 pb-4 md:hidden">
-        <div className="relative flex items-center justify-center">
+    <div className="py-2 sm:px-7 sm:py-6">
+      <div className="border-gray2 md:hidden">
+        <div className="flex items-center justify-center gap-2">
           <button
             type="button"
             onClick={() => onMoveMonthAction(-1)}
-            className="absolute left-0 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
             aria-label="이전 달"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronsLeft className="h-5 w-5" />
           </button>
 
           <div className="text-body text-center font-bold text-black">{currentMonth}</div>
@@ -177,23 +177,23 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={() => onMoveMonthAction(1)}
-            className="absolute right-0 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
             aria-label="다음 달"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronsRight className="h-5 w-5" />
           </button>
         </div>
       </div>
 
       <div className="border-gray2 hidden flex-col gap-3 pb-4 md:flex lg:flex-row lg:items-center lg:justify-between">
-        <div className="grid w-full grid-cols-[2.25rem_minmax(7.5rem,max-content)_2.25rem] items-center justify-center gap-4 lg:w-auto lg:grid-cols-[2.5rem_minmax(8.25rem,max-content)_2.5rem]">
+        <div className="flex items-center justify-center gap-4 lg:w-auto">
           <button
             type="button"
             onClick={() => onMoveMonthAction(-1)}
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="이전 달"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
           <div className="text-body sm:text-title text-center font-bold text-black">
             {currentMonth}

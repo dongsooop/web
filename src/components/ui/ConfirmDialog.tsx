@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { AlertCircle, Info, X } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
+import { lockBody, unlockBody } from '@/lib/body-lock';
 
 interface DialogBaseProps {
   open: boolean;
@@ -40,8 +41,7 @@ export default function ConfirmDialog({
   useEffect(() => {
     if (!open) return;
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockBody();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isSingleAction) {
@@ -52,7 +52,7 @@ export default function ConfirmDialog({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      unlockBody();
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, isSingleAction, onClose]);
@@ -81,12 +81,6 @@ export default function ConfirmDialog({
         };
 
   const Icon = iconConfig.icon;
-  const canClose = Boolean(onClose);
-
-  const handleClose = () => {
-    onClose?.();
-  };
-
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
@@ -98,17 +92,6 @@ export default function ConfirmDialog({
         className="animate-in fade-in zoom-in-95 relative w-full max-w-[340px] overflow-hidden rounded-xl bg-white px-6 py-7 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {canClose && (
-          <button
-            type="button"
-            onClick={handleClose}
-            className="text-gray5 hover:bg-gray7 absolute top-4 right-4 inline-flex h-11 min-h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-colors"
-            aria-label="다이얼로그 닫기"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
-
         <div className="flex flex-col items-center text-center">
           <div
             className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full ${iconConfig.wrapperClassName}`}
@@ -127,7 +110,7 @@ export default function ConfirmDialog({
           {!isSingleAction && (
             <button
               type="button"
-              onClick={handleClose}
+              onClick={onClose}
               className="text-body border-gray2 text-gray6 min-h-11 flex-1 cursor-pointer rounded-xl border bg-white px-4 py-3 font-semibold"
             >
               {cancel}

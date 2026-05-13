@@ -8,6 +8,7 @@ import { useToastStore } from '@/store/useToastStore';
 type ToastTone = 'default' | 'success' | 'error';
 
 type ToastItem = {
+  className?: string;
   id?: number;
   message: string;
   tone: ToastTone;
@@ -67,7 +68,7 @@ export default function ToastView({
   return (
     <div key={toast.id ?? toast.message} className={containerClassName}>
       <div
-        className={`flex w-full max-w-[420px] items-center gap-3 rounded-2xl border px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] ${style.className} ${toastClassName}`.trim()}
+        className={`flex w-full max-w-[420px] items-center gap-3 rounded-2xl border px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] ${style.className} ${toast.className ?? ''} ${toastClassName}`.trim()}
         role="status"
         aria-live="polite"
       >
