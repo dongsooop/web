@@ -11,6 +11,7 @@ type ScheduleDetailContentProps = {
   isError: boolean;
   listClassName?: string;
   onCreateAction?: () => void;
+  onSelectScheduleAction?: (schedule: Schedule) => void;
   selectedDay: string;
   selectedList: Schedule[];
   showCreateAction?: boolean;
@@ -58,6 +59,7 @@ export default function ScheduleDetailContent({
   isError,
   listClassName = '',
   onCreateAction,
+  onSelectScheduleAction,
   selectedDay,
   selectedList,
   showCreateAction = false,
@@ -70,7 +72,7 @@ export default function ScheduleDetailContent({
         <div className={['flex flex-col gap-6', contentClassName].join(' ')}>
           {showHeader ? (
             <div>
-              <div className="text-heading font-regular text-black">{selectedDay}</div>
+              <div className="text-heading font-semibold text-black">{selectedDay}</div>
               <p className="text-gray5 text-bodySm mt-1 hidden md:block">{helperText(tab)}</p>
             </div>
           ) : null}
@@ -85,7 +87,11 @@ export default function ScheduleDetailContent({
                 {selectedList.map((schedule, index) => (
                   <article
                     key={`${schedule.title}-${schedule.startAt}-${index}`}
-                    className="border-gray2 shadow-schedule-card flex min-h-11 cursor-pointer gap-3.5 rounded-2xl border bg-white p-3"
+                    onClick={() => onSelectScheduleAction?.(schedule)}
+                    className={[
+                      'border-gray2 shadow-schedule-card flex min-h-11 gap-3.5 rounded-2xl border bg-white p-3',
+                      tab === 'MEMBER' && schedule.id !== null ? 'cursor-pointer' : '',
+                    ].join(' ')}
                   >
                     <div
                       className={[

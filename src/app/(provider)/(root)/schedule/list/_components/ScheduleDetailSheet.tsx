@@ -1,4 +1,3 @@
-import { Divider } from '@/components/ui/Divider';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import type { TabId } from './ScheduleTabs';
 import ScheduleDetailContent from './ScheduleDetailContent';
@@ -7,6 +6,7 @@ type ScheduleDetailSheetProps = {
   displayErrorMessage: string | null;
   isError: boolean;
   onCreateAction?: () => void;
+  onSelectScheduleAction?: (schedule: Schedule) => void;
   selectedDay: string;
   selectedList: Schedule[];
   tab: TabId;
@@ -16,6 +16,7 @@ export default function ScheduleDetailSheet({
   displayErrorMessage,
   isError,
   onCreateAction,
+  onSelectScheduleAction,
   selectedDay,
   selectedList,
   tab,
@@ -31,6 +32,7 @@ export default function ScheduleDetailSheet({
           displayErrorMessage={displayErrorMessage}
           isError={isError}
           onCreateAction={onCreateAction}
+          onSelectScheduleAction={onSelectScheduleAction}
           selectedDay={selectedDay}
           selectedList={selectedList}
           showCreateAction

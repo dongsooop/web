@@ -6,6 +6,7 @@ type ScheduleDetailPanelProps = {
   displayErrorMessage: string | null;
   isError: boolean;
   onCreateAction?: () => void;
+  onSelectScheduleAction?: (schedule: Schedule) => void;
   selectedDay: string;
   selectedList: Schedule[];
   tab: TabId;

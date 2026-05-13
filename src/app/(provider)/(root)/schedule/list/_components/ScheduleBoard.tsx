@@ -8,9 +8,13 @@ import ToastView from '@/components/ui/ToastView';
 import { ScheduleCreateProvider } from '../../_components/ScheduleCreateContext';
 import ScheduleCreatePanel from '../../_components/ScheduleCreatePanel';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
+import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
+import { useUpdateSchedule } from '@/features/schedule/hooks/useUpdateSchedule';
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
+import type { Schedule } from '@/features/schedule/types/ui-model';
 import { lockBody, unlockBody } from '@/lib/body-lock';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useDialogStore } from '@/store/useDialogStore';
 import { useToastStore } from '@/store/useToastStore';
 import { toDateKey } from '@/utils/date';
 import { useScheduleBoardData } from '../hooks/useScheduleBoardData';
@@ -28,7 +32,7 @@ const tabs = [
 type ScheduleOverlayState =
   | { type: 'none' }
   | { type: 'detail' }
-  | { type: 'create' };
+  | { schedule: Schedule | null; type: 'create' };
 
 type ScheduleViewState = {
   selected: string;
@@ -54,12 +58,16 @@ export default function ScheduleBoard() {
     view: new Date(today.getFullYear(), today.getMonth(), 1),
   }));
   const [overlay, setOverlay] = useState<ScheduleOverlayState>({ type: 'none' });
-  const [showBanner, setShowBanner] = useState(false);
+  const [bannerText, setBannerText] = useState<string | null>(null);
+  const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
   const create = useCreateSchedule();
+  const remove = useDeleteSchedule();
+  const update = useUpdateSchedule();
   const { selected, tab, view } = viewState;
   const createOpen = overlay.type === 'create';
   const detailOpen = overlay.type === 'detail';
+  const editSchedule = overlay.type === 'create' ? overlay.schedule : null;
   const {
     cells,
     currentMonth,
@@ -78,14 +86,14 @@ export default function ScheduleBoard() {
   });
 
   useEffect(() => {
-    if (!showBanner) return;
+    if (!bannerText) return;
 
     const timer = window.setTimeout(() => {
-      setShowBanner(false);
+      setBannerText(null);
     }, 2000);
 
     return () => window.clearTimeout(timer);
-  }, [showBanner]);
+  }, [bannerText]);
 
   useEffect(() => {
     if (!detailOpen) return;
@@ -158,8 +166,24 @@ export default function ScheduleBoard() {
       return;
     }
 
-    setOverlay({ type: 'create' });
+    setOverlay({ type: 'create', schedule: null });
   }, [router, selected]);
+
+  const openEdit = useCallback(
+    (schedule: Schedule) => {
+      if (tab !== 'MEMBER' || schedule.id === null) {
+        return;
+      }
+
+      if (!window.matchMedia('(min-width: 768px)').matches) {
+        router.push(`/schedule/write?id=${schedule.id}&month=${schedule.startDateKey.slice(0, 7)}`);
+        return;
+      }
+
+      setOverlay({ type: 'create', schedule });
+    },
+    [router, tab],
+  );
 
   const closeCreate = useCallback(() => {
     setOverlay((state) => (state.type === 'create' ? { type: 'none' } : state));
@@ -170,7 +194,7 @@ export default function ScheduleBoard() {
   }, []);
 
   const closeBanner = useCallback(() => {
-    setShowBanner(false);
+    setBannerText(null);
   }, []);
 
   const saveCreate = useCallback(
@@ -178,20 +202,69 @@ export default function ScheduleBoard() {
       try {
         await create.mutateAsync(payload);
         setOverlay({ type: 'none' });
-        setShowBanner(true);
+        setBannerText('일정이 추가되었어요!');
       } catch (error) {
-        showToast(getErrorMessage('schedule', error), 'error');
+        showToast(getErrorMessage('schedule', error, 'create'), 'error');
       }
     },
     [create, showToast],
   );
 
+  const saveEdit = useCallback(
+    async (payload: ScheduleCreateRequest) => {
+      if (!editSchedule?.id) {
+        return;
+      }
+
+      try {
+        await update.mutateAsync({
+          id: editSchedule.id,
+          payload,
+        });
+        setOverlay({ type: 'none' });
+        setBannerText('일정이 수정되었어요!');
+      } catch (error) {
+        showToast(getErrorMessage('schedule', error, 'update'), 'error');
+      }
+    },
+    [editSchedule, showToast, update],
+  );
+
+  const deleteEdit = useCallback(async () => {
+    if (!editSchedule?.id) {
+      return;
+    }
+
+    try {
+      await remove.mutateAsync(editSchedule.id);
+      setOverlay({ type: 'none' });
+      setBannerText('일정이 삭제되었어요!');
+    } catch (error) {
+      showToast(getErrorMessage('schedule', error, 'delete'), 'error');
+    }
+  }, [editSchedule, remove, showToast]);
+
+  const openDeleteDialog = useCallback(() => {
+    if (!editSchedule?.id) {
+      return;
+    }
+
+    showDialog({
+      title: '일정 삭제',
+      content: '선택한 일정을 삭제하시겠습니까?\n삭제된 일정은 복구할 수 없어요.',
+      cancel: '취소',
+      confirm: '삭제',
+      variant: 'danger',
+      onConfirm: deleteEdit,
+    });
+  }, [deleteEdit, editSchedule, showDialog]);
+
   const createValue = useMemo(
     () => ({
       closeCreate,
-      saveCreate,
+      saveCreate: editSchedule ? saveEdit : saveCreate,
     }),
-    [closeCreate, saveCreate],
+    [closeCreate, editSchedule, saveCreate, saveEdit],
   );
 
   if (showSkeleton) {
@@ -237,10 +310,11 @@ export default function ScheduleBoard() {
             />
 
             <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
-              {showBanner ? (
+              {bannerText ? (
                 <ToastView
                   toast={{
-                    message: '일정이 추가되었어요!',
+                    className: bannerText === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
+                    message: bannerText,
                     tone: 'success',
                   }}
                   onHideAction={closeBanner}
@@ -249,12 +323,16 @@ export default function ScheduleBoard() {
                 />
               ) : null}
               {createOpen ? (
-                <ScheduleCreatePanel />
+                <ScheduleCreatePanel
+                  onDeleteAction={editSchedule ? openDeleteDialog : undefined}
+                  schedule={editSchedule ?? undefined}
+                />
               ) : (
                 <ScheduleDetailPanel
                   displayErrorMessage={displayErrorMessage}
                   isError={isError}
                   onCreateAction={openCreate}
+                  onSelectScheduleAction={openEdit}
                   selectedDay={selectedDay}
                   selectedList={selectedList}
                   tab={tab}
@@ -278,6 +356,7 @@ export default function ScheduleBoard() {
                 displayErrorMessage={displayErrorMessage}
                 isError={isError}
                 onCreateAction={openCreate}
+                onSelectScheduleAction={openEdit}
                 selectedDay={selectedDay}
                 selectedList={selectedList}
                 tab={tab}

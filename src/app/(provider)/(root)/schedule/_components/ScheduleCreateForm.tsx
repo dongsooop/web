@@ -1,18 +1,21 @@
 'use client';
 
-import { Check, ChevronDown, MapPin, X } from 'lucide-react';
+import { Check, ChevronDown, MapPin, Trash2 } from 'lucide-react';
 
 import { Divider } from '@/components/ui/Divider';
 import { useScheduleForm } from '@/features/schedule/hooks/useScheduleForm';
 import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTimePicker';
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
+import type { Schedule } from '@/features/schedule/types/ui-model';
 import { useScheduleCreate } from './ScheduleCreateContext';
 
 type ScheduleCreateFormProps = {
   initialDate?: Date;
   mode: 'page' | 'panel';
   onCloseAction?: () => void;
+  onDeleteAction?: () => void | Promise<void>;
   onSaveAction?: (payload: ScheduleCreateRequest) => Promise<void>;
+  schedule?: Schedule;
 };
 
 type ColorItem = {
@@ -60,7 +63,7 @@ function DateTimeField({
       ].join(' ')}
     >
       <div className="flex min-w-0 items-center">
-        <span className="text-caption font-regular shrink-0 text-black">{label}</span>
+        <span className="text-bodySm font-regular shrink-0 text-black">{label}</span>
 
         <span className="bg-gray2 mx-3 h-4 w-px shrink-0" />
 
@@ -84,12 +87,15 @@ export default function ScheduleCreateForm({
   initialDate,
   mode,
   onCloseAction,
+  onDeleteAction,
   onSaveAction,
+  schedule,
 }: ScheduleCreateFormProps) {
   const bodyClass = mode === 'panel' ? 'overflow-visible px-4' : 'flex-1 overflow-y-auto px-4 py-5';
   const context = useScheduleCreate();
   const closeCreate = onCloseAction ?? context?.closeCreate;
   const saveCreate = onSaveAction ?? context?.saveCreate;
+  const formTitle = schedule ? '일정 편집' : '일정 추가';
 
   const {
     form: { title, setTitle, place, setPlace, allDay, setAllDay, color, setColor, startAt },
@@ -98,6 +104,7 @@ export default function ScheduleCreateForm({
     action: { save },
   } = useScheduleForm({
     initialDate,
+    schedule,
     onSaveAction: saveCreate ?? (async () => {}),
   });
 
@@ -105,16 +112,22 @@ export default function ScheduleCreateForm({
     <>
       <div className="flex flex-col bg-white">
         <div className="border-gray2 flex items-center justify-between px-4 pt-3">
-          <h2 className="text-heading font-bold text-black">일정 추가</h2>
+          <h2 className="text-heading font-bold text-black">{formTitle}</h2>
 
-          <button
-            type="button"
-            onClick={closeCreate}
-            className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition"
-            aria-label="일정 추가 닫기"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {schedule && onDeleteAction ? (
+            <button
+              type="button"
+              onClick={() => {
+                void onDeleteAction();
+              }}
+              className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition"
+              aria-label="일정 삭제"
+            >
+              <Trash2 className="h-5 w-5" />
+            </button>
+          ) : (
+            <div className="h-11 w-11 shrink-0" aria-hidden="true" />
+          )}
         </div>
 
         <Divider />
@@ -161,7 +174,7 @@ export default function ScheduleCreateForm({
                 <DateTimeField
                   label="시작"
                   dateText={startDateText}
-                  timeText={allDay ? `${startTimeText} · 종일 시작 기준` : startTimeText}
+                  timeText={allDay ? '' : startTimeText}
                   open={target === 'start'}
                   onClickAction={() => open('start')}
                   disabled={allDay}
@@ -170,7 +183,7 @@ export default function ScheduleCreateForm({
                 <DateTimeField
                   label="종료"
                   dateText={endDateText}
-                  timeText={allDay ? `${endTimeText} · 종일 종료 기준` : endTimeText}
+                  timeText={allDay ? '' : endTimeText}
                   open={target === 'end'}
                   onClickAction={() => open('end')}
                   disabled={allDay}
