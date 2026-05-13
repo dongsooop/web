@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 
 import { Divider } from '@/components/ui/Divider';
+import { lockBody, unlockBody } from '@/lib/body-lock';
 import { toDateKey } from '@/utils/date';
 
 import DateTimeWheel from './DateTimeWheel';
@@ -11,14 +12,20 @@ import {
   buildDateItems,
   buildHourItems,
   buildMinuteItems,
-  lockBody,
   mergeDate,
   mergeTime,
   padTime,
-  unlockBody,
   WHEEL_VIEW_H,
 } from './utils';
-import { DateTimePickerProps } from './types';
+
+type DateTimePickerProps = {
+  open: boolean;
+  title: string;
+  value: Date;
+  minDate?: Date;
+  onCloseAction: () => void;
+  onConfirmAction: (value: Date) => void;
+};
 
 export default function DateTimePicker({
   open,

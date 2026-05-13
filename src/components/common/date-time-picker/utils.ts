@@ -1,6 +1,10 @@
 import { DAY_LABELS, toDateKey } from '@/utils/date';
-import { WheelItem } from './types';
 
+export type WheelItem = {
+  key: string;
+  value: string;
+  label: string;
+};
 
 export const WHEEL_ROW_H = 48;
 export const WHEEL_VIEW_H = WHEEL_ROW_H * 7;
@@ -90,12 +94,4 @@ export function buildMinuteItems(): WheelItem[] {
       label: `${minute}분`,
     };
   });
-}
-
-export function lockBody() {
-  document.body.style.overflow = 'hidden';
-}
-
-export function unlockBody() {
-  document.body.style.overflow = '';
 }

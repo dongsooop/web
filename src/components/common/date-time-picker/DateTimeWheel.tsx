@@ -2,8 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { WheelProps } from './types';
-import { WHEEL_CONTENT_PAD, WHEEL_LOOP_COUNT, WHEEL_ROW_H } from './utils';
+import { WHEEL_CONTENT_PAD, WHEEL_LOOP_COUNT, WHEEL_ROW_H, type WheelItem } from './utils';
+
+type WheelProps = {
+  items: WheelItem[];
+  value: string;
+  loop?: boolean;
+  widthClassName?: string;
+  onChangeAction: (value: string) => void;
+};
 
 const toneMap = [
   { className: 'text-body font-medium text-black', opacity: 0.96 },
