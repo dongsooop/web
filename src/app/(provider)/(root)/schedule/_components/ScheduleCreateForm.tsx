@@ -4,13 +4,15 @@ import { Check, ChevronDown, MapPin, X } from 'lucide-react';
 
 import { Divider } from '@/components/ui/Divider';
 import { useScheduleForm } from '@/features/schedule/hooks/useScheduleForm';
-import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTimePicker';
+import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
+import { useScheduleCreate } from './ScheduleCreateContext';
 
 type ScheduleCreateFormProps = {
-  mode: 'panel' | 'sheet';
-  onCloseAction: () => void;
-  onSaveAction: (payload: ScheduleCreateRequest) => void | Promise<void>;
+  initialDate?: Date;
+  mode: 'page' | 'panel';
+  onCloseAction?: () => void;
+  onSaveAction?: (payload: ScheduleCreateRequest) => Promise<void>;
 };
 
 type ColorItem = {
@@ -79,32 +81,35 @@ function allDayText(timeText: string) {
 }
 
 export default function ScheduleCreateForm({
+  initialDate,
   mode,
   onCloseAction,
   onSaveAction,
 }: ScheduleCreateFormProps) {
   const bodyClass = mode === 'panel' ? 'overflow-visible px-4' : 'flex-1 overflow-y-auto px-4 py-5';
+  const context = useScheduleCreate();
+  const closeCreate = onCloseAction ?? context?.closeCreate;
+  const saveCreate = onSaveAction ?? context?.saveCreate;
 
   const {
     form: { title, setTitle, place, setPlace, allDay, setAllDay, color, setColor, startAt },
     view: { startDateText, endDateText, startTimeText, endTimeText, invalidTimeRange, pickerValue },
     picker: { target, open, close, confirm },
     action: { save },
-  } = useScheduleForm({ onSaveAction });
+  } = useScheduleForm({
+    initialDate,
+    onSaveAction: saveCreate ?? (async () => {}),
+  });
 
   return (
     <>
       <div className="flex flex-col bg-white">
-        {mode === 'sheet' ? (
-          <div className="bg-gray2 mx-auto mt-3 h-1 w-12 rounded-full md:hidden" />
-        ) : null}
-
         <div className="border-gray2 flex items-center justify-between px-4 pt-3">
           <h2 className="text-heading font-bold text-black">일정 추가</h2>
 
           <button
             type="button"
-            onClick={onCloseAction}
+            onClick={closeCreate}
             className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition"
             aria-label="일정 추가 닫기"
           >
@@ -237,7 +242,7 @@ export default function ScheduleCreateForm({
         <div className="my-3 grid shrink-0 grid-cols-2 gap-3 bg-white p-4">
           <button
             type="button"
-            onClick={onCloseAction}
+            onClick={closeCreate}
             className="border-gray2 text-bodySm text-gray6 min-h-11 cursor-pointer rounded-xl border bg-white px-4 font-semibold"
           >
             취소

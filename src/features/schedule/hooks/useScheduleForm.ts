@@ -15,11 +15,16 @@ import type { ScheduleCreateRequest } from '../types/request';
 import type { PickerTarget } from '../types/form';
 
 type UseScheduleFormOptions = {
+  initialDate?: Date;
   onSaveAction: (payload: ScheduleCreateRequest) => void | Promise<void>;
 };
 
-export function useScheduleForm({ onSaveAction }: UseScheduleFormOptions) {
-  const [state, dispatch] = useReducer(reduceForm, undefined, createFormState);
+export function useScheduleForm({ initialDate, onSaveAction }: UseScheduleFormOptions) {
+  const [state, dispatch] = useReducer(
+    reduceForm,
+    initialDate,
+    createFormState,
+  );
 
   const startDateText = useMemo(() => formatDateText(state.startAt), [state.startAt]);
   const endDateText = useMemo(() => formatDateText(state.endAt), [state.endAt]);

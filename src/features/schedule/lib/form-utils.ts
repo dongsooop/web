@@ -20,6 +20,12 @@ function createDefaultStartAt(now: Date) {
   return startAt;
 }
 
+function applyDatePart(base: Date, next: Date) {
+  const value = copyDate(base);
+  value.setFullYear(next.getFullYear(), next.getMonth(), next.getDate());
+  return value;
+}
+
 function createDefaultEndAt(startAt: Date) {
   const endAt = copyDate(startAt);
 
@@ -46,8 +52,8 @@ export function formatTimeText(value: Date) {
   return toTimeKey(value);
 }
 
-export function createFormState() {
-  const now = new Date();
+export function createFormState(initialDate?: Date) {
+  const now = initialDate ? applyDatePart(new Date(), initialDate) : new Date();
   const startAt = createDefaultStartAt(now);
   const endAt = createDefaultEndAt(startAt);
 
