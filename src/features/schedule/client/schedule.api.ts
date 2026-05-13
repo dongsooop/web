@@ -19,3 +19,16 @@ export async function createSchedule(payload: ScheduleCreateRequest) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function updateSchedule(id: number, payload: ScheduleCreateRequest) {
+  return clientRequestAuth<void>(`/bff/schedule/write/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSchedule(id: number) {
+  return clientRequestAuth<void>(`/bff/schedule/write/${id}`, {
+    method: 'DELETE',
+  });
+}

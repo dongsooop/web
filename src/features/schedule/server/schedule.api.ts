@@ -77,3 +77,33 @@ export async function createScheduleWithSpring(
     appCheckToken: options.appCheckToken,
   });
 }
+
+export async function updateScheduleWithSpring(
+  id: number,
+  payload: ScheduleCreateRequest,
+  options: ScheduleSpringAuthRequestOptions,
+) {
+  const endpoint = `${getRequiredScheduleWriteEndpoint()}/${id}`;
+
+  return serverFetchAuth(endpoint, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export async function deleteScheduleWithSpring(
+  id: number,
+  options: ScheduleSpringAuthRequestOptions,
+) {
+  const endpoint = `${getRequiredScheduleWriteEndpoint()}/${id}`;
+
+  return serverFetchAuth(endpoint, {
+    method: 'DELETE',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
