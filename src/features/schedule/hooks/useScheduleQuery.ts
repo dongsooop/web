@@ -25,6 +25,6 @@ export function useScheduleQuery(month: string) {
   return {
     ...query,
     isQueryReady,
-    displayErrorMessage: query.error ? getErrorMessage('schedule', query.error) : null,
+    displayErrorMessage: query.error ? getErrorMessage('schedule', query.error, 'fetch') : null,
   };
 }

@@ -16,6 +16,26 @@ export function toTimeKey(date: Date) {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+export function fromDateKey(value?: string) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return undefined;
+  }
+
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+export function parseMonthKey(value?: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  const match = value.match(/^\d{4}-\d{2}/);
+  return match ? match[0] : undefined;
+}
+
 export function dateKeysBetween(startKey: string, endKey: string) {
   const [startYear, startMonth, startDay] = startKey.split('-').map(Number);
   const [endYear, endMonth, endDay] = endKey.split('-').map(Number);

@@ -13,16 +13,18 @@ import {
 } from '../lib/form-utils';
 import type { ScheduleCreateRequest } from '../types/request';
 import type { PickerTarget } from '../types/form';
+import type { Schedule } from '../types/ui-model';
 
 type UseScheduleFormOptions = {
   initialDate?: Date;
+  schedule?: Schedule;
   onSaveAction: (payload: ScheduleCreateRequest) => void | Promise<void>;
 };
 
-export function useScheduleForm({ initialDate, onSaveAction }: UseScheduleFormOptions) {
+export function useScheduleForm({ initialDate, schedule, onSaveAction }: UseScheduleFormOptions) {
   const [state, dispatch] = useReducer(
     reduceForm,
-    initialDate,
+    { initialDate, schedule },
     createFormState,
   );
 

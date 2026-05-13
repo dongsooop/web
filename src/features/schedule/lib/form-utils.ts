@@ -1,5 +1,6 @@
-import { DAY_LABELS, toDateKey, toTimeKey } from '@/utils/date';
+import { DAY_LABELS, fromDateKey, toDateKey, toTimeKey } from '@/utils/date';
 import type { FormAction, FormState } from '../types/form';
+import type { Schedule } from '../types/ui-model';
 
 function copyDate(value: Date) {
   return new Date(value);
@@ -52,7 +53,41 @@ export function formatTimeText(value: Date) {
   return toTimeKey(value);
 }
 
-export function createFormState(initialDate?: Date) {
+function toDate(dateKey: string, timeKey: string) {
+  const date = fromDateKey(dateKey);
+  if (!date) {
+    return new Date();
+  }
+
+  const [hour, minute] = timeKey.split(':').map(Number);
+  const value = new Date(date);
+  value.setHours(hour, minute, 0, 0);
+
+  return Number.isNaN(value.getTime()) ? new Date() : value;
+}
+
+function isAllDaySchedule(schedule: Schedule) {
+  return schedule.startAt === '00:00' && schedule.endAt === '23:59';
+}
+
+type FormStateInit = {
+  initialDate?: Date;
+  schedule?: Schedule;
+};
+
+export function createFormState({ initialDate, schedule }: FormStateInit = {}) {
+  if (schedule) {
+    return {
+      title: schedule.title,
+      place: schedule.location,
+      allDay: isAllDaySchedule(schedule),
+      color: 'red',
+      startAt: toDate(schedule.startDateKey, schedule.startAt),
+      endAt: toDate(schedule.endDateKey, schedule.endAt),
+      picker: null,
+    } satisfies FormState;
+  }
+
   const now = initialDate ? applyDatePart(new Date(), initialDate) : new Date();
   const startAt = createDefaultStartAt(now);
   const endAt = createDefaultEndAt(startAt);
