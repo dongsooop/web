@@ -87,13 +87,15 @@ export function useAuth() {
       await logoutRequest();
     } finally {
       clearAuth();
+      void initSession();
     }
-  }, [clearAuth]);
+  }, [clearAuth, initSession]);
 
   const deleteAccount = useCallback(async () => {
     await deleteRequest();
     clearAuth();
-  }, [clearAuth]);
+    void initSession();
+  }, [clearAuth, initSession]);
 
   return {
     user,

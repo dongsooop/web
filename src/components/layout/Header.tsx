@@ -26,7 +26,11 @@ export default function Header() {
       await logout();
     } catch {
     } finally {
-      router.refresh();
+      if (pathname.startsWith('/schedule')) {
+        router.replace('/mypage');
+      } else {
+        router.refresh();
+      }
       setIsLoggingOut(false);
     }
   };
@@ -39,7 +43,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMenuOpen((prev) => !prev)}
-              className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-lg lg:hidden"
+              className="hover:bg-gray1 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg lg:hidden"
               aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-global-nav"
@@ -47,7 +51,11 @@ export default function Header() {
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-            <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+            <Link
+              href="/"
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
               <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
               <span className="text-heading font-semibold text-black">Dongsoop</span>
             </Link>
@@ -63,14 +71,14 @@ export default function Header() {
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="text-body hover:bg-gray1 inline-flex min-h-11 items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
               </button>
             ) : (
               <Link
                 href="/sign-in"
-                className="text-body hover:bg-gray1 inline-flex min-h-11 items-center justify-center rounded-lg px-3 font-semibold text-black"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg px-3 font-semibold text-black"
               >
                 로그인
               </Link>
@@ -99,7 +107,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(false)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-lg"
+            className="hover:bg-gray1 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg"
             aria-label="메뉴 닫기"
           >
             <X className="h-5 w-5" />
@@ -115,7 +123,7 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`inline-flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 ${
+                className={`inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 ${
                   active ? 'bg-primary/10 text-primary' : 'text-gray6 hover:bg-gray1'
                 }`}
               >

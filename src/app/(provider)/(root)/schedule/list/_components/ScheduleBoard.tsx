@@ -7,6 +7,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
 import { ScheduleCreateProvider } from '../../_components/ScheduleCreateContext';
 import ScheduleCreatePanel from '../../_components/ScheduleCreatePanel';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
 import { useUpdateSchedule } from '@/features/schedule/hooks/useUpdateSchedule';
@@ -46,6 +47,7 @@ function descriptionText() {
 
 export default function ScheduleBoard() {
   const router = useRouter();
+  const { isLoggedIn, isReady } = useAuth();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -64,10 +66,11 @@ export default function ScheduleBoard() {
   const create = useCreateSchedule();
   const remove = useDeleteSchedule();
   const update = useUpdateSchedule();
-  const { selected, tab, view } = viewState;
-  const createOpen = overlay.type === 'create';
+  const { selected, view } = viewState;
+  const tab = isReady && !isLoggedIn ? 'OFFICIAL' : viewState.tab;
+  const createOpen = isLoggedIn && overlay.type === 'create';
   const detailOpen = overlay.type === 'detail';
-  const editSchedule = overlay.type === 'create' ? overlay.schedule : null;
+  const editSchedule = isLoggedIn && overlay.type === 'create' ? overlay.schedule : null;
   const {
     cells,
     currentMonth,
@@ -105,6 +108,19 @@ export default function ScheduleBoard() {
       unlockBody();
     };
   }, [detailOpen]);
+
+  const openLoginDialog = useCallback(() => {
+    showDialog({
+      title: '로그인이 필요한 서비스예요',
+      content: '로그인 화면으로 이동하시겠습니까?',
+      cancel: '취소',
+      confirm: '로그인',
+      variant: 'primary',
+      onConfirm: () => {
+        router.push('/sign-in');
+      },
+    });
+  }, [router, showDialog]);
 
   const moveMonth = useCallback((delta: number) => {
     setViewState((state) => {
@@ -146,28 +162,41 @@ export default function ScheduleBoard() {
     });
   }, []);
 
-  const changeTab = useCallback((next: ScheduleViewState['tab']) => {
-    setViewState((state) => ({
-      ...state,
-      tab: next,
-    }));
+  const changeTab = useCallback(
+    (next: ScheduleViewState['tab']) => {
+      if (next === 'MEMBER' && isReady && !isLoggedIn) {
+        openLoginDialog();
+        return;
+      }
 
-    if (next === 'OFFICIAL') {
-      setOverlay({ type: 'none' });
+      setViewState((state) => ({
+        ...state,
+        tab: next,
+      }));
+
+      if (next === 'OFFICIAL') {
+        setOverlay({ type: 'none' });
+        return;
+      }
+
+      setOverlay((state) => (state.type === 'detail' ? { type: 'none' } : state));
+    },
+    [isLoggedIn, isReady, openLoginDialog],
+  );
+
+  const openCreate = useCallback(() => {
+    if (isReady && !isLoggedIn) {
+      openLoginDialog();
       return;
     }
 
-    setOverlay((state) => (state.type === 'detail' ? { type: 'none' } : state));
-  }, []);
-
-  const openCreate = useCallback(() => {
     if (!window.matchMedia('(min-width: 768px)').matches) {
       router.push(`/schedule/write?date=${selected}`);
       return;
     }
 
     setOverlay({ type: 'create', schedule: null });
-  }, [router, selected]);
+  }, [isLoggedIn, isReady, openLoginDialog, router, selected]);
 
   const openEdit = useCallback(
     (schedule: Schedule) => {
