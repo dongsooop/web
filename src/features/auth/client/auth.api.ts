@@ -28,6 +28,20 @@ export async function signIn(payload: SignInRequest) {
   });
 }
 
+export async function signInGoogleSocial(token: string) {
+  return clientRequestAuth<SignInResponse>('/bff/auth/sign-in/social/google', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export async function signInKakaoSocial(code: string) {
+  return clientRequestAuth<SignInResponse>('/bff/auth/sign-in/social/kakao/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+}
+
 export async function signUp(payload: SignUpRequest) {
   return clientRequest<UserResponse>('/bff/auth/sign-up', {
     method: 'POST',

@@ -5,6 +5,12 @@ export interface SignInRequest {
   password: string;
 }
 
+export interface SocialSignInRequest {
+  token: string;
+  deviceToken: string;
+  deviceType: DeviceType;
+}
+
 export interface SignUpRequest {
   email: string;
   password: string;

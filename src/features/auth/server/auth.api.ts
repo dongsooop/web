@@ -10,6 +10,7 @@ import type {
   SendCodeRequest,
   SignInRequest,
   SignUpRequest,
+  SocialSignInRequest,
   VerifyCodeRequest,
 } from '../types/request';
 
@@ -77,6 +78,27 @@ export async function signInWithSpring(
   const response = await serverFetch(endpoint, {
     method: 'POST',
     body: JSON.stringify(requestBody),
+    headers,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return response.json() as Promise<BackendSignInResponse>;
+}
+
+export async function socialSignInWithSpring(
+  platform: 'google' | 'kakao',
+  payload: SocialSignInRequest,
+  options: SpringRequestOptions = {},
+): Promise<BackendSignInResponse> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LOGIN_ENDPOINT')}/${platform}`;
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
+
+  const response = await serverFetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(payload),
     headers,
     appCheckToken: options.appCheckToken,
   });
