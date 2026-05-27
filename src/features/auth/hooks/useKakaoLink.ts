@@ -5,7 +5,22 @@ const kakaoStateKey = 'kakao_oauth_state';
 type UseKakaoLinkOptions = {
   jsKey: string;
   onError: (message: string) => void;
+  redirectUri?: string;
+  stateKey?: string;
+  stateType?: 'signin' | 'link';
 };
+
+function resolveRedirectUri(redirectUri?: string) {
+  if (redirectUri?.trim()) {
+    return redirectUri.trim();
+  }
+
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  return `${window.location.origin}/bff/auth/social/kakao/callback`;
+}
 
 function isRateLimit(error: unknown) {
   return (
@@ -14,7 +29,13 @@ function isRateLimit(error: unknown) {
   );
 }
 
-export function useKakaoLink({ jsKey, onError }: UseKakaoLinkOptions) {
+export function useKakaoLink({
+  jsKey,
+  onError,
+  redirectUri,
+  stateKey = kakaoStateKey,
+  stateType = 'link',
+}: UseKakaoLinkOptions) {
   const ready = () => {
     const sdk = window.Kakao;
 
@@ -39,12 +60,19 @@ export function useKakaoLink({ jsKey, onError }: UseKakaoLinkOptions) {
       return false;
     }
 
+    const nextRedirectUri = resolveRedirectUri(redirectUri);
+
+    if (!nextRedirectUri) {
+      onError(getErrorMessage('social', new Error(), 'sdk'));
+      return false;
+    }
+
     try {
-      const state = window.crypto.randomUUID();
-      sessionStorage.setItem(kakaoStateKey, state);
+      const state = `${stateType}:${window.crypto.randomUUID()}`;
+      sessionStorage.setItem(stateKey, state);
 
       window.Kakao.Auth.authorize({
-        redirectUri: `${window.location.origin}/bff/auth/social/kakao/callback`,
+        redirectUri: nextRedirectUri,
         state,
       });
 

@@ -84,6 +84,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onError: setErrorMessage,
     onFinish: stopLoading,
     context: 'link',
+    redirectPath: '/mypage/social/google/callback?mode=link',
   });
 
   const googleUnlink = useGoogleLink({
@@ -95,6 +96,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onError: setErrorMessage,
     onFinish: stopLoading,
     context: 'unlink',
+    redirectPath: '/mypage/social/google/callback?mode=unlink',
   });
 
   useEffect(() => {

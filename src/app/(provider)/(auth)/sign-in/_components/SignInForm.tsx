@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Script from 'next/script';
 
 import Button from '@/components/ui/Button';
 import SocialLoginButtons from './SocialButtons';
@@ -10,17 +11,51 @@ import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
+import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
+import { useSocialError } from '@/features/auth/hooks/useSocialError';
 import { getErrorMessage } from '@/lib/errors/messages';
 
-export default function SignInForm() {
+const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
+
+type SignInFormProps = {
+  kakaoJsKey: string;
+};
+
+export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, signInGoogleSocial } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [loadingPlatform, setLoadingPlatform] = useState<'google' | 'kakao' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useSocialError((message) => {
+    setErrorMessage(message);
+  }, '/sign-in');
+
+  const kakao = useKakaoLink({
+    jsKey: kakaoJsKey,
+    stateKey: 'kakao_signin_state',
+    stateType: 'signin',
+    onError: setErrorMessage,
+  });
+
+  const google = useGoogleLink({
+    onToken: async (token) => {
+      await signInGoogleSocial(token);
+      router.push('/');
+    },
+    onError: setErrorMessage,
+    onFinish: () => {
+      setLoadingPlatform(null);
+    },
+    context: 'login',
+    redirectPath: '/sign-in/google/callback',
+  });
 
   const handleLogin = async () => {
     if (isSigningIn) return;
@@ -64,8 +99,30 @@ export default function SignInForm() {
     router.push('/password-reset');
   };
 
+  const socialLogin = (platform: 'kakao' | 'google') => {
+    if (isSigningIn || loadingPlatform) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setLoadingPlatform(platform);
+
+    if (platform === 'google') {
+      google.start();
+      return;
+    }
+
+    const started = kakao.start();
+
+    if (!started) {
+      setLoadingPlatform(null);
+    }
+  };
+
   return (
     <section className="flex w-full max-w-[480px] flex-col items-center gap-4 pt-4">
+      <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
+
       <div className="h-4" />
 
       <div className="flex items-center">
@@ -119,7 +176,7 @@ export default function SignInForm() {
       >
         비밀번호 변경
       </button>
-      <SocialLoginButtons onLogin={() => undefined} />
+      <SocialLoginButtons onLogin={socialLogin} />
     </section>
   );
 }
