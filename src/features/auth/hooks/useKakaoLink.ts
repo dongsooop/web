@@ -1,4 +1,5 @@
 import { getErrorMessage } from '@/lib/errors/messages';
+import { setSocialState } from '../lib/socialState';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
@@ -69,7 +70,7 @@ export function useKakaoLink({
 
     try {
       const state = `${stateType}:${window.crypto.randomUUID()}`;
-      sessionStorage.setItem(stateKey, state);
+      setSocialState(stateKey, state);
 
       window.Kakao.Auth.authorize({
         redirectUri: nextRedirectUri,
