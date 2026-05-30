@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, CircleAlert } from 'lucide-react';
 
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -19,6 +19,11 @@ import SocialLoginCard from './SocialLoginCard';
 const defaultItems: SocialConnectItem[] = buildSocialConnectItems([]);
 const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
 
+type ActionMessage = {
+  tone: 'success' | 'error';
+  message: string;
+};
+
 function SocialConnectSkeleton() {
   return (
     <div className="space-y-3">
@@ -29,34 +34,37 @@ function SocialConnectSkeleton() {
   );
 }
 
+function getListErrorMessage(error: unknown) {
+  return getErrorMessage('social', error, 'state');
+}
+
 export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   const { isReady } = useAuth();
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [listErrorMessage, setListErrorMessage] = useState<string | null>(null);
   const [loadingPlatform, setLoadingPlatform] = useState<LoginPlatform | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<ActionMessage | null>(null);
 
   useSocialError((message) => {
-    setErrorMessage(message);
+    setActionMessage({ tone: 'error', message });
   });
 
   const kakao = useKakaoLink({
     jsKey: kakaoJsKey,
-    onError: setErrorMessage,
+    onError: (message) => {
+      setActionMessage({ tone: 'error', message });
+    },
   });
 
   const refreshSocialState = async () => {
     const data = await getSocialState();
     setItems(buildSocialConnectItems(data.list));
+    setListErrorMessage(null);
   };
 
-  const clearError = () => {
-    setErrorMessage(null);
-  };
-
-  const showInlineToast = (message: string) => {
-    setToastMessage(message);
+  const showActionMessage = (tone: ActionMessage['tone'], message: string) => {
+    setActionMessage({ tone, message });
   };
 
   const startLoading = (platform: LoginPlatform) => {
@@ -64,7 +72,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
       return false;
     }
 
-    clearError();
+    setActionMessage(null);
     setLoadingPlatform(platform);
     return true;
   };
@@ -85,9 +93,10 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onToken: async (token) => {
       await linkGoogleSocial(token);
       await refreshSocialState();
-      clearError();
     },
-    onError: setErrorMessage,
+    onError: (message) => {
+      setActionMessage({ tone: 'error', message });
+    },
     onFinish: stopLoading,
     context: 'link',
     redirectPath: '/mypage/social/google/callback?mode=link',
@@ -97,10 +106,11 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onToken: async (token) => {
       await unlinkSocial('google', token);
       applyUnlink('google');
-      clearError();
-      showInlineToast('구글 계정 연결이 해제되었어요.');
+      showActionMessage('success', '구글 계정 연결이 해제되었어요.');
     },
-    onError: setErrorMessage,
+    onError: (message) => {
+      setActionMessage({ tone: 'error', message });
+    },
     onFinish: stopLoading,
     context: 'unlink',
     redirectPath: '/mypage/social/google/callback?mode=unlink',
@@ -122,13 +132,12 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
         }
 
         await refreshSocialState();
-      } catch {
+      } catch (error) {
         if (!active) {
           return;
         }
 
-        setItems(buildSocialConnectItems([]));
-        setErrorMessage('소셜 계정 연동 정보를 불러오는 중\n오류가 발생했습니다.');
+        setListErrorMessage(getListErrorMessage(error));
       } finally {
         if (active) {
           setIsLoading(false);
@@ -144,16 +153,16 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   }, [isReady]);
 
   useEffect(() => {
-    if (!toastMessage) {
+    if (!actionMessage) {
       return;
     }
 
     const timeout = window.setTimeout(() => {
-      setToastMessage(null);
+      setActionMessage(null);
     }, 2000);
 
     return () => window.clearTimeout(timeout);
-  }, [toastMessage]);
+  }, [actionMessage]);
 
   const linkGoogle = () => {
     if (!startLoading('google')) {
@@ -178,8 +187,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   const unlinkKakao = async () => {
     await unlinkSocial('kakao');
     applyUnlink('kakao');
-    clearError();
-    showInlineToast('카카오 계정 연결이 해제되었어요.');
+    showActionMessage('success', '카카오 계정 연결이 해제되었어요.');
   };
 
   const unlinkItem = async (item: SocialConnectItem) => {
@@ -195,7 +203,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
 
       await unlinkKakao();
     } catch (error) {
-      setErrorMessage(getErrorMessage('social', error, 'unlink'));
+      showActionMessage('error', getErrorMessage('social', error, 'unlink'));
     } finally {
       if (item.platform !== 'google') {
         stopLoading();
@@ -231,38 +239,56 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
 
         <div className="mx-auto w-full py-3">
           <div className="w-full rounded-[8px] bg-white p-4">
-            {isLoading ? (
-              <SocialConnectSkeleton />
-            ) : (
-              <div>
-                {items.map((item) => (
-                  <div key={item.platform}>
-                    <SocialLoginCard
-                      platform={item.platform}
-                      isConnected={item.isConnected}
-                      date={item.date}
-                      onClick={() => clickItem(item)}
-                      isLoading={item.platform === loadingPlatform}
-                    />
+            <div className="min-h-[188px]">
+              {isLoading ? (
+                <SocialConnectSkeleton />
+              ) : listErrorMessage ? (
+                <div className="flex h-[236px] items-center justify-center px-4 text-center">
+                  <div className="flex flex-col items-center">
+                    <CircleAlert className="text-warning mb-4 h-12 w-12 shrink-0" />
+                    <p className="text-normal text-gray6 whitespace-pre-line">{listErrorMessage}</p>
                   </div>
-                ))}
-              </div>
-            )}
-
-            <div className="my-2 min-h-[48px]">
-              {toastMessage ? (
-                <div className="animate-in fade-in slide-in-from-bottom-2 border-primary/15 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200">
-                  <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
-                  <p className="text-normal min-w-0 flex-1 font-medium">{toastMessage}</p>
                 </div>
-              ) : null}
+              ) : (
+                <div>
+                  {items.map((item) => (
+                    <div key={item.platform}>
+                      <SocialLoginCard
+                        platform={item.platform}
+                        isConnected={item.isConnected}
+                        date={item.date}
+                        onClick={() => clickItem(item)}
+                        isLoading={item.platform === loadingPlatform}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {errorMessage && (
-              <p className="text-small text-warning px-1 whitespace-pre-line">{errorMessage}</p>
+            {!listErrorMessage && (
+              <div className="my-2 min-h-[48px]">
+                {actionMessage ? (
+                  <div
+                    className={`animate-in fade-in slide-in-from-bottom-2 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${
+                      actionMessage.tone === 'success'
+                        ? 'border-primary/15'
+                        : 'border-warning/20'
+                    }`}
+                  >
+                    {actionMessage.tone === 'success' ? (
+                      <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
+                    ) : (
+                      <CircleAlert className="text-warning h-5 w-5 shrink-0" />
+                    )}
+                    <p className="text-normal min-w-0 flex-1 font-medium whitespace-pre-line">
+                      {actionMessage.message}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
             )}
           </div>
-
         </div>
       </div>
     </div>

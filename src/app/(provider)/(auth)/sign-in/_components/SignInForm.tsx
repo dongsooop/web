@@ -15,6 +15,7 @@ import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
 import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
 import { useSocialError } from '@/features/auth/hooks/useSocialError';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useDialogStore } from '@/store/useDialogStore';
 
 const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
 
@@ -25,6 +26,7 @@ type SignInFormProps = {
 export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const router = useRouter();
   const { signIn, signInGoogleSocial } = useAuth();
+  const showDialog = useDialogStore((state) => state.showDialog);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,15 +35,28 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const [loadingPlatform, setLoadingPlatform] = useState<'google' | 'kakao' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const openSocialErrorDialog = (message: string) => {
+    setLoadingPlatform(null);
+
+    showDialog({
+      title: '소셜 로그인 오류',
+      content: message,
+      confirm: '확인',
+      isSingleAction: true,
+      variant: 'danger',
+      onConfirm: () => {},
+    });
+  };
+
   useSocialError((message) => {
-    setErrorMessage(message);
+    openSocialErrorDialog(message);
   }, '/sign-in');
 
   const kakao = useKakaoLink({
     jsKey: kakaoJsKey,
     stateKey: 'kakao_signin_state',
     stateType: 'signin',
-    onError: setErrorMessage,
+    onError: openSocialErrorDialog,
   });
 
   const google = useGoogleLink({
@@ -49,7 +64,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       await signInGoogleSocial(token);
       router.push('/');
     },
-    onError: setErrorMessage,
+    onError: openSocialErrorDialog,
     onFinish: () => {
       setLoadingPlatform(null);
     },
