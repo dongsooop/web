@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
+import { CheckCircle2 } from 'lucide-react';
 
 import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -21,7 +22,7 @@ const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
 function SocialConnectSkeleton() {
   return (
     <div className="space-y-3">
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 2 }).map((_, index) => (
         <Skeleton key={index} className="h-18 w-full rounded-lg" />
       ))}
     </div>
@@ -34,6 +35,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loadingPlatform, setLoadingPlatform] = useState<LoginPlatform | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useSocialError((message) => {
     setErrorMessage(message);
@@ -51,6 +53,10 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
 
   const clearError = () => {
     setErrorMessage(null);
+  };
+
+  const showInlineToast = (message: string) => {
+    setToastMessage(message);
   };
 
   const startLoading = (platform: LoginPlatform) => {
@@ -92,6 +98,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
       await unlinkSocial('google', token);
       applyUnlink('google');
       clearError();
+      showInlineToast('구글 계정 연결이 해제되었어요.');
     },
     onError: setErrorMessage,
     onFinish: stopLoading,
@@ -136,6 +143,18 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     };
   }, [isReady]);
 
+  useEffect(() => {
+    if (!toastMessage) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setToastMessage(null);
+    }, 2000);
+
+    return () => window.clearTimeout(timeout);
+  }, [toastMessage]);
+
   const linkGoogle = () => {
     if (!startLoading('google')) {
       return;
@@ -159,6 +178,8 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   const unlinkKakao = async () => {
     await unlinkSocial('kakao');
     applyUnlink('kakao');
+    clearError();
+    showInlineToast('카카오 계정 연결이 해제되었어요.');
   };
 
   const unlinkItem = async (item: SocialConnectItem) => {
@@ -228,12 +249,20 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
               </div>
             )}
 
+            <div className="my-2 min-h-[48px]">
+              {toastMessage ? (
+                <div className="animate-in fade-in slide-in-from-bottom-2 border-primary/15 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200">
+                  <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
+                  <p className="text-normal min-w-0 flex-1 font-medium">{toastMessage}</p>
+                </div>
+              ) : null}
+            </div>
+
             {errorMessage && (
-              <p className="text-small text-warning px-1 pt-4 whitespace-pre-line">
-                {errorMessage}
-              </p>
+              <p className="text-small text-warning px-1 whitespace-pre-line">{errorMessage}</p>
             )}
           </div>
+
         </div>
       </div>
     </div>
