@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { CheckCircle2, CircleAlert } from 'lucide-react';
 
@@ -39,7 +40,8 @@ function getListErrorMessage(error: unknown) {
 }
 
 export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
-  const { isReady } = useAuth();
+  const router = useRouter();
+  const { isLoggedIn, isReady } = useAuth();
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
   const [listErrorMessage, setListErrorMessage] = useState<string | null>(null);
@@ -121,6 +123,24 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
       return;
     }
 
+    if (!isLoggedIn) {
+      router.replace('/mypage');
+    }
+  }, [isLoggedIn, isReady, router]);
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    if (!isLoggedIn) {
+      setItems(defaultItems);
+      setListErrorMessage(null);
+      setActionMessage(null);
+      setIsLoading(false);
+      return;
+    }
+
     let active = true;
 
     const load = async () => {
@@ -150,7 +170,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     return () => {
       active = false;
     };
-  }, [isReady]);
+  }, [isLoggedIn, isReady]);
 
   useEffect(() => {
     if (!actionMessage) {
@@ -227,6 +247,10 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     }
   };
 
+  if (isReady && !isLoggedIn) {
+    return null;
+  }
+
   return (
     <div className="w-full">
       <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
@@ -271,9 +295,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
                 {actionMessage ? (
                   <div
                     className={`animate-in fade-in slide-in-from-bottom-2 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${
-                      actionMessage.tone === 'success'
-                        ? 'border-primary/15'
-                        : 'border-warning/20'
+                      actionMessage.tone === 'success' ? 'border-primary/15' : 'border-warning/20'
                     }`}
                   >
                     {actionMessage.tone === 'success' ? (
