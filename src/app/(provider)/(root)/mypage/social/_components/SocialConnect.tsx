@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { CheckCircle2, CircleAlert } from 'lucide-react';
 
-import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { getSocialState, linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -252,67 +251,55 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   }
 
   return (
-    <div className="w-full">
+    <>
       <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
-
-      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-4">
-        <PageHeader
-          title="소셜 계정 연동"
-          description="연결된 계정을 확인하고 로그인 연동 상태를 관리할 수 있어요."
-        />
-
-        <div className="mx-auto w-full py-3">
-          <div className="w-full rounded-[8px] bg-white p-4">
-            <div className="min-h-[188px]">
-              {isLoading ? (
-                <SocialConnectSkeleton />
-              ) : listErrorMessage ? (
-                <div className="flex h-[236px] items-center justify-center px-4 text-center">
-                  <div className="flex flex-col items-center">
-                    <CircleAlert className="text-warning mb-4 h-12 w-12 shrink-0" />
-                    <p className="text-normal text-gray6 whitespace-pre-line">{listErrorMessage}</p>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  {items.map((item) => (
-                    <div key={item.platform}>
-                      <SocialLoginCard
-                        platform={item.platform}
-                        isConnected={item.isConnected}
-                        date={item.date}
-                        onClick={() => clickItem(item)}
-                        isLoading={item.platform === loadingPlatform}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+      <div className="min-h-[188px]">
+        {isLoading ? (
+          <SocialConnectSkeleton />
+        ) : listErrorMessage ? (
+          <div className="flex h-[236px] items-center justify-center px-4 text-center">
+            <div className="flex flex-col items-center">
+              <CircleAlert className="text-warning mb-4 h-12 w-12 shrink-0" />
+              <p className="text-normal text-gray6 whitespace-pre-line">{listErrorMessage}</p>
             </div>
-
-            {!listErrorMessage && (
-              <div className="my-2 min-h-[48px]">
-                {actionMessage ? (
-                  <div
-                    className={`animate-in fade-in slide-in-from-bottom-2 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${
-                      actionMessage.tone === 'success' ? 'border-primary/15' : 'border-warning/20'
-                    }`}
-                  >
-                    {actionMessage.tone === 'success' ? (
-                      <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
-                    ) : (
-                      <CircleAlert className="text-warning h-5 w-5 shrink-0" />
-                    )}
-                    <p className="text-normal min-w-0 flex-1 font-medium whitespace-pre-line">
-                      {actionMessage.message}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            )}
           </div>
-        </div>
+        ) : (
+          <div>
+            {items.map((item) => (
+              <div key={item.platform}>
+                <SocialLoginCard
+                  platform={item.platform}
+                  isConnected={item.isConnected}
+                  date={item.date}
+                  onClick={() => clickItem(item)}
+                  isLoading={item.platform === loadingPlatform}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      {!listErrorMessage && (
+        <div className="my-2 min-h-[48px]">
+          {actionMessage ? (
+            <div
+              className={`animate-in fade-in slide-in-from-bottom-2 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${
+                actionMessage.tone === 'success' ? 'border-primary/15' : 'border-warning/20'
+              }`}
+            >
+              {actionMessage.tone === 'success' ? (
+                <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
+              ) : (
+                <CircleAlert className="text-warning h-5 w-5 shrink-0" />
+              )}
+              <p className="text-normal min-w-0 flex-1 font-medium whitespace-pre-line">
+                {actionMessage.message}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </>
   );
 }

@@ -6,8 +6,13 @@ import { linkKakaoSocial } from '@/features/auth/client/auth.api';
 import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getKakaoCallbackResult } from '@/features/auth/lib/socialCallback';
-import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
+import {
+  clearSocialState,
+  getSocialState,
+  isSocialStateValid,
+} from '@/features/auth/lib/socialState';
 import { getErrorMessage } from '@/lib/errors/messages';
+import SocialPageLayout from '../../_components/SocialPageLayout';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
@@ -39,5 +44,9 @@ export default function KakaoCallbackPage() {
     },
   });
 
-  return <SocialCallbackScreen message={message} wide />;
+  return (
+    <SocialPageLayout>
+      <SocialCallbackScreen message={message} wide boxed />
+    </SocialPageLayout>
+  );
 }

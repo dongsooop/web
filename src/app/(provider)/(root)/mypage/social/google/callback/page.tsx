@@ -6,6 +6,7 @@ import { linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api'
 import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
+import SocialPageLayout from '../../_components/SocialPageLayout';
 
 export default function GoogleCallbackPage() {
   const searchParams = useSearchParams();
@@ -30,5 +31,9 @@ export default function GoogleCallbackPage() {
     },
   });
 
-  return <SocialCallbackScreen message={message} wide />;
+  return (
+    <SocialPageLayout>
+      <SocialCallbackScreen message={message} wide boxed />
+    </SocialPageLayout>
+  );
 }
