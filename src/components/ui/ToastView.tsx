@@ -88,7 +88,7 @@ export default function ToastView() {
         aria-live="polite"
       >
         <Icon className={`h-5 w-5 shrink-0 ${style.iconClassName}`} />
-        <p className="text-normal min-w-0 flex-1 font-medium">{toast.message}</p>
+        <p className="text-body min-w-0 flex-1 font-medium">{toast.message}</p>
       </div>
     </div>
   );

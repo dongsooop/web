@@ -124,9 +124,9 @@ export default function ConfirmDialog({
             <Icon className="h-8 w-8" strokeWidth={2.2} />
           </div>
 
-          <h2 className="text-large font-bold text-black">{title}</h2>
+          <h2 className="text-heading font-bold text-black">{title}</h2>
 
-          <p className="text-normal text-gray5 mt-4 leading-relaxed whitespace-pre-line">
+          <p className="text-body text-gray5 mt-4 leading-relaxed whitespace-pre-line">
             {content}
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function ConfirmDialog({
             <button
               type="button"
               onClick={handleClose}
-              className="text-normal border-gray2 text-gray6 min-h-11 flex-1 cursor-pointer rounded-xl border bg-white px-4 py-3 font-semibold"
+              className="text-body border-gray2 text-gray6 min-h-11 flex-1 cursor-pointer rounded-xl border bg-white px-4 py-3 font-semibold"
             >
               {cancel}
             </button>
@@ -145,7 +145,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className={`text-normal min-h-11 ${isSingleAction ? 'w-full' : 'flex-1'} cursor-pointer rounded-xl px-4 py-3 font-semibold transition-all active:scale-[0.98] ${confirmClass}`}
+            className={`text-body min-h-11 ${isSingleAction ? 'w-full' : 'flex-1'} cursor-pointer rounded-xl px-4 py-3 font-semibold transition-all active:scale-[0.98] ${confirmClass}`}
           >
             {confirm}
           </button>

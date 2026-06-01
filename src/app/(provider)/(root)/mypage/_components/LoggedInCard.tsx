@@ -63,8 +63,8 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="text-large font-bold text-black">{user.nickname}</div>
-              <div className="bg-primary-5 text-small text-primary mt-2 inline-flex max-w-full items-center rounded-full px-3 py-1 font-bold">
+              <div className="text-heading font-bold text-black">{user.nickname}</div>
+              <div className="bg-primary-5 text-caption text-primary mt-2 inline-flex max-w-full items-center rounded-full px-3 py-1 font-bold">
                 <span className="truncate">{departmentLabel}</span>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
         </div>
 
         <div className="w-full rounded-lg bg-white p-4">
-          <div className="text-small mb-3 font-bold text-black">학사 관리</div>
+          <div className="text-caption mb-3 font-bold text-black">학사 관리</div>
 
           <ManagementLinkCard
             href="/timetable"
@@ -92,7 +92,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
         </div>
 
         <div className="w-full rounded-lg bg-white p-4">
-          <div className="text-small mb-3 font-bold text-black">계정 관리</div>
+          <div className="text-caption mb-3 font-bold text-black">계정 관리</div>
 
           <ManagementLinkCard
             href="/mypage/social"

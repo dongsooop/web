@@ -49,13 +49,13 @@ export default function Header() {
 
             <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
               <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
-              <span className="text-large font-semibold text-black">Dongsoop</span>
+              <span className="text-heading font-semibold text-black">Dongsoop</span>
             </Link>
           </div>
 
           <div className="flex items-center">
             {!isReady ? (
-              <div className="inline-flex min-h-[44px] items-center justify-center px-3 text-sm text-gray-400">
+              <div className="inline-flex min-h-11 items-center justify-center px-3 text-sm text-gray-400">
                 ...
               </div>
             ) : isLoggedIn ? (
@@ -63,14 +63,14 @@ export default function Header() {
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
               </button>
             ) : (
               <Link
                 href="/sign-in"
-                className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 items-center justify-center rounded-lg px-3 font-semibold text-black"
               >
                 로그인
               </Link>
@@ -95,7 +95,7 @@ export default function Header() {
         }`}
       >
         <div className="border-gray2 flex h-14 items-center justify-between border-b px-4">
-          <div className="text-normal font-semibold text-black">메뉴</div>
+          <div className="text-body font-semibold text-black">메뉴</div>
           <button
             type="button"
             onClick={() => setIsMenuOpen(false)}
@@ -115,12 +115,12 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`inline-flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 ${
+                className={`inline-flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 ${
                   active ? 'bg-primary/10 text-primary' : 'text-gray6 hover:bg-gray1'
                 }`}
               >
                 <span className="inline-flex h-5 w-5 items-center justify-center">{item.icon}</span>
-                <span className="text-normal font-semibold">{item.label}</span>
+                <span className="text-body font-semibold">{item.label}</span>
               </Link>
             );
           })}

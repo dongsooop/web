@@ -13,8 +13,8 @@ export default function StudyRoomBanner() {
         <BookOpen className="text-gray6 h-6 w-6" />
 
         <div>
-          <div className="text-normal text-black">팀원들과 시너지를 올릴 공간이 필요하신가요?</div>
-          <div className="text-normal">
+          <div className="text-body text-black">팀원들과 시너지를 올릴 공간이 필요하신가요?</div>
+          <div className="text-body">
             <span className="text-primary font-semibold">도서관 스터디룸</span>
             <span className="text-black">을 예약해 보세요</span>
           </div>

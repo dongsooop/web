@@ -170,7 +170,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       </div>
 
       {errorMessage && (
-        <p className="text-small font-regular text-warning w-full whitespace-pre-line">
+        <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
           {errorMessage}
         </p>
       )}
@@ -186,7 +186,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       <button
         type="button"
         onClick={handlePasswordReset}
-        className="text-normal text-gray4 min-h-[44px] cursor-pointer font-bold"
+        className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
       >
         비밀번호 변경
       </button>
