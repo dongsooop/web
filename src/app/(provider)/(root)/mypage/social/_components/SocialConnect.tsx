@@ -134,10 +134,6 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     }
 
     if (!isLoggedIn) {
-      setItems(defaultItems);
-      setListErrorMessage(null);
-      setActionMessage(null);
-      setIsLoading(false);
       return;
     }
 
