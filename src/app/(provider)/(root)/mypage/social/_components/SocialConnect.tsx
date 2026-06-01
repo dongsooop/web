@@ -51,11 +51,16 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     setActionMessage({ tone: 'error', message });
   });
 
+  const stopLoading = () => {
+    setLoadingPlatform(null);
+  };
+
   const kakao = useKakaoLink({
     jsKey: kakaoJsKey,
     onError: (message) => {
       setActionMessage({ tone: 'error', message });
     },
+    onFinish: stopLoading,
   });
 
   const refreshSocialState = async () => {
@@ -76,10 +81,6 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     setActionMessage(null);
     setLoadingPlatform(platform);
     return true;
-  };
-
-  const stopLoading = () => {
-    setLoadingPlatform(null);
   };
 
   const applyUnlink = (platform: LoginPlatform) => {
@@ -196,11 +197,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
       return;
     }
 
-    const started = kakao.start();
-
-    if (!started) {
-      stopLoading();
-    }
+    kakao.start();
   };
 
   const unlinkKakao = async () => {

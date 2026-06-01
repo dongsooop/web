@@ -1,10 +1,13 @@
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin, useGoogleOAuth } from '@react-oauth/google';
 import { getErrorMessage } from '@/lib/errors/messages';
 
-type UseGoogleLinkOptions = {
-  onToken: (token: string) => Promise<void>;
+type UseSocialStartOptions = {
   onError: (message: string) => void;
   onFinish: () => void;
+};
+
+type UseGoogleLinkOptions = UseSocialStartOptions & {
+  onToken: (token: string) => Promise<void>;
   context: 'login' | 'link' | 'unlink';
   redirectPath?: string;
 };
@@ -19,9 +22,7 @@ function isMobileBrowser() {
     return false;
   }
 
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
-  );
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function buildRedirectUri(path?: string) {
@@ -32,6 +33,18 @@ function buildRedirectUri(path?: string) {
   return new URL(path, window.location.origin).toString();
 }
 
+function buildAuthorizeUrl(clientId: string, redirectUri: string) {
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+
+  url.searchParams.set('client_id', clientId);
+  url.searchParams.set('redirect_uri', redirectUri);
+  url.searchParams.set('response_type', 'token');
+  url.searchParams.set('scope', googleScope);
+  url.searchParams.set('include_granted_scopes', 'true');
+
+  return url.toString();
+}
+
 export function useGoogleLink({
   onToken,
   onError,
@@ -39,9 +52,11 @@ export function useGoogleLink({
   context,
   redirectPath,
 }: UseGoogleLinkOptions) {
+  const { clientId } = useGoogleOAuth();
   const redirectUri = buildRedirectUri(redirectPath);
+  const init = () => {};
 
-  const handleSuccess = async (tokenResponse: { access_token?: string }) => {
+  const processSuccess = async (tokenResponse: { access_token?: string }) => {
     const token = tokenResponse.access_token?.trim();
 
     if (!token) {
@@ -57,6 +72,10 @@ export function useGoogleLink({
     } finally {
       onFinish();
     }
+  };
+
+  const handleSuccess = (tokenResponse: { access_token?: string }) => {
+    void processSuccess(tokenResponse);
   };
 
   const handleError = () => {
@@ -75,16 +94,8 @@ export function useGoogleLink({
   };
 
   const openPopup = useGoogleLogin({
+    flow: 'implicit',
     scope: googleScope,
-    onSuccess: handleSuccess,
-    onError: handleError,
-    onNonOAuthError: handleNonOAuthError,
-  });
-
-  const openRedirect = useGoogleLogin({
-    scope: googleScope,
-    ux_mode: 'redirect',
-    redirect_uri: redirectUri,
     onSuccess: handleSuccess,
     onError: handleError,
     onNonOAuthError: handleNonOAuthError,
@@ -92,7 +103,13 @@ export function useGoogleLink({
 
   const start = () => {
     if (isMobileBrowser() && redirectUri) {
-      openRedirect();
+      if (!clientId) {
+        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onFinish();
+        return;
+      }
+
+      window.location.assign(buildAuthorizeUrl(clientId, redirectUri));
       return;
     }
 
@@ -100,6 +117,7 @@ export function useGoogleLink({
   };
 
   return {
+    init,
     start,
   };
 }

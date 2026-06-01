@@ -57,6 +57,9 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
     stateKey: 'kakao_signin_state',
     stateType: 'signin',
     onError: openSocialErrorDialog,
+    onFinish: () => {
+      setLoadingPlatform(null);
+    },
   });
 
   const google = useGoogleLink({
@@ -127,11 +130,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       return;
     }
 
-    const started = kakao.start();
-
-    if (!started) {
-      setLoadingPlatform(null);
-    }
+    kakao.start();
   };
 
   return (

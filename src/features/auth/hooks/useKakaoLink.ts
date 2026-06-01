@@ -3,24 +3,28 @@ import { setSocialState } from '../lib/socialState';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
-type UseKakaoLinkOptions = {
-  jsKey: string;
+type UseSocialStartOptions = {
   onError: (message: string) => void;
-  redirectUri?: string;
+  onFinish: () => void;
+};
+
+type UseKakaoLinkOptions = UseSocialStartOptions & {
+  jsKey: string;
+  redirectPath?: string;
   stateKey?: string;
   stateType?: 'signin' | 'link';
 };
 
-function resolveRedirectUri(redirectUri?: string) {
-  if (redirectUri?.trim()) {
-    return redirectUri.trim();
-  }
-
+function resolveRedirectUri(path?: string) {
   if (typeof window === 'undefined') {
     return '';
   }
 
-  return `${window.location.origin}/bff/auth/social/kakao/callback`;
+  if (path?.trim()) {
+    return new URL(path.trim(), window.location.origin).toString();
+  }
+
+  return new URL('/bff/auth/social/kakao/callback', window.location.origin).toString();
 }
 
 function isRateLimit(error: unknown) {
@@ -33,7 +37,8 @@ function isRateLimit(error: unknown) {
 export function useKakaoLink({
   jsKey,
   onError,
-  redirectUri,
+  onFinish,
+  redirectPath,
   stateKey = kakaoStateKey,
   stateType = 'link',
 }: UseKakaoLinkOptions) {
@@ -58,14 +63,16 @@ export function useKakaoLink({
   const start = () => {
     if (!ready() || !window.Kakao) {
       onError(getErrorMessage('social', new Error(), 'sdk'));
-      return false;
+      onFinish();
+      return;
     }
 
-    const nextRedirectUri = resolveRedirectUri(redirectUri);
+    const nextRedirectUri = resolveRedirectUri(redirectPath);
 
     if (!nextRedirectUri) {
       onError(getErrorMessage('social', new Error(), 'sdk'));
-      return false;
+      onFinish();
+      return;
     }
 
     try {
@@ -76,15 +83,13 @@ export function useKakaoLink({
         redirectUri: nextRedirectUri,
         state,
       });
-
-      return true;
     } catch (error) {
       onError(
         isRateLimit(error)
           ? getErrorMessage('social', error, 'kakaoRateLimit')
           : getErrorMessage('social', error, 'sdk'),
       );
-      return false;
+      onFinish();
     }
   };
 
