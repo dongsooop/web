@@ -175,6 +175,10 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
       return;
     }
 
+    if (actionMessage.tone === 'error') {
+      return;
+    }
+
     const timeout = window.setTimeout(() => {
       setActionMessage(null);
     }, 2000);
