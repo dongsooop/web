@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { HttpStatusCode } from '@/constants/httpStatusCode';
@@ -7,6 +6,7 @@ import { ApiError } from '@/lib/api/apiError';
 import type { SignInRequest } from '@/features/auth/types/request';
 import type { BackendSignInResponse } from '@/features/auth/types/backend';
 import { signInWithSpring } from '@/features/auth/server/auth.api';
+import { resolveDeviceContext } from '@/features/auth/server/auth.context';
 import {
   setAuthCookies,
   setDepartmentTypeCookie,
@@ -17,12 +17,7 @@ import { toSignInResponse } from '@/features/auth/mapper';
 
 export async function POST(request: NextRequest) {
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
-
-  const existingDeviceToken = request.cookies.get('device_token')?.value;
-  const existingDeviceType = request.cookies.get('device_type')?.value || 'WEB';
-
-  const deviceToken = existingDeviceToken || randomUUID();
-  const deviceType = existingDeviceType || 'WEB';
+  const { deviceToken, deviceType } = resolveDeviceContext(request);
 
   if (!appCheckToken) {
     return NextResponse.json(

@@ -10,10 +10,12 @@ import type {
   SendCodeRequest,
   SignInRequest,
   SignUpRequest,
+  SocialSignInRequest,
   VerifyCodeRequest,
 } from '../types/request';
 
-import type { BackendReissueResponse, BackendSignInResponse } from '../types/backend';
+import type { BackendReissueResponse, BackendSignInResponse, SocialState } from '../types/backend';
+import type { SocialLinkResponse } from '../types/response';
 import { buildAuthHeaders } from './auth.header';
 
 type SpringRequestOptions = {
@@ -24,6 +26,23 @@ type SpringRequestOptions = {
 type SpringAuthRequestOptions = SpringRequestOptions & {
   accessToken: string;
   refreshToken?: string;
+};
+
+type SocialStateResult = {
+  list: SocialState[];
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
+};
+
+type SocialLinkResult = {
+  data: SocialLinkResponse;
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
+};
+
+type SocialUnlinkResult = {
+  reissuedTokens?: BackendReissueResponse;
+  clearAuthCookies?: boolean;
 };
 
 function getRequiredEndpoint(name: string): string {
@@ -59,6 +78,27 @@ export async function signInWithSpring(
   const response = await serverFetch(endpoint, {
     method: 'POST',
     body: JSON.stringify(requestBody),
+    headers,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return response.json() as Promise<BackendSignInResponse>;
+}
+
+export async function socialSignInWithSpring(
+  platform: 'google' | 'kakao',
+  payload: SocialSignInRequest,
+  options: SpringRequestOptions = {},
+): Promise<BackendSignInResponse> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LOGIN_ENDPOINT')}/${platform}`;
+
+  const headers = buildAuthHeaders({
+    cookieHeader: options.cookieHeader,
+  });
+
+  const response = await serverFetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(payload),
     headers,
     appCheckToken: options.appCheckToken,
   });
@@ -106,6 +146,91 @@ export async function signUpWithSpring(
     headers,
     appCheckToken: options.appCheckToken,
   });
+}
+
+export async function getSocialStateWithSpring(
+  options: SpringAuthRequestOptions,
+): Promise<SocialStateResult> {
+  const endpoint = getRequiredEndpoint('SOCIAL_STATE_ENDPOINT');
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'GET',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  const list =
+    result.response.status === 204 ? [] : ((await result.response.json()) as SocialState[]);
+
+  return {
+    list: Array.isArray(list) ? list : [],
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
+export async function linkGoogleSocialWithSpring(
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialLinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LINK_ENDPOINT')}/google`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
+    data: (await result.response.json()) as SocialLinkResponse,
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
+export async function linkKakaoSocialWithSpring(
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialLinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LINK_ENDPOINT')}/kakao`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
+    data: (await result.response.json()) as SocialLinkResponse,
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
+}
+
+export async function unlinkSocialWithSpring(
+  platform: 'google' | 'kakao',
+  token: string,
+  options: SpringAuthRequestOptions,
+): Promise<SocialUnlinkResult> {
+  const endpoint = `${getRequiredEndpoint('SOCIAL_LOGIN_ENDPOINT')}/${platform}`;
+
+  const result = await serverFetchAuth(endpoint, {
+    method: 'DELETE',
+    body: JSON.stringify({ token }),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+
+  return {
+    reissuedTokens: result.reissuedTokens,
+    clearAuthCookies: result.clearAuthCookies,
+  };
 }
 
 export async function logoutWithSpring(

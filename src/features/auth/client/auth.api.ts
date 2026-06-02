@@ -11,13 +11,34 @@ import type {
   VerifyCodeRequest,
 } from '../types/request';
 
-import type { SessionResponse, SignInResponse, UserResponse } from '../types/response';
+import type {
+  SessionResponse,
+  SignInResponse,
+  SocialLinkResponse,
+  SocialStateResponse,
+  UserResponse,
+} from '../types/response';
+import type { LoginPlatform } from '../types/ui-model';
 
 {/* 브라우저 -> Next API */}
 export async function signIn(payload: SignInRequest) {
   return clientRequestAuth<SignInResponse>('/bff/auth/sign-in', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export async function signInGoogleSocial(token: string) {
+  return clientRequestAuth<SignInResponse>('/bff/auth/sign-in/social/google', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export async function signInKakaoSocial(code: string) {
+  return clientRequestAuth<SignInResponse>('/bff/auth/sign-in/social/kakao/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
   });
 }
 
@@ -43,6 +64,33 @@ export async function deleteAccount() {
 export async function getSession() {
   return clientRequestAuth<SessionResponse>('/bff/auth/session', {
     method: 'GET',
+  });
+}
+
+export async function getSocialState() {
+  return clientRequestAuth<SocialStateResponse>('/bff/auth/social/state', {
+    method: 'GET',
+  });
+}
+
+export async function linkGoogleSocial(token: string) {
+  return clientRequestAuth<SocialLinkResponse>('/bff/auth/social/google', {
+    method: 'POST',
+    body: JSON.stringify({ providerToken: token }),
+  });
+}
+
+export async function linkKakaoSocial(code: string) {
+  return clientRequestAuth<SocialLinkResponse>('/bff/auth/social/kakao/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+}
+
+export async function unlinkSocial(platform: LoginPlatform, token?: string) {
+  return clientRequestAuth<void>(`/bff/auth/social/${platform}`, {
+    method: 'DELETE',
+    body: JSON.stringify(token ? { token } : {}),
   });
 }
 
