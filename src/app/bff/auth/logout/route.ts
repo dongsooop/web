@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       deviceToken,
     });
 
-    if (result.shouldClearAuthCookies) {
+    if (result.clearAuthCookies) {
       const response = createSessionExpiredResponse();
       clearDeviceCookies(response);
       clearUserMetadataCookies(response);

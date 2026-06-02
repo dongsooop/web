@@ -6,11 +6,11 @@ import { clearAuthCookies, setAuthCookies } from './auth.cookies';
 
 type AuthRouteResult = {
   reissuedTokens?: BackendReissueResponse;
-  shouldClearAuthCookies?: boolean;
+  clearAuthCookies?: boolean;
 };
 
 export function applyAuthResult(response: NextResponse, result: AuthRouteResult) {
-  if (result.shouldClearAuthCookies) {
+  if (result.clearAuthCookies) {
     clearAuthCookies(response);
     return;
   }

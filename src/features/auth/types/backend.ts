@@ -29,3 +29,8 @@ export interface JwtAccessPayload {
   exp: number;
   did?: number;
 }
+
+export interface SocialState {
+  providerType: string;
+  createdAt: string;
+}

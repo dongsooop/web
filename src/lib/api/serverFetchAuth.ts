@@ -10,7 +10,7 @@ import type { BackendReissueResponse } from '@/features/auth/types/backend';
 type ServerFetchAuthResult = {
   response: Response;
   reissuedTokens?: BackendReissueResponse;
-  shouldClearAuthCookies?: boolean;
+  clearAuthCookies?: boolean;
 };
 
 function createUnauthorizedResponse() {
@@ -29,7 +29,7 @@ export async function serverFetchAuth(
   if (!accessToken) {
     return {
       response: createUnauthorizedResponse(),
-      shouldClearAuthCookies: true,
+      clearAuthCookies: true,
     };
   }
 
@@ -60,7 +60,7 @@ export async function serverFetchAuth(
     if (!refreshToken) {
       return {
         response: createUnauthorizedResponse(),
-        shouldClearAuthCookies: true,
+        clearAuthCookies: true,
       };
     }
 
@@ -89,7 +89,7 @@ export async function serverFetchAuth(
       if (reissueError instanceof ApiError && reissueError.status === HttpStatusCode.UNAUTHORIZED) {
         return {
           response: createUnauthorizedResponse(),
-          shouldClearAuthCookies: true,
+          clearAuthCookies: true,
         };
       }
 

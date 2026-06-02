@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 interface SocialLoginButtonsProps {
-  onLogin: (platform: 'kakao' | 'google' | 'apple') => void | Promise<void>;
+  onLogin: (platform: 'kakao' | 'google') => void | Promise<void>;
 }
 
 const socialItems = [
@@ -15,11 +15,6 @@ const socialItems = [
     label: '구글 로그인',
     src: '/img/google_symbol.png',
   },
-  {
-    key: 'apple' as const,
-    label: '애플 로그인',
-    src: '/img/apple_symbol.png',
-  },
 ];
 
 export default function SocialLoginButtons({ onLogin }: SocialLoginButtonsProps) {
@@ -31,7 +26,7 @@ export default function SocialLoginButtons({ onLogin }: SocialLoginButtonsProps)
           type="button"
           onClick={() => onLogin(item.key)}
           aria-label={item.label}
-          className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full"
+          className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full"
         >
           <Image
             src={item.src}
