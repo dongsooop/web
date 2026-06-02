@@ -5,8 +5,11 @@ import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackS
 import { toUserModel } from '@/features/auth/mapper';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
+import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
 import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { getErrorMessage } from '@/lib/errors/messages';
+
+const googleStateKey = 'google_signin_state';
 
 export default function GoogleSignInCallbackPage() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -19,7 +22,16 @@ export default function GoogleSignInCallbackPage() {
     errorPath: '/sign-in',
     cancelPath: '/sign-in',
     context: 'login',
-    runAction: async (accessToken) => {
+    validateAction: ({ accessToken, state }) => {
+      const savedState = getSocialState(googleStateKey);
+
+      if (!accessToken || !isSocialStateValid(state, savedState)) {
+        return getErrorMessage('social', new Error(), 'sdk');
+      }
+
+      return null;
+    },
+    runAction: async ({ accessToken }) => {
       const result = await signInGoogleSocial(accessToken);
 
       if (!result?.user) {
@@ -28,6 +40,9 @@ export default function GoogleSignInCallbackPage() {
 
       setUser(toUserModel(result.user));
       clearExpired();
+    },
+    clearAction: () => {
+      clearSocialState(googleStateKey);
     },
   });
 

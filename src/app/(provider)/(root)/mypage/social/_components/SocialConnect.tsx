@@ -102,6 +102,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onFinish: stopLoading,
     context: 'link',
     redirectPath: '/mypage/social/google/callback?mode=link',
+    stateType: 'link',
   });
 
   const googleUnlink = useGoogleLink({
@@ -116,6 +117,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     onFinish: stopLoading,
     context: 'unlink',
     redirectPath: '/mypage/social/google/callback?mode=unlink',
+    stateType: 'unlink',
   });
 
   useEffect(() => {

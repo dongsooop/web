@@ -6,7 +6,11 @@ import { linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api'
 import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
+import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
+import { getErrorMessage } from '@/lib/errors/messages';
 import SocialPageLayout from '../../_components/SocialPageLayout';
+
+const googleStateKey = 'google_oauth_state';
 
 export default function GoogleCallbackPage() {
   const searchParams = useSearchParams();
@@ -21,13 +25,25 @@ export default function GoogleCallbackPage() {
     cancelPath: '/mypage/social',
     appCheckErrorMessage: 'App Check 초기화에 실패했어요. 잠시 후 다시 시도해 주세요.',
     context: mode,
-    runAction: async (accessToken) => {
+    validateAction: ({ accessToken, state }) => {
+      const savedState = getSocialState(googleStateKey);
+
+      if (!accessToken || !isSocialStateValid(state, savedState)) {
+        return getErrorMessage('social', new Error(), 'sdk');
+      }
+
+      return null;
+    },
+    runAction: async ({ accessToken }) => {
       if (mode === 'unlink') {
         await unlinkSocial('google', accessToken);
         return;
       }
 
       await linkGoogleSocial(accessToken);
+    },
+    clearAction: () => {
+      clearSocialState(googleStateKey);
     },
   });
 

@@ -13,6 +13,11 @@ export type KakaoCallbackPayload = {
   state: string;
 };
 
+export type GoogleCallbackPayload = {
+  accessToken: string;
+  state: string;
+};
+
 function getHashParams() {
   if (typeof window === 'undefined') {
     return new URLSearchParams();
@@ -33,14 +38,15 @@ export function resolveSocialCallbackError(error: string, description: string) {
   return getErrorMessage('social', new Error(), 'sdk');
 }
 
-export function getGoogleCallbackResult(): SocialCallbackResult<string> {
+export function getGoogleCallbackResult(): SocialCallbackResult<GoogleCallbackPayload> {
   const params = getHashParams();
   const accessToken = params.get('access_token')?.trim() ?? '';
+  const state = params.get('state')?.trim() ?? '';
   const error = params.get('error')?.trim() ?? '';
   const errorDescription = params.get('error_description')?.trim() ?? '';
 
   return {
-    payload: accessToken || null,
+    payload: { accessToken, state },
     error,
     errorDescription,
   };

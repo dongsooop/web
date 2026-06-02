@@ -1,5 +1,6 @@
 import { useGoogleLogin, useGoogleOAuth } from '@react-oauth/google';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { setSocialState } from '../lib/socialState';
 
 type UseSocialStartOptions = {
   onError: (message: string) => void;
@@ -10,12 +11,15 @@ type UseGoogleLinkOptions = UseSocialStartOptions & {
   onToken: (token: string) => Promise<void>;
   context: 'login' | 'link' | 'unlink';
   redirectPath?: string;
+  stateKey?: string;
+  stateType?: 'signin' | 'link' | 'unlink';
 };
 
 const googleScope = [
   'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/userinfo.profile',
 ].join(' ');
+const googleStateKey = 'google_oauth_state';
 
 function isMobileBrowser() {
   if (typeof navigator === 'undefined') {
@@ -33,7 +37,7 @@ function buildRedirectUri(path?: string) {
   return new URL(path, window.location.origin).toString();
 }
 
-function buildAuthorizeUrl(clientId: string, redirectUri: string) {
+function buildAuthorizeUrl(clientId: string, redirectUri: string, state: string) {
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
 
   url.searchParams.set('client_id', clientId);
@@ -41,6 +45,7 @@ function buildAuthorizeUrl(clientId: string, redirectUri: string) {
   url.searchParams.set('response_type', 'token');
   url.searchParams.set('scope', googleScope);
   url.searchParams.set('include_granted_scopes', 'true');
+  url.searchParams.set('state', state);
 
   return url.toString();
 }
@@ -51,6 +56,8 @@ export function useGoogleLink({
   onFinish,
   context,
   redirectPath,
+  stateKey = googleStateKey,
+  stateType = 'link',
 }: UseGoogleLinkOptions) {
   const { clientId } = useGoogleOAuth();
   const redirectUri = buildRedirectUri(redirectPath);
@@ -109,7 +116,9 @@ export function useGoogleLink({
         return;
       }
 
-      window.location.assign(buildAuthorizeUrl(clientId, redirectUri));
+      const state = `${stateType}:${window.crypto.randomUUID()}`;
+      setSocialState(stateKey, state);
+      window.location.assign(buildAuthorizeUrl(clientId, redirectUri, state));
       return;
     }
 

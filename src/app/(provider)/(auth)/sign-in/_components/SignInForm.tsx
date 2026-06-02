@@ -73,6 +73,8 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
     },
     context: 'login',
     redirectPath: '/sign-in/google/callback',
+    stateKey: 'google_signin_state',
+    stateType: 'signin',
   });
 
   const handleLogin = async () => {
