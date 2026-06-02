@@ -46,7 +46,7 @@ export function getGoogleCallbackResult(): SocialCallbackResult<GoogleCallbackPa
   const errorDescription = params.get('error_description')?.trim() ?? '';
 
   return {
-    payload: { accessToken, state },
+    payload: accessToken || state || error ? { accessToken, state } : null,
     error,
     errorDescription,
   };
@@ -61,7 +61,7 @@ export function getKakaoCallbackResult(
   const errorDescription = searchParams.get('error_description')?.trim() ?? '';
 
   return {
-    payload: { code, state },
+    payload: code || state || error ? { code, state } : null,
     error,
     errorDescription,
   };
