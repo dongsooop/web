@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAppCheckStore } from '@/store/useAppCheckStore';
@@ -42,6 +42,7 @@ export function useSocialCallback<T>({
   const token = useAppCheckStore((state) => state.token);
   const isInitialized = useAppCheckStore((state) => state.isInitialized);
   const [message, setMessage] = useState(pendingMessage);
+  const didRun = useRef(false);
 
   const move = useEffectEvent((path: string) => {
     clearAction?.();
@@ -104,6 +105,11 @@ export function useSocialCallback<T>({
           setMessage(progressMessage);
         }
 
+        if (didRun.current) {
+          return;
+        }
+
+        didRun.current = true;
         await run(result.payload);
         move(successPath);
       } catch (error) {
