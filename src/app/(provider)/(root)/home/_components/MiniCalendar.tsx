@@ -39,9 +39,8 @@ export default function MiniCalendar() {
       return;
     }
 
-    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
+    previouslyFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     dialogRef.current?.focus();
 
@@ -163,14 +162,7 @@ export default function MiniCalendar() {
               {displayErrorMessage}
             </div>
           ) : isLoading ? (
-            <div className="grid grid-cols-3 gap-2">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
-                />
-              ))}
-            </div>
+            <div className="min-h-11" aria-hidden="true" />
           ) : visibleSchedules.length > 0 ? (
             <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
