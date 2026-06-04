@@ -158,6 +158,7 @@ export default function ScheduleCalendar({
   const extraBox =
     'text-gray5 text-caption pointer-events-none absolute right-2 bottom-1 text-right leading-none font-semibold';
   const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
+  const memberLaneOffsetMap = buildLaneOffsetMap(cells, memberRangeSegments);
 
   return (
     <div className="py-2 sm:px-7 sm:py-6">
@@ -281,7 +282,10 @@ export default function ScheduleCalendar({
             const dailySchedules = (scheduleMap[key] ?? []).filter(
               (schedule) => schedule.startDateKey === schedule.endDateKey,
             );
-            const visible = dailySchedules.slice(0, 3);
+            const occupiedLaneCount =
+              tab === 'OFFICIAL' ? (officialLaneOffsetMap[key] ?? 0) : (memberLaneOffsetMap[key] ?? 0);
+            const visibleCount = Math.max(3 - occupiedLaneCount, 0);
+            const visible = dailySchedules.slice(0, visibleCount);
             const extra = Math.max(dailySchedules.length - visible.length, 0);
             const isSelected = key === selected;
             const isToday = key === toDateKey(today);
@@ -315,7 +319,12 @@ export default function ScheduleCalendar({
 
                 {tab === 'MEMBER' ? (
                   <>
-                    <div className={[memberBarBox, 'pointer-events-none'].join(' ')}>
+                    <div
+                      className={[memberBarBox, 'pointer-events-none'].join(' ')}
+                      style={{
+                        transform: `translateY(calc(var(--bar-step) * ${memberLaneOffsetMap[key] ?? 0}))`,
+                      }}
+                    >
                       <div className="flex flex-col gap-1">
                         {visible.map((schedule, barIndex) => (
                           <div
