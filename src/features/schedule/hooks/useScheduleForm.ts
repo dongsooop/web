@@ -4,6 +4,7 @@ import { useMemo, useReducer } from 'react';
 
 import { toDateKey } from '@/utils/date';
 import {
+  colorHex,
   createFormState,
   formatDateText,
   formatTimeText,
@@ -45,6 +46,7 @@ export function useScheduleForm({ initialDate, schedule, onSaveAction }: UseSche
     }
 
     const payload: ScheduleCreateRequest = {
+      color: colorHex(state.color),
       title: state.title.trim(),
       location: state.place.trim(),
       startAt: state.allDay ? `${toDateKey(state.startAt)}T00:00:00` : toDateTime(state.startAt),
@@ -63,7 +65,7 @@ export function useScheduleForm({ initialDate, schedule, onSaveAction }: UseSche
       allDay: state.allDay,
       setAllDay: (value: boolean) => dispatch({ type: 'allDay', value }),
       color: state.color,
-      setColor: (value: string) => dispatch({ type: 'color', value }),
+      setColor: (value) => dispatch({ type: 'color', value }),
       startAt: state.startAt,
       endAt: state.endAt,
     },

@@ -1,5 +1,6 @@
 import { DAY_LABELS, fromDateKey, toDateKey, toTimeKey } from '@/utils/date';
 import type { FormAction, FormState } from '../types/form';
+import type { ScheduleColorToken } from '../types/form';
 import type { Schedule } from '../types/ui-model';
 
 function copyDate(value: Date) {
@@ -70,6 +71,34 @@ function isAllDaySchedule(schedule: Schedule) {
   return schedule.startAt === '00:00' && schedule.endAt === '23:59';
 }
 
+const colorHexByToken: Record<ScheduleColorToken, string> = {
+  red: 'f28b82',
+  yellow: 'f4d03f',
+  green: '79c89d',
+  blue: '8bb8ff',
+  purple: 'b9a2f3',
+  orange: 'f2be7a',
+};
+
+const tokenByColorHex: Record<string, ScheduleColorToken> = Object.entries(colorHexByToken).reduce<
+  Record<string, ScheduleColorToken>
+>((acc, [token, hex]) => {
+  acc[hex] = token as ScheduleColorToken;
+  return acc;
+}, {});
+
+export function colorHex(token: ScheduleColorToken) {
+  return colorHexByToken[token];
+}
+
+function defaultColor(schedule?: Schedule): ScheduleColorToken {
+  if (!schedule?.color) {
+    return 'red';
+  }
+
+  return tokenByColorHex[schedule.color] ?? 'red';
+}
+
 type FormStateInit = {
   initialDate?: Date;
   schedule?: Schedule;
@@ -81,7 +110,7 @@ export function createFormState({ initialDate, schedule }: FormStateInit = {}) {
       title: schedule.title,
       place: schedule.location,
       allDay: isAllDaySchedule(schedule),
-      color: 'red',
+      color: defaultColor(schedule),
       startAt: toDate(schedule.startDateKey, schedule.startAt),
       endAt: toDate(schedule.endDateKey, schedule.endAt),
       picker: null,
@@ -96,7 +125,7 @@ export function createFormState({ initialDate, schedule }: FormStateInit = {}) {
     title: '',
     place: '',
     allDay: false,
-    color: 'red',
+    color: defaultColor(),
     startAt,
     endAt,
     picker: null,

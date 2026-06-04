@@ -1,6 +1,7 @@
 import type { ScheduleType } from './response';
 
 export type Schedule = {
+  color: string | null;
   id: number | null;
   title: string;
   location: string;

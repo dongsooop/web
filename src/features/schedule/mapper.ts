@@ -61,6 +61,16 @@ function parseType(value: unknown): ScheduleType {
   return 'MEMBER';
 }
 
+function parseColor(value: unknown) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const hex = value.trim().replace(/^#/, '').toLowerCase();
+
+  return /^[0-9a-f]{6}$/.test(hex) ? hex : null;
+}
+
 function getTitle(item: ScheduleResponseItem) {
   return item.title.trim() ? item.title.trim() : '일정';
 }
@@ -78,6 +88,7 @@ function toModel(item: ScheduleResponseItem): Schedule | null {
   const endAt = getTime(item.endAt);
 
   return {
+    color: parseColor(item.color),
     id: item.id,
     title: getTitle(item),
     location: item.location,

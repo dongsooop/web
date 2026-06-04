@@ -1,6 +1,7 @@
 export type ScheduleType = 'MEMBER' | 'OFFICIAL';
 
 export type ScheduleResponseItem = {
+  color?: string | null;
   id: number | null;
   title: string;
   location: string;

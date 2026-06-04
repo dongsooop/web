@@ -42,13 +42,14 @@ export async function PATCH(
   try {
     const body = (await request.json()) as Partial<ScheduleCreateRequest>;
     const payload: ScheduleCreateRequest = {
+      color: trimValue(body.color),
       title: trimValue(body.title),
       location: trimValue(body.location),
       startAt: trimValue(body.startAt),
       endAt: trimValue(body.endAt),
     };
 
-    if (!payload.title || !payload.location || !payload.startAt || !payload.endAt) {
+    if (!payload.color || !payload.title || !payload.startAt || !payload.endAt) {
       return NextResponse.json(
         { message: '일정 정보를 올바르게 입력해 주세요.' },
         { status: HttpStatusCode.BAD_REQUEST },
