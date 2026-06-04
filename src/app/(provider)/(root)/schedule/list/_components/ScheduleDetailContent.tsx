@@ -53,7 +53,8 @@ function timeText(schedule: Schedule, tab: TabId) {
   return `${schedule.startAt} - ${schedule.endAt}`;
 }
 
-export default function ScheduleDetailContent({
+export default function
+  ScheduleDetailContent({
   contentClassName = '',
   displayErrorMessage,
   isError,

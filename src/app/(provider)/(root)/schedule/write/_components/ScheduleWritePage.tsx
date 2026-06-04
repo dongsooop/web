@@ -59,7 +59,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
     async (payload: ScheduleCreateRequest) => {
       try {
         await create.mutateAsync(payload);
-        showToast('일정이 추가되었어요!', 'success');
+        showToast('일정이 추가되었어요!', 'success', 'shadow-none');
         router.push('/schedule');
       } catch (error) {
         showToast(getErrorMessage('schedule', error, 'create'), 'error');
@@ -95,7 +95,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
 
     try {
       await remove.mutateAsync(scheduleId);
-      showToast('일정이 삭제되었어요!', 'success');
+      showToast('일정이 삭제되었어요!', 'success', 'shadow-none');
       router.push('/schedule');
     } catch (error) {
       showToast(getErrorMessage('schedule', error, 'delete'), 'error');

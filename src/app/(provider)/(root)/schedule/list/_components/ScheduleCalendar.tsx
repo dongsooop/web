@@ -241,7 +241,7 @@ export default function ScheduleCalendar({
           ))}
         </div>
 
-        <div className="sm:border-gray2 auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.125rem] [--bar-step:1.125rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.25rem] sm:[--bar-step:1.5rem]">
+        <div className="sm:border-gray2 auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.25rem] [--bar-step:1.25rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.375rem] sm:[--bar-step:1.625rem]">
           {tab === 'OFFICIAL' || memberRangeSegments.length > 0 ? (
             <div className="pointer-events-none absolute inset-0 z-10 grid grid-cols-7 grid-rows-6">
               {(tab === 'OFFICIAL' ? officialSegments : memberRangeSegments).map(
@@ -325,7 +325,7 @@ export default function ScheduleCalendar({
                         transform: `translateY(calc(var(--bar-step) * ${memberLaneOffsetMap[key] ?? 0}))`,
                       }}
                     >
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-[var(--bar-gap)]">
                         {visible.map((schedule, barIndex) => (
                           <div
                             key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
@@ -351,7 +351,7 @@ export default function ScheduleCalendar({
                         transform: `translateY(calc(var(--bar-step) * ${officialLaneOffsetMap[key] ?? 0}))`,
                       }}
                     >
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-[var(--bar-gap)]">
                         {visible.map((schedule, barIndex) => (
                           <div
                             key={`${schedule.title}-${schedule.startAt}-${barIndex}`}

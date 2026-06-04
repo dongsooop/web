@@ -1,3 +1,5 @@
+import { X } from 'lucide-react';
+
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import type { TabId } from './ScheduleTabs';
 import ScheduleDetailContent from './ScheduleDetailContent';
@@ -5,6 +7,7 @@ import ScheduleDetailContent from './ScheduleDetailContent';
 type ScheduleDetailSheetProps = {
   displayErrorMessage: string | null;
   isError: boolean;
+  onCloseAction?: () => void;
   onCreateAction?: () => void;
   onSelectScheduleAction?: (schedule: Schedule) => void;
   selectedDay: string;
@@ -15,6 +18,7 @@ type ScheduleDetailSheetProps = {
 export default function ScheduleDetailSheet({
   displayErrorMessage,
   isError,
+  onCloseAction,
   onCreateAction,
   onSelectScheduleAction,
   selectedDay,
@@ -23,10 +27,18 @@ export default function ScheduleDetailSheet({
 }: ScheduleDetailSheetProps) {
   return (
     <aside className="border-gray2 flex max-h-[78vh] flex-col overflow-hidden rounded-t-xl border-t bg-white">
-      <div className="flex shrink-0 items-center bg-white p-4">
+      <div className="flex h-11 shrink-0 items-center justify-between bg-white px-4">
         <div className="text-heading font-semibold text-black">{selectedDay}</div>
+        <button
+          type="button"
+          aria-label="상세 일정 닫기"
+          onClick={onCloseAction}
+          className="text-gray5 flex h-11 w-11 items-center justify-center"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col pb-1">
+      <div className={['flex min-h-0 flex-1 flex-col', tab === 'OFFICIAL' ? 'pb-6' : 'pb-1'].join(' ')}>
         <ScheduleDetailContent
           contentClassName="px-4"
           displayErrorMessage={displayErrorMessage}

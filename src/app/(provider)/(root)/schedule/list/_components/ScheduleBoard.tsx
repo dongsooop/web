@@ -386,6 +386,7 @@ export default function ScheduleBoard() {
               <ScheduleDetailSheet
                 displayErrorMessage={displayErrorMessage}
                 isError={isError}
+                onCloseAction={closeDetail}
                 onCreateAction={openCreate}
                 onSelectScheduleAction={openEdit}
                 selectedDay={selectedDay}
