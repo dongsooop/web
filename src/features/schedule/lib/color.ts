@@ -1,56 +1,85 @@
 import type { Schedule } from '../types/ui-model';
 
-function toneIndex(schedule: Schedule, count: number) {
-  const seed = `${schedule.type}:${schedule.id ?? schedule.title}`;
-  const value = Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+const toneByHex = {
+  f28b82: 'bg-schedule-redBg text-schedule-redText',
+  f4d03f: 'bg-schedule-yellowBg text-schedule-yellowText',
+  '79c89d': 'bg-schedule-greenBg text-schedule-greenText',
+  '8ecfa9': 'bg-schedule-greenBg text-schedule-greenText',
+  '8bb8ff': 'bg-schedule-blueBg text-schedule-blueText',
+  '9fc3ff': 'bg-schedule-blueBg text-schedule-blueText',
+  b9a2f3: 'bg-schedule-purpleBg text-schedule-purpleText',
+  f2be7a: 'bg-schedule-orangeBg text-schedule-orangeText',
+} as const;
 
-  return value % count;
+const lineByHex = {
+  f28b82: 'bg-schedule-redLine',
+  f4d03f: 'bg-schedule-yellowLine',
+  '79c89d': 'bg-schedule-greenLine',
+  '8ecfa9': 'bg-schedule-greenLine',
+  '8bb8ff': 'bg-schedule-blueLine',
+  '9fc3ff': 'bg-schedule-blueLine',
+  b9a2f3: 'bg-schedule-purpleLine',
+  f2be7a: 'bg-schedule-orangeLine',
+} as const;
+
+const defaultTone = 'bg-schedule-redBg text-schedule-redText';
+const defaultLine = 'bg-schedule-redLine';
+const officialToneFallback = [
+  toneByHex.f28b82,
+  toneByHex.b9a2f3,
+  toneByHex['79c89d'],
+  toneByHex['8bb8ff'],
+  toneByHex.f2be7a,
+] as const;
+const officialLineFallback = [
+  lineByHex.f28b82,
+  lineByHex.b9a2f3,
+  lineByHex['79c89d'],
+  lineByHex['8bb8ff'],
+  lineByHex.f2be7a,
+] as const;
+
+function toneIndex(schedule: Schedule, count: number) {
+  const seed = `${schedule.id ?? ''}${schedule.title}`;
+  let hash = 0;
+
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) % 2147483647;
+  }
+
+  return Math.abs(hash) % count;
+}
+
+function toneBySchedule(schedule: Schedule) {
+  if (!schedule.color || !(schedule.color in toneByHex)) {
+    if (schedule.type === 'OFFICIAL') {
+      return officialToneFallback[toneIndex(schedule, officialToneFallback.length)];
+    }
+
+    return defaultTone;
+  }
+
+  return toneByHex[schedule.color as keyof typeof toneByHex];
 }
 
 export function memberScheduleTone(schedule: Schedule) {
-  const colors = [
-    'bg-schedule-member-redBg text-schedule-member-redText',
-    'bg-schedule-member-yellowBg text-schedule-member-yellowText',
-    'bg-schedule-member-greenBg text-schedule-member-greenText',
-    'bg-schedule-member-blueBg text-schedule-member-blueText',
-    'bg-schedule-member-purpleBg text-schedule-member-purpleText',
-  ];
-
-  return colors[toneIndex(schedule, colors.length)];
+  return toneBySchedule(schedule);
 }
 
 export function officialScheduleTone(schedule: Schedule) {
-  const colors = [
-    'bg-schedule-official-purpleBg text-schedule-official-purpleText',
-    'bg-schedule-official-greenBg text-schedule-official-greenText',
-    'bg-schedule-official-blueBg text-schedule-official-blueText',
-    'bg-schedule-official-orangeBg text-schedule-official-orangeText',
-  ];
-
-  return colors[toneIndex(schedule, colors.length)];
+  return toneBySchedule(schedule);
 }
 
 export function scheduleLineColor(schedule: Schedule) {
-  if (schedule.type === 'OFFICIAL') {
-    const colors = [
-      'bg-schedule-official-purpleLine',
-      'bg-schedule-official-greenLine',
-      'bg-schedule-official-blueLine',
-      'bg-schedule-official-orangeLine',
-    ];
-
-    return colors[toneIndex(schedule, colors.length)];
+  if (schedule.color && schedule.color in lineByHex) {
+    return lineByHex[schedule.color as keyof typeof lineByHex];
   }
 
-  const colors = [
-    'bg-schedule-member-redLine',
-    'bg-schedule-member-yellowLine',
-    'bg-schedule-member-greenLine',
-    'bg-schedule-member-blueLine',
-    'bg-schedule-member-purpleLine',
-  ];
+  if (schedule.type === 'OFFICIAL') {
+    return officialLineFallback[toneIndex(schedule, officialLineFallback.length)];
+  }
 
-  return colors[toneIndex(schedule, colors.length)];
+  return defaultLine;
 }
 
 export function weekColorClass(index: number) {

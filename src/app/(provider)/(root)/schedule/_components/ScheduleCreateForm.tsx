@@ -26,11 +26,11 @@ type ColorItem = {
 };
 
 const colors: ColorItem[] = [
-  { id: 'red', bg: 'bg-schedule-create-redLine' },
-  { id: 'yellow', bg: 'bg-schedule-create-yellowLine' },
-  { id: 'green', bg: 'bg-schedule-create-greenLine' },
-  { id: 'blue', bg: 'bg-schedule-create-blueLine' },
-  { id: 'purple', bg: 'bg-schedule-create-purpleLine' },
+  { id: 'red', bg: 'bg-schedule-redLine' },
+  { id: 'yellow', bg: 'bg-schedule-yellowLine' },
+  { id: 'green', bg: 'bg-schedule-greenLine' },
+  { id: 'blue', bg: 'bg-schedule-blueLine' },
+  { id: 'purple', bg: 'bg-schedule-purpleLine' },
 ];
 
 function fieldClass() {
