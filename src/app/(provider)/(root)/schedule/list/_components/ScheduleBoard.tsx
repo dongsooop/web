@@ -353,6 +353,8 @@ export default function ScheduleBoard() {
               ) : null}
               {createOpen ? (
                 <ScheduleCreatePanel
+                  isDeleting={remove.isPending}
+                  isSaving={editSchedule ? update.isPending : create.isPending}
                   onDeleteAction={editSchedule ? openDeleteDialog : undefined}
                   schedule={editSchedule ?? undefined}
                 />

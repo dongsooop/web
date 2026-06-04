@@ -44,7 +44,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
 
     return initialDate ? toMonthKey(initialDate) : toMonthKey(new Date());
   }, [initialDate, month]);
-  const { data, isLoading, isQueryReady } = useScheduleQuery(monthKey);
+  const { data, displayErrorMessage, isError, isLoading, isQueryReady } = useScheduleQuery(monthKey);
   const schedule = useMemo(
     () => (scheduleId ? (data ?? []).find((item) => item.id === scheduleId) : undefined),
     [data, scheduleId],
@@ -135,6 +135,16 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
     );
   }
 
+  if (isEdit && !schedule && isError) {
+    return (
+      <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
+        <div className="text-bodySm text-gray5 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border sm:border-gray2">
+          {displayErrorMessage}
+        </div>
+      </div>
+    );
+  }
+
   if (isEdit && !schedule) {
     return (
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
@@ -150,6 +160,8 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
         <div className="overflow-hidden rounded-2xl bg-white sm:border sm:border-gray2">
           <ScheduleCreateForm
+            isDeleting={remove.isPending}
+            isSaving={isEdit ? update.isPending : create.isPending}
             key={schedule?.id ? `edit-${schedule.id}` : `create-${date ?? 'default'}`}
             mode="page"
             initialDate={initialDate}

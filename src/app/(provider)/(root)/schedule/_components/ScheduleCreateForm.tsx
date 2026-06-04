@@ -11,6 +11,8 @@ import { useScheduleCreate } from './ScheduleCreateContext';
 
 type ScheduleCreateFormProps = {
   initialDate?: Date;
+  isDeleting?: boolean;
+  isSaving?: boolean;
   mode: 'page' | 'panel';
   onCloseAction?: () => void;
   onDeleteAction?: () => void | Promise<void>;
@@ -85,6 +87,8 @@ function allDayText(timeText: string) {
 
 export default function ScheduleCreateForm({
   initialDate,
+  isDeleting = false,
+  isSaving = false,
   mode,
   onCloseAction,
   onDeleteAction,
@@ -96,6 +100,9 @@ export default function ScheduleCreateForm({
   const closeCreate = onCloseAction ?? context?.closeCreate;
   const saveCreate = onSaveAction ?? context?.saveCreate;
   const formTitle = schedule ? '일정 편집' : '일정 추가';
+  const showSaving = isSaving;
+  const showDeleting = isDeleting;
+  const isPending = showSaving || showDeleting;
 
   const {
     form: { title, setTitle, place, setPlace, allDay, setAllDay, color, setColor, startAt },
@@ -120,7 +127,8 @@ export default function ScheduleCreateForm({
               onClick={() => {
                 void onDeleteAction();
               }}
-              className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition"
+              disabled={isPending}
+              className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
               aria-label="일정 삭제"
             >
               <Trash2 className="h-5 w-5" />
@@ -140,6 +148,7 @@ export default function ScheduleCreateForm({
               </label>
 
               <input
+                disabled={isPending}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="예) 스터디 모임"
@@ -160,6 +169,7 @@ export default function ScheduleCreateForm({
 
                 <label className="flex min-h-11 cursor-pointer items-center gap-2">
                   <input
+                    disabled={isPending}
                     type="checkbox"
                     checked={allDay}
                     onChange={(e) => setAllDay(e.target.checked)}
@@ -177,7 +187,7 @@ export default function ScheduleCreateForm({
                   timeText={allDay ? '' : startTimeText}
                   open={target === 'start'}
                   onClickAction={() => open('start')}
-                  disabled={allDay}
+                  disabled={allDay || isPending}
                 />
 
                 <DateTimeField
@@ -186,7 +196,7 @@ export default function ScheduleCreateForm({
                   timeText={allDay ? '' : endTimeText}
                   open={target === 'end'}
                   onClickAction={() => open('end')}
-                  disabled={allDay}
+                  disabled={allDay || isPending}
                 />
               </div>
 
@@ -204,6 +214,7 @@ export default function ScheduleCreateForm({
 
               <div className="relative">
                 <input
+                  disabled={isPending}
                   value={place}
                   onChange={(e) => setPlace(e.target.value)}
                   placeholder="예) 도서관 3층 세미나실"
@@ -232,8 +243,9 @@ export default function ScheduleCreateForm({
                     <button
                       key={item.id}
                       type="button"
+                      disabled={isPending}
                       onClick={() => setColor(item.id)}
-                      className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition"
+                      className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
                       aria-label={`${item.id} 색상 선택`}
                     >
                       <span
@@ -256,7 +268,8 @@ export default function ScheduleCreateForm({
           <button
             type="button"
             onClick={closeCreate}
-            className="border-gray2 text-bodySm text-gray6 min-h-11 cursor-pointer rounded-xl border bg-white px-4 font-semibold"
+            disabled={isPending}
+            className="border-gray2 text-bodySm text-gray6 min-h-11 cursor-pointer rounded-xl border bg-white px-4 font-semibold disabled:cursor-default disabled:opacity-60"
           >
             취소
           </button>
@@ -264,9 +277,18 @@ export default function ScheduleCreateForm({
           <button
             type="button"
             onClick={save}
-            className="text-bodySm bg-primary min-h-11 cursor-pointer rounded-xl px-4 font-semibold text-white"
+            disabled={isPending}
+            className="text-bodySm bg-primary min-h-11 cursor-pointer rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
           >
-            저장
+            <span className="inline-flex items-center gap-2">
+              <span>{schedule ? '수정' : '저장'}</span>
+              {showSaving ? (
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+              ) : null}
+            </span>
           </button>
         </div>
       </div>
