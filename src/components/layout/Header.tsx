@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { NAV } from './Sidebar';
+import { isNavActive, NAV } from './Sidebar';
 
 export default function Header() {
   const router = useRouter();
@@ -116,7 +116,7 @@ export default function Header() {
 
         <nav className="flex flex-1 flex-col gap-2 px-3 py-4">
           {NAV.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + '/');
+            const active = isNavActive(pathname, item.href);
 
             return (
               <Link
