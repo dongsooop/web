@@ -145,22 +145,31 @@ export default function ScheduleBoard() {
     }));
   }, [today]);
 
-  const selectDate = useCallback((key: string) => {
-    setViewState((state) => ({
-      ...state,
-      selected: key,
-    }));
-
-    if (window.matchMedia('(min-width: 640px)').matches) return;
-
-    setOverlay((state) => {
-      if (state.type === 'create') {
-        return state;
+  const selectDate = useCallback(
+    (key: string) => {
+      if (key === selected) {
+        return;
       }
 
-      return { type: 'detail' };
-    });
-  }, []);
+      setViewState((state) => ({
+        ...state,
+        selected: key,
+      }));
+
+      setOverlay((state) => {
+        if (state.type === 'create') {
+          return { type: 'none' };
+        }
+
+        return state;
+      });
+
+      if (window.matchMedia('(min-width: 640px)').matches) return;
+
+      setOverlay(() => ({ type: 'detail' }));
+    },
+    [selected],
+  );
 
   const changeTab = useCallback(
     (next: ScheduleViewState['tab']) => {
