@@ -245,7 +245,7 @@ export default function ScheduleCreateForm({
                       type="button"
                       disabled={isPending}
                       onClick={() => setColor(item.id)}
-                      className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
+                      className="inline-flex h-11 w-7 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
                       aria-label={`${item.id} 색상 선택`}
                     >
                       <span

@@ -212,7 +212,7 @@ export default function ScheduleCalendar({
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="다음 달"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
 
