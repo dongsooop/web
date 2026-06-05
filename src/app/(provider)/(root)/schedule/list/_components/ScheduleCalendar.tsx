@@ -263,7 +263,7 @@ export default function ScheduleCalendar({
                   >
                     <div
                       className={[
-                        'text-caption mt-8 flex h-4 items-center rounded-full px-1.5 font-semibold sm:mt-12 sm:h-5 sm:px-2.5',
+                        'text-caption mt-9 flex h-4 items-center rounded-full px-1.5 font-semibold sm:mt-12 sm:h-5 sm:px-2.5',
                         segment.style,
                       ].join(' ')}
                       style={{
