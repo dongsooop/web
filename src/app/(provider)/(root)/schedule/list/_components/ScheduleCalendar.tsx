@@ -1,4 +1,11 @@
-import { CalendarDays, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Plus,
+} from 'lucide-react';
 
 import {
   dateColorClass,
@@ -153,7 +160,7 @@ export default function ScheduleCalendar({
           memberScheduleTone,
         )
       : [];
-  const dayBox = 'absolute top-2 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
+  const dayBox = 'absolute top-1 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
   const memberBarBox = 'absolute left-0.5 right-0.5 top-9 bottom-0 sm:left-1 sm:right-1 sm:top-12';
   const extraBox =
     'text-gray5 text-caption pointer-events-none absolute right-2 bottom-1 text-right leading-none font-semibold';
@@ -283,7 +290,9 @@ export default function ScheduleCalendar({
               (schedule) => schedule.startDateKey === schedule.endDateKey,
             );
             const occupiedLaneCount =
-              tab === 'OFFICIAL' ? (officialLaneOffsetMap[key] ?? 0) : (memberLaneOffsetMap[key] ?? 0);
+              tab === 'OFFICIAL'
+                ? (officialLaneOffsetMap[key] ?? 0)
+                : (memberLaneOffsetMap[key] ?? 0);
             const visibleCount = Math.max(3 - occupiedLaneCount, 0);
             const visible = dailySchedules.slice(0, visibleCount);
             const extra = Math.max(dailySchedules.length - visible.length, 0);
