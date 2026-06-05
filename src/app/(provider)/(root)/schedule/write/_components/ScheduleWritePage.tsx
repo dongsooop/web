@@ -44,7 +44,8 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
 
     return initialDate ? toMonthKey(initialDate) : toMonthKey(new Date());
   }, [initialDate, month]);
-  const { data, displayErrorMessage, isError, isLoading, isQueryReady } = useScheduleQuery(monthKey);
+  const { data, displayErrorMessage, isError, isLoading, isQueryReady } =
+    useScheduleQuery(monthKey);
   const schedule = useMemo(
     () => (scheduleId ? (data ?? []).find((item) => item.id === scheduleId) : undefined),
     [data, scheduleId],
@@ -109,7 +110,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
 
     showDialog({
       title: '일정 삭제',
-      content: '선택한 일정을 삭제하시겠습니까?\n삭제된 일정은 복구할 수 없어요.',
+      content: '선택한 일정을 삭제하시겠어요?\n삭제된 일정은 복구할 수 없어요.',
       cancel: '취소',
       confirm: '삭제',
       variant: 'danger',
@@ -128,7 +129,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   if (isEdit && !schedule && (!isQueryReady || isLoading)) {
     return (
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
-        <div className="text-bodySm text-gray5 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border sm:border-gray2">
+        <div className="text-bodySm text-gray5 sm:border-gray2 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border">
           일정을 불러오는 중이에요.
         </div>
       </div>
@@ -138,7 +139,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   if (isEdit && !schedule && isError) {
     return (
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
-        <div className="text-bodySm text-gray5 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border sm:border-gray2">
+        <div className="text-bodySm text-gray5 sm:border-gray2 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border">
           {displayErrorMessage}
         </div>
       </div>
@@ -148,7 +149,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   if (isEdit && !schedule) {
     return (
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
-        <div className="text-bodySm text-gray5 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border sm:border-gray2">
+        <div className="text-bodySm text-gray5 sm:border-gray2 overflow-hidden rounded-2xl bg-white px-4 py-6 sm:border">
           수정할 일정을 찾을 수 없어요.
         </div>
       </div>
@@ -158,7 +159,7 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   return (
     <ScheduleCreateProvider value={createValue}>
       <div className="max-w-layout mx-auto w-full py-4 sm:px-4">
-        <div className="overflow-hidden rounded-2xl bg-white sm:border sm:border-gray2">
+        <div className="sm:border-gray2 overflow-hidden rounded-2xl bg-white sm:border">
           <ScheduleCreateForm
             isDeleting={remove.isPending}
             isSaving={isEdit ? update.isPending : create.isPending}
