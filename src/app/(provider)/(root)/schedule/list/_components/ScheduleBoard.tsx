@@ -41,6 +41,11 @@ type ScheduleViewState = {
   view: Date;
 };
 
+type Banner = {
+  id: number;
+  message: string;
+};
+
 function descriptionText() {
   return '학사 일정과 개인 일정을 확인하고 관리할 수 있어요.';
 }
@@ -60,7 +65,7 @@ export default function ScheduleBoard() {
     view: new Date(today.getFullYear(), today.getMonth(), 1),
   }));
   const [overlay, setOverlay] = useState<ScheduleOverlayState>({ type: 'none' });
-  const [bannerText, setBannerText] = useState<string | null>(null);
+  const [banner, setBanner] = useState<Banner | null>(null);
   const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
   const create = useCreateSchedule();
@@ -89,14 +94,14 @@ export default function ScheduleBoard() {
   });
 
   useEffect(() => {
-    if (!bannerText) return;
+    if (!banner) return;
 
     const timer = window.setTimeout(() => {
-      setBannerText(null);
+      setBanner(null);
     }, 2000);
 
     return () => window.clearTimeout(timer);
-  }, [bannerText]);
+  }, [banner]);
 
   useEffect(() => {
     if (!detailOpen) return;
@@ -232,7 +237,7 @@ export default function ScheduleBoard() {
   }, []);
 
   const closeBanner = useCallback(() => {
-    setBannerText(null);
+    setBanner(null);
   }, []);
 
   const saveCreate = useCallback(
@@ -240,7 +245,7 @@ export default function ScheduleBoard() {
       try {
         await create.mutateAsync(payload);
         setOverlay({ type: 'none' });
-        setBannerText('일정이 추가되었어요!');
+        setBanner({ id: Date.now(), message: '일정이 추가되었어요!' });
       } catch (error) {
         showToast(getErrorMessage('schedule', error, 'create'), 'error');
       }
@@ -260,7 +265,7 @@ export default function ScheduleBoard() {
           payload,
         });
         setOverlay({ type: 'none' });
-        setBannerText('일정이 수정되었어요!');
+        setBanner({ id: Date.now(), message: '일정이 수정되었어요!' });
       } catch (error) {
         showToast(getErrorMessage('schedule', error, 'update'), 'error');
       }
@@ -276,7 +281,7 @@ export default function ScheduleBoard() {
     try {
       await remove.mutateAsync(editSchedule.id);
       setOverlay({ type: 'none' });
-      setBannerText('일정이 삭제되었어요!');
+      setBanner({ id: Date.now(), message: '일정이 삭제되었어요!' });
     } catch (error) {
       showToast(getErrorMessage('schedule', error, 'delete'), 'error');
     }
@@ -348,11 +353,12 @@ export default function ScheduleBoard() {
             />
 
             <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
-              {bannerText ? (
+              {banner ? (
                 <ToastView
                   toast={{
-                    className: bannerText === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
-                    message: bannerText,
+                    className: banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
+                    id: banner.id,
+                    message: banner.message,
                     tone: 'success',
                   }}
                   onHideAction={closeBanner}
