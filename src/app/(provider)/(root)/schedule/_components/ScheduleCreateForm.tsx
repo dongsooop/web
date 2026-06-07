@@ -6,6 +6,7 @@ import { Divider } from '@/components/ui/Divider';
 import { useScheduleForm } from '@/features/schedule/hooks/useScheduleForm';
 import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTimePicker';
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
+import type { ScheduleColorToken } from '@/features/schedule/types/form';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import { useScheduleCreate } from './ScheduleCreateContext';
 
@@ -21,7 +22,7 @@ type ScheduleCreateFormProps = {
 };
 
 type ColorItem = {
-  id: string;
+  id: ScheduleColorToken;
   bg: string;
 };
 
