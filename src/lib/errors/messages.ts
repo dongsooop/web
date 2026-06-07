@@ -52,11 +52,20 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
-  schedule: (err) => {
-    return (
-      common(err) ??
-      '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-    );
+  schedule: (err, context) => {
+    if (context === 'create') {
+      return common(err) ?? '일정을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'update') {
+      return common(err) ?? '일정을 수정하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'delete') {
+      return common(err) ?? '일정을 삭제하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    return common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
   },
   mypage: (err) => {
     return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';

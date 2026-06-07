@@ -11,8 +11,7 @@ import {
   shiftCalendarMonth,
   WEEK_LABELS,
 } from '@/features/schedule/lib/calendar';
-import { toDateKey, toMonthKey } from '@/features/schedule/lib/date';
-import { formatDateLabel, formatMonthLabel } from '@/utils/formatter/date';
+import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 
 export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
@@ -40,9 +39,8 @@ export default function MiniCalendar() {
       return;
     }
 
-    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
+    previouslyFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     dialogRef.current?.focus();
 
@@ -164,19 +162,12 @@ export default function MiniCalendar() {
               {displayErrorMessage}
             </div>
           ) : isLoading ? (
-            <div className="grid grid-cols-3 gap-2">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
-                />
-              ))}
-            </div>
+            <div className="min-h-11" aria-hidden="true" />
           ) : visibleSchedules.length > 0 ? (
             <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
                 <button
-                  key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
+                  key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
                   type="button"
                   onClick={() => setOpenedScheduleIndex(index)}
                   className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
