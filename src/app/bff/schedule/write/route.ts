@@ -21,8 +21,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let rawBody: unknown;
+
   try {
-    const body = (await request.json()) as Partial<ScheduleCreateRequest>;
+    rawBody = await request.json();
+  } catch {
+    return NextResponse.json(
+      { message: '잘못된 요청 형식입니다.' },
+      { status: HttpStatusCode.BAD_REQUEST },
+    );
+  }
+
+  try {
+    const body = (rawBody ?? {}) as Partial<ScheduleCreateRequest>;
     const payload: ScheduleCreateRequest = {
       color: trimValue(body.color),
       title: trimValue(body.title),
