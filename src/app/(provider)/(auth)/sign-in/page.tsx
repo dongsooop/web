@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import SignInForm from './_components/SignInForm';
 
 export default function SignInPage() {
@@ -5,7 +7,9 @@ export default function SignInPage() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-center bg-white px-4">
-      <SignInForm kakaoJsKey={kakaoJsKey} />
+      <Suspense fallback={null}>
+        <SignInForm kakaoJsKey={kakaoJsKey} />
+      </Suspense>
     </div>
   );
 }
