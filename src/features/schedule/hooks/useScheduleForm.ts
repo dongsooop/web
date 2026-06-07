@@ -13,7 +13,7 @@ import {
   reduceForm,
 } from '../lib/form-utils';
 import type { ScheduleCreateRequest } from '../types/request';
-import type { PickerTarget } from '../types/form';
+import type { PickerTarget, ScheduleColorToken } from '../types/form';
 import type { Schedule } from '../types/ui-model';
 
 type UseScheduleFormOptions = {
@@ -65,7 +65,7 @@ export function useScheduleForm({ initialDate, schedule, onSaveAction }: UseSche
       allDay: state.allDay,
       setAllDay: (value: boolean) => dispatch({ type: 'allDay', value }),
       color: state.color,
-      setColor: (value) => dispatch({ type: 'color', value }),
+      setColor: (value: ScheduleColorToken) => dispatch({ type: 'color', value }),
       startAt: state.startAt,
       endAt: state.endAt,
     },
