@@ -24,7 +24,16 @@ export function fromDateKey(value?: string) {
   const [year, month, day] = value.split('-').map(Number);
   const date = new Date(year, month - 1, day);
 
-  return Number.isNaN(date.getTime()) ? undefined : date;
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return date;
 }
 
 export function parseMonthKey(value?: string) {
@@ -59,8 +68,16 @@ export function getWeekNumber(date: Date): number {
   return Math.ceil((((utcDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
+function getWeekYear(date: Date) {
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+
+  return utcDate.getUTCFullYear();
+}
+
 export function getWeekKey(date: Date = new Date()): string {
-  return `${date.getFullYear()}-W${getWeekNumber(date)}`;
+  return `${getWeekYear(date)}-W${getWeekNumber(date)}`;
 }
 
 export function getTodayLabel() {
