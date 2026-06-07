@@ -57,25 +57,29 @@ export function useKakaoLink({
   };
 
   const init = () => {
-    ready();
+    try {
+      ready();
+    } catch {
+      // Ignore eager init errors here and let start() surface them consistently.
+    }
   };
 
   const start = () => {
-    if (!ready() || !window.Kakao) {
-      onError(getErrorMessage('social', new Error(), 'sdk'));
-      onFinish();
-      return;
-    }
-
-    const nextRedirectUri = resolveRedirectUri(redirectPath);
-
-    if (!nextRedirectUri) {
-      onError(getErrorMessage('social', new Error(), 'sdk'));
-      onFinish();
-      return;
-    }
-
     try {
+      if (!ready() || !window.Kakao) {
+        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onFinish();
+        return;
+      }
+
+      const nextRedirectUri = resolveRedirectUri(redirectPath);
+
+      if (!nextRedirectUri) {
+        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onFinish();
+        return;
+      }
+
       const state = `${stateType}:${window.crypto.randomUUID()}`;
       setSocialState(stateKey, state);
 
