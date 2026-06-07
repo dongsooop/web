@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { CalendarDays, KeyRound, Link2, Table2, UserX } from 'lucide-react';
@@ -23,12 +24,21 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   const { deleteAccount } = useAuth();
   const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
+  const redirectId = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectId.current !== null) {
+        window.clearTimeout(redirectId.current);
+      }
+    };
+  }, []);
 
   const handleDelete = async () => {
     try {
       await deleteAccount();
       showToast('회원 탈퇴가 완료되었어요.', 'success');
-      window.setTimeout(() => {
+      redirectId.current = window.setTimeout(() => {
         router.replace('/');
       }, 1200);
     } catch (error) {
