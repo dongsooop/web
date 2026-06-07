@@ -111,8 +111,17 @@ export function useSocialCallback<T>({
 
         didRun.current = true;
         await run(result.payload);
+
+        if (!active) {
+          return;
+        }
+
         move(successPath);
       } catch (error) {
+        if (!active) {
+          return;
+        }
+
         move(buildErrorPath(errorPath, getErrorMessage('social', error, context)));
       }
     };
