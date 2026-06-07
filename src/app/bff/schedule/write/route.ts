@@ -11,6 +11,13 @@ function trimValue(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function isValidRange(startAt: string, endAt: string) {
+  const start = new Date(startAt);
+  const end = new Date(endAt);
+
+  return !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && start < end;
+}
+
 export async function POST(request: NextRequest) {
   const { accessToken, refreshToken, appCheckToken } = extractAuthContext(request);
 
@@ -45,6 +52,13 @@ export async function POST(request: NextRequest) {
     if (!payload.color || !payload.title || !payload.startAt || !payload.endAt) {
       return NextResponse.json(
         { message: '일정 정보를 올바르게 입력해 주세요.' },
+        { status: HttpStatusCode.BAD_REQUEST },
+      );
+    }
+
+    if (!isValidRange(payload.startAt, payload.endAt)) {
+      return NextResponse.json(
+        { message: '일정 시간을 올바르게 입력해 주세요.' },
         { status: HttpStatusCode.BAD_REQUEST },
       );
     }

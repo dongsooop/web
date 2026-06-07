@@ -16,6 +16,13 @@ function parseId(value: string) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+function isValidRange(startAt: string, endAt: string) {
+  const start = new Date(startAt);
+  const end = new Date(endAt);
+
+  return !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && start < end;
+}
+
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -63,6 +70,13 @@ export async function PATCH(
     if (!payload.color || !payload.title || !payload.startAt || !payload.endAt) {
       return NextResponse.json(
         { message: '일정 정보를 올바르게 입력해 주세요.' },
+        { status: HttpStatusCode.BAD_REQUEST },
+      );
+    }
+
+    if (!isValidRange(payload.startAt, payload.endAt)) {
+      return NextResponse.json(
+        { message: '일정 시간을 올바르게 입력해 주세요.' },
         { status: HttpStatusCode.BAD_REQUEST },
       );
     }
