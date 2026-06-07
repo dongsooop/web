@@ -57,7 +57,7 @@ export function useAuth() {
       const session = await getSession();
 
       if (session?.isLoggedIn && session.user) {
-        setUser(toUserModel(session.user));
+        saveSignedInUser(session.user);
         return;
       }
 
@@ -75,7 +75,7 @@ export function useAuth() {
       setReady();
       initInFlightRef.current = false;
     }
-  }, [clearAuth, setReady, setUser]);
+  }, [clearAuth, saveSignedInUser, setReady]);
 
   const signIn = useCallback(
     async (payload: SignInRequest) => {
