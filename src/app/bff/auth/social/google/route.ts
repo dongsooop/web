@@ -16,6 +16,13 @@ export async function POST(request: NextRequest) {
     return createSessionExpiredResponse();
   }
 
+  if (!auth.appCheckToken) {
+    return NextResponse.json(
+      { message: 'Unauthorized: App Check token is missing' },
+      { status: HttpStatusCode.UNAUTHORIZED },
+    );
+  }
+
   let rawBody: unknown;
 
   try {
@@ -71,6 +78,13 @@ export async function DELETE(request: NextRequest) {
 
   if (!auth.accessToken) {
     return createSessionExpiredResponse();
+  }
+
+  if (!auth.appCheckToken) {
+    return NextResponse.json(
+      { message: 'Unauthorized: App Check token is missing' },
+      { status: HttpStatusCode.UNAUTHORIZED },
+    );
   }
 
   let rawBody: unknown;

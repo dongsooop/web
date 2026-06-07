@@ -61,6 +61,13 @@ export async function DELETE(request: NextRequest) {
     return createSessionExpiredResponse();
   }
 
+  if (!auth.appCheckToken) {
+    return NextResponse.json(
+      { message: 'Unauthorized: App Check token is missing' },
+      { status: HttpStatusCode.UNAUTHORIZED },
+    );
+  }
+
   try {
     const result = await unlinkSocialWithSpring('kakao', 'mobile', {
       accessToken: auth.accessToken,
