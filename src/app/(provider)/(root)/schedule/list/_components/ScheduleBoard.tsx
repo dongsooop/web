@@ -166,6 +166,10 @@ export default function ScheduleBoard() {
   const selectDate = useCallback(
     (key: string) => {
       if (key === selected) {
+        if (!window.matchMedia('(min-width: 640px)').matches) {
+          setOverlay((state) => (state.type === 'none' ? { type: 'detail' } : state));
+        }
+
         return;
       }
 
