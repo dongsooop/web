@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 
-type ToastTone = 'default' | 'success' | 'error';
-type ToastWidth = 'default' | 'wide';
-type ToastPosition = 'top' | 'socialAction';
+export type ToastTone = 'default' | 'success' | 'error';
+export type ToastWidth = 'default' | 'wide';
+export type ToastPosition = 'top' | 'socialAction';
 
-type Toast = {
+export type Toast = {
   className?: string;
   id: number;
   message: string;
