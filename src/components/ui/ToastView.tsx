@@ -4,16 +4,15 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { CheckCircle2, CircleAlert, Info } from 'lucide-react';
 
+import type { ToastTone, ToastWidth } from '@/store/useToastStore';
 import { useToastStore } from '@/store/useToastStore';
-
-type ToastTone = 'default' | 'success' | 'error';
 
 type ToastItem = {
   className?: string;
   id?: number;
   message: string;
   tone: ToastTone;
-  width?: 'default' | 'wide';
+  width?: ToastWidth;
   position?: 'top' | 'socialAction';
 };
 
