@@ -3,6 +3,8 @@ import 'server-only';
 import { serverFetch } from '@/lib/api/serverFetch';
 import { serverFetchAuth } from '@/lib/api/serverFetchAuth';
 
+import type { ScheduleCreateRequest } from '../types/request';
+
 type ScheduleSpringRequestOptions = {
   appCheckToken?: string;
 };
@@ -17,6 +19,16 @@ function getRequiredScheduleEndpoint() {
 
   if (!endpoint) {
     throw new Error('CALENDAR_ENDPOINT_MISSING');
+  }
+
+  return endpoint;
+}
+
+function getRequiredScheduleWriteEndpoint() {
+  const endpoint = process.env.CALENDAR_WRITE_ENDPOINT;
+
+  if (!endpoint) {
+    throw new Error('CALENDAR_WRITE_ENDPOINT_MISSING');
   }
 
   return endpoint;
@@ -45,6 +57,51 @@ export async function fetchScheduleWithSpring(
 ) {
   return serverFetchAuth(buildScheduleUrl(options.yearMonth), {
     method: 'GET',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export async function createScheduleWithSpring(
+  payload: ScheduleCreateRequest,
+  options: ScheduleSpringAuthRequestOptions,
+) {
+  const endpoint = getRequiredScheduleWriteEndpoint();
+
+  return serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export async function updateScheduleWithSpring(
+  id: number,
+  payload: ScheduleCreateRequest,
+  options: ScheduleSpringAuthRequestOptions,
+) {
+  const endpoint = `${getRequiredScheduleWriteEndpoint()}/${id}`;
+
+  return serverFetchAuth(endpoint, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export async function deleteScheduleWithSpring(
+  id: number,
+  options: ScheduleSpringAuthRequestOptions,
+) {
+  const endpoint = `${getRequiredScheduleWriteEndpoint()}/${id}`;
+
+  return serverFetchAuth(endpoint, {
+    method: 'DELETE',
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,

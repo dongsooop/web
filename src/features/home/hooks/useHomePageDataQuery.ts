@@ -7,7 +7,7 @@ import { fetchCafeteria } from '@/features/cafeteria/client/cafeteria.api';
 import { mapCafeteriaResponseToUi } from '@/features/cafeteria/mapper';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
-import { getWeekKey } from '@/utils/date/date';
+import { getWeekKey } from '@/utils/date';
 
 import { fetchGuestHome, fetchHome } from '../client/home.api';
 import { mapHomeResponseToUi } from '../mapper';

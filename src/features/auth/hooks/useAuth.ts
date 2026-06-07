@@ -2,11 +2,21 @@ import { useCallback, useRef } from 'react';
 
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
-import { getSession, logout as logoutRequest, signIn as signInRequest } from '../client/auth.api';
+import {
+  deleteAccount as deleteRequest,
+  getSession,
+  logout as logoutRequest,
+  signInGoogleSocial as signInGoogleSocialRequest,
+  signInKakaoSocial as signInKakaoSocialRequest,
+  signIn as signInRequest,
+} from '../client/auth.api';
 import { toUserModel } from '../mapper';
 import { useAuthStore } from '../stores/useAuthStore';
 
 import type { SignInRequest } from '../types/request';
+import type { UserResponse } from '../types/response';
+
+const AUTH_INIT_MIN_DELAY_MS = 300;
 
 export function useAuth() {
   const initInFlightRef = useRef(false);
@@ -21,12 +31,21 @@ export function useAuth() {
   const expireSession = useAuthStore((state) => state.expireSession);
   const clearExpired = useAuthStore((state) => state.clearExpired);
 
+  const saveSignedInUser = useCallback(
+    (user: UserResponse) => {
+      setUser(toUserModel(user));
+      clearExpired();
+    },
+    [clearExpired, setUser],
+  );
+
   const initSession = useCallback(async () => {
     if (initInFlightRef.current) {
       return;
     }
 
     initInFlightRef.current = true;
+    const startTime = Date.now();
 
     try {
       const appCheckToken = useAppCheckStore.getState().token;
@@ -38,7 +57,7 @@ export function useAuth() {
       const session = await getSession();
 
       if (session?.isLoggedIn && session.user) {
-        setUser(toUserModel(session.user));
+        saveSignedInUser(session.user);
         return;
       }
 
@@ -46,10 +65,17 @@ export function useAuth() {
     } catch {
       clearAuth();
     } finally {
+      const elapsed = Date.now() - startTime;
+      const remainingDelay = AUTH_INIT_MIN_DELAY_MS - elapsed;
+
+      if (remainingDelay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remainingDelay));
+      }
+
       setReady();
       initInFlightRef.current = false;
     }
-  }, [clearAuth, setReady, setUser]);
+  }, [clearAuth, saveSignedInUser, setReady]);
 
   const signIn = useCallback(
     async (payload: SignInRequest) => {
@@ -59,12 +85,39 @@ export function useAuth() {
         throw new Error('로그인 응답에 사용자 정보가 없습니다.');
       }
 
-      setUser(toUserModel(response.user));
-      clearExpired();
+      saveSignedInUser(response.user);
 
       return response;
     },
-    [clearExpired, setUser],
+    [saveSignedInUser],
+  );
+
+  const signInGoogleSocial = useCallback(
+    async (token: string) => {
+      const response = await signInGoogleSocialRequest(token);
+
+      if (!response?.user) {
+        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
+      }
+
+      saveSignedInUser(response.user);
+      return response;
+    },
+    [saveSignedInUser],
+  );
+
+  const signInKakaoSocial = useCallback(
+    async (code: string) => {
+      const response = await signInKakaoSocialRequest(code);
+
+      if (!response?.user) {
+        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
+      }
+
+      saveSignedInUser(response.user);
+      return response;
+    },
+    [saveSignedInUser],
   );
 
   const logout = useCallback(async () => {
@@ -72,8 +125,15 @@ export function useAuth() {
       await logoutRequest();
     } finally {
       clearAuth();
+      void initSession();
     }
-  }, [clearAuth]);
+  }, [clearAuth, initSession]);
+
+  const deleteAccount = useCallback(async () => {
+    await deleteRequest();
+    clearAuth();
+    void initSession();
+  }, [clearAuth, initSession]);
 
   return {
     user,
@@ -82,7 +142,10 @@ export function useAuth() {
     isExpired,
     initSession,
     signIn,
+    signInGoogleSocial,
+    signInKakaoSocial,
     logout,
+    deleteAccount,
     expireSession,
     clearExpired,
   };

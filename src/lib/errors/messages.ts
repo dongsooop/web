@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '../api/apiError';
 
-type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule';
+type Scope = 'home' | 'cafeteria' | 'auth' | 'signup' | 'schedule' | 'mypage' | 'social';
 
 function common(err: unknown): string | null {
   if (err instanceof ApiError) {
@@ -29,6 +29,17 @@ function common(err: unknown): string | null {
   return '알 수 없는 오류가 발생했어요.';
 }
 
+const socialMessages = {
+  login: '소셜 로그인 중 오류가 발생했어요.',
+  state: '소셜 계정 연동 정보를 불러오는 중\n오류가 발생했어요.',
+  link: '소셜 계정을 연동하는 중에 오류가 발생했어요.',
+  unlink: '소셜 계정을 연동 해제하는 중에 오류가 발생했어요.',
+  rateLimit: '카카오 로그인 요청이 너무 자주 발생했어요.\n잠시 후 다시 시도해 주세요.',
+  missingLink:
+    '회원가입 또는 소셜 로그인 연결 정보가 없어요.\n로그인 후 마이페이지에서 소셜 로그인 연결을 먼저 해주세요',
+  unauthorizedUnlink: '회원 정보를 확인하는 데 실패했어요\n잠시 후에 다시 시도해 주세요',
+} as const;
+
 const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> = {
   home: (err) => {
     return (
@@ -41,10 +52,60 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
-  schedule: (err) => {
-    return (
-      common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-    );
+  schedule: (err, context) => {
+    if (context === 'create') {
+      return common(err) ?? '일정을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'update') {
+      return common(err) ?? '일정을 수정하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'delete') {
+      return common(err) ?? '일정을 삭제하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    return common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+  },
+  mypage: (err) => {
+    return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+  },
+  social: (err, context) => {
+    if (context === 'kakaoRateLimit') {
+      return socialMessages.rateLimit;
+    }
+
+    if (context === 'sdk') {
+      return socialMessages.login;
+    }
+
+    if (context === 'state') {
+      return socialMessages.state;
+    }
+
+    if (err instanceof ApiError) {
+      if (context === 'login' && err.status === HttpStatusCode.BAD_REQUEST) {
+        return socialMessages.missingLink;
+      }
+
+      if (context === 'unlink' && err.status === HttpStatusCode.UNAUTHORIZED) {
+        return socialMessages.unauthorizedUnlink;
+      }
+    }
+
+    if (context === 'login') {
+      return socialMessages.login;
+    }
+
+    if (context === 'link') {
+      return socialMessages.link;
+    }
+
+    if (context === 'unlink') {
+      return socialMessages.unlink;
+    }
+
+    return common(err) ?? socialMessages.login;
   },
   auth: (err, context) => {
     if (context) {
@@ -63,6 +124,9 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
         }
       }
       if (err instanceof ApiError) {
+        if (context === 'deleteAccount') {
+          return common(err) ?? '회원 탈퇴 중 오류가 발생했어요.';
+        }
         if (context === 'verifyCode' && err.status === HttpStatusCode.BAD_REQUEST) {
           return '인증 코드가 일치하지 않아요.';
         }

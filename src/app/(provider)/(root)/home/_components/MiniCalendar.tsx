@@ -11,8 +11,7 @@ import {
   shiftCalendarMonth,
   WEEK_LABELS,
 } from '@/features/schedule/lib/calendar';
-import { toDateKey, toMonthKey } from '@/features/schedule/lib/date';
-import { formatDateLabel, formatMonthLabel } from '@/utils/formatter/date';
+import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 
 export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
@@ -40,9 +39,8 @@ export default function MiniCalendar() {
       return;
     }
 
-    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
+    previouslyFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     dialogRef.current?.focus();
 
@@ -70,7 +68,7 @@ export default function MiniCalendar() {
   return (
     <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
       <div className="flex items-center justify-between">
-        <div className="text-normal font-semibold text-black">일정</div>
+        <div className="text-body font-semibold text-black">일정</div>
 
         <div className="flex items-center gap-1">
           <button
@@ -94,9 +92,9 @@ export default function MiniCalendar() {
 
       <div className="mt-2 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="text-small w-6 font-semibold text-black">{monthText}</div>
+          <div className="text-caption w-6 font-semibold text-black">{monthText}</div>
 
-          <div className="text-gray5 text-small grid flex-1 grid-cols-7 text-center font-semibold">
+          <div className="text-gray5 text-caption grid flex-1 grid-cols-7 text-center font-semibold">
             {WEEK_LABELS.map((w) => (
               <div key={w} className="py-1">
                 {w}
@@ -149,43 +147,36 @@ export default function MiniCalendar() {
         <div className="border-gray2 mb-4 h-px w-full shrink-0 border-t" aria-hidden="true" />
         <div className="shrink-0 px-1">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-small font-semibold text-black">
+            <div className="text-caption font-semibold text-black">
               {formatDateLabel(selected)} 일정
             </div>
             {overflowCount > 0 ? (
-              <div className="text-small text-gray5 shrink-0 font-semibold">+{overflowCount}</div>
+              <div className="text-caption text-gray5 shrink-0 font-semibold">+{overflowCount}</div>
             ) : null}
           </div>
         </div>
 
         <div className="mt-3 min-h-11 px-1">
           {isError ? (
-            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
+            <div className="text-caption text-gray5 flex min-h-11 items-center justify-center text-center">
               {displayErrorMessage}
             </div>
           ) : isLoading ? (
-            <div className="grid grid-cols-3 gap-2">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="border-gray2 bg-gray1 min-h-11 animate-pulse rounded-xl border"
-                />
-              ))}
-            </div>
+            <div className="min-h-11" aria-hidden="true" />
           ) : visibleSchedules.length > 0 ? (
             <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
                 <button
-                  key={`${schedule.title}-${schedule.dateKey}-${schedule.startAt}-${index}`}
+                  key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
                   type="button"
                   onClick={() => setOpenedScheduleIndex(index)}
                   className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
                 >
                   <div className="min-w-0">
-                    <div className="text-small truncate font-semibold text-black">
+                    <div className="text-caption truncate font-semibold text-black">
                       {schedule.title}
                     </div>
-                    <div className="text-small text-gray5 mt-0.5 truncate">
+                    <div className="text-caption text-gray5 mt-0.5 truncate">
                       {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
@@ -193,7 +184,7 @@ export default function MiniCalendar() {
               ))}
             </div>
           ) : (
-            <div className="text-small text-gray5 flex min-h-11 items-center justify-center text-center">
+            <div className="text-caption text-gray5 flex min-h-11 items-center justify-center text-center">
               선택한 날짜에 예정된 일정이 없어요.
             </div>
           )}
@@ -215,7 +206,7 @@ export default function MiniCalendar() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="text-small text-gray5">{formatDateLabel(selected)} 일정</div>
+              <div className="text-caption text-gray5">{formatDateLabel(selected)} 일정</div>
               <button
                 type="button"
                 onClick={() => setOpenedScheduleIndex(null)}
@@ -225,10 +216,10 @@ export default function MiniCalendar() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="text-normal mt-3 font-semibold text-black">
+            <div className="text-body mt-3 font-semibold text-black">
               {visibleSchedules[openedScheduleIndex]?.title}
             </div>
-            <div className="text-small text-gray5 mt-2">
+            <div className="text-caption text-gray5 mt-2">
               {visibleSchedules[openedScheduleIndex]
                 ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
                 : ''}

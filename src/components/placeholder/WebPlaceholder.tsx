@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight, MonitorSmartphone } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 type WebPlaceholderProps = {
   title: string;
@@ -35,7 +36,7 @@ function StoreButton({ href, src, alt, label }: StoreButtonProps) {
           height={32}
           className="h-8 w-8 object-contain"
         />
-        <span className="text-large font-semibold text-black">{label}</span>
+        <span className="text-heading font-semibold text-black">{label}</span>
       </span>
       <ChevronRight className="text-gray5 h-5 w-5" />
     </Link>
@@ -66,15 +67,7 @@ export default function WebPlaceholder({
   return (
     <div className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 lg:px-6">
-        <section className="flex flex-col gap-3 px-1 pt-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-title mr-1 font-bold text-black">{title}</h1>
-            <span className="border-primary/15 bg-primary/5 text-normal text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 font-semibold">
-              <MonitorSmartphone className="text-large h-4 w-4" />웹 준비 중
-            </span>
-          </div>
-          <p className="text-large text-gray6">{description}</p>
-        </section>
+        <PageHeader title={title} description={description} isPreparing />
 
         <section className="border-gray2/70 flex rounded-xl border bg-white p-4 shadow-[0_10px_30px_rgba(31,41,55,0.04)] md:p-8 lg:px-12 lg:py-16">
           <div className="mx-auto flex w-full max-w-[760px] flex-col items-center text-center">
@@ -88,10 +81,10 @@ export default function WebPlaceholder({
             />
 
             <div className="mt-4 flex flex-col items-center gap-4">
-              <h2 className="md:text-title text-lg font-bold text-black">
+              <h2 className="md:text-title text-heading font-bold text-black">
                 웹에서는 아직 사용할 수 없는 기능이에요
               </h2>
-              <p className="text-normal md:text-large text-gray6 whitespace-pre-line">
+              <p className="text-body md:text-heading text-gray6 whitespace-pre-line">
                 이 기능은 앱에서 먼저 이용할 수 있어요.{'\n'}웹 버전에서도 순차적으로 지원될
                 예정이에요.
               </p>

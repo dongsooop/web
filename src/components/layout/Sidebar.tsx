@@ -15,6 +15,21 @@ export const NAV: NavItem[] = [
   { label: '마이페이지', href: '/mypage', icon: <User className="h-5 w-5" /> },
 ];
 
+export function isNavActive(pathname: string, href: string) {
+  if (href === '/mypage') {
+    return (
+      pathname === href ||
+      pathname.startsWith('/mypage/') ||
+      pathname === '/schedule' ||
+      pathname.startsWith('/schedule/') ||
+      pathname === '/timetable' ||
+      pathname.startsWith('/timetable/')
+    );
+  }
+
+  return pathname === href || pathname.startsWith(href + '/');
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
 
@@ -23,7 +38,7 @@ export default function Sidebar() {
       <div className="flex w-full flex-col items-center py-4">
         <nav className="flex w-full flex-col items-center gap-2">
           {NAV.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + '/');
+            const active = isNavActive(pathname, item.href);
 
             return (
               <Link
@@ -45,7 +60,7 @@ export default function Sidebar() {
                   {item.icon}
                 </div>
 
-                <div className={`text-small ${active ? 'text-primary' : 'text-gray4'}`}>
+                <div className={`text-caption ${active ? 'text-primary' : 'text-gray4'}`}>
                   {item.label}
                 </div>
               </Link>

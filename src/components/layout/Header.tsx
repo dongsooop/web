@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { NAV } from './Sidebar';
+import { isNavActive, NAV } from './Sidebar';
 
 export default function Header() {
   const router = useRouter();
@@ -26,7 +26,11 @@ export default function Header() {
       await logout();
     } catch {
     } finally {
-      router.refresh();
+      if (pathname.startsWith('/schedule')) {
+        router.replace('/mypage');
+      } else {
+        router.refresh();
+      }
       setIsLoggingOut(false);
     }
   };
@@ -39,7 +43,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMenuOpen((prev) => !prev)}
-              className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-lg lg:hidden"
+              className="hover:bg-gray1 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg lg:hidden"
               aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-global-nav"
@@ -47,15 +51,19 @@ export default function Header() {
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-            <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+            <Link
+              href="/"
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
               <Image src="/img/logo.svg" alt="Dongsoop" width={28} height={28} priority />
-              <span className="text-large font-semibold text-black">Dongsoop</span>
+              <span className="text-heading font-semibold text-black">Dongsoop</span>
             </Link>
           </div>
 
           <div className="flex items-center">
             {!isReady ? (
-              <div className="inline-flex min-h-[44px] items-center justify-center px-3 text-sm text-gray-400">
+              <div className="inline-flex min-h-11 items-center justify-center px-3 text-bodySm text-gray-400">
                 ...
               </div>
             ) : isLoggedIn ? (
@@ -63,14 +71,14 @@ export default function Header() {
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg px-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
               </button>
             ) : (
               <Link
                 href="/sign-in"
-                className="text-normal hover:bg-gray1 inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 font-semibold text-black"
+                className="text-body hover:bg-gray1 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg px-3 font-semibold text-black"
               >
                 로그인
               </Link>
@@ -95,11 +103,11 @@ export default function Header() {
         }`}
       >
         <div className="border-gray2 flex h-14 items-center justify-between border-b px-4">
-          <div className="text-normal font-semibold text-black">메뉴</div>
+          <div className="text-body font-semibold text-black">메뉴</div>
           <button
             type="button"
             onClick={() => setIsMenuOpen(false)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 items-center justify-center rounded-lg"
+            className="hover:bg-gray1 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg"
             aria-label="메뉴 닫기"
           >
             <X className="h-5 w-5" />
@@ -108,19 +116,19 @@ export default function Header() {
 
         <nav className="flex flex-1 flex-col gap-2 px-3 py-4">
           {NAV.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + '/');
+            const active = isNavActive(pathname, item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`inline-flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 ${
+                className={`inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 ${
                   active ? 'bg-primary/10 text-primary' : 'text-gray6 hover:bg-gray1'
                 }`}
               >
                 <span className="inline-flex h-5 w-5 items-center justify-center">{item.icon}</span>
-                <span className="text-normal font-semibold">{item.label}</span>
+                <span className="text-body font-semibold">{item.label}</span>
               </Link>
             );
           })}

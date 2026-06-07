@@ -21,7 +21,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({
       user,
       isExpired: false,
-      isReady: true,
     }),
 
   clearAuth: () =>

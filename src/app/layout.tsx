@@ -5,8 +5,11 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import QueryProvider from '@/providers/QueryProvider';
 import FirebaseProvider from '@/providers/FirebaseProvider';
+import GoogleProvider from '@/providers/GoogleProvider';
 import AuthInitializer from '@/features/auth/components/AuthInitializer';
 import SessionExpiredHandler from '@/features/auth/components/SessionExpiredHandler';
+import DialogView from '@/components/ui/DialogView';
+import ToastView from '@/components/ui/ToastView';
 
 const pretendard = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
@@ -23,17 +26,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const googleClientId = process.env.GOOGLE_WEB_CLIENT_ID ?? '';
+
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} font-pretendard flex min-h-dvh flex-col`}>
         <QueryProvider>
-          <FirebaseProvider>
-            <AuthInitializer />
-            <SessionExpiredHandler />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </FirebaseProvider>
+          <GoogleProvider clientId={googleClientId}>
+            <FirebaseProvider>
+              <AuthInitializer />
+              <SessionExpiredHandler />
+              <Header />
+              <DialogView />
+              <ToastView />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </FirebaseProvider>
+          </GoogleProvider>
         </QueryProvider>
       </body>
     </html>

@@ -12,8 +12,8 @@ interface AgreementItemProps {
 const AgreementItem = ({ label, link, checked, onChange }: AgreementItemProps) => {
   return (
     <div className="flex items-center justify-between">
-      <label className="flex min-h-[44px] cursor-pointer items-center py-1">
-        <div className="-ml-3 flex h-[44px] w-[44px] items-center justify-center">
+      <label className="flex min-h-11 cursor-pointer items-center py-1">
+        <div className="-ml-3 flex h-11 w-11 items-center justify-center">
           <input
             type="checkbox"
             checked={checked}
@@ -21,13 +21,13 @@ const AgreementItem = ({ label, link, checked, onChange }: AgreementItemProps) =
             className="accent-primary h-4 w-4 cursor-pointer"
           />
         </div>
-        <span className="text-normal font-regular leading-none text-black">{label}</span>
+        <span className="text-body font-regular leading-none text-black">{label}</span>
       </label>
       <Link
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-small text-gray4 ml-auto flex min-h-[44px] min-w-[44px] items-center justify-end font-bold hover:underline"
+        className="text-caption text-gray4 ml-auto flex min-h-11 min-w-11 items-center justify-end font-bold hover:underline"
       >
         보기
       </Link>
@@ -56,7 +56,7 @@ export default function AgreementSection({
   return (
     <div className="flex flex-col gap-4 px-4">
       <div className="flex items-end gap-2">
-        <p className="text-normal font-bold text-black">
+        <p className="text-body font-bold text-black">
           약관 동의<span className="text-primary"> *</span>
         </p>
       </div>

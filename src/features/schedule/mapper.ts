@@ -1,5 +1,5 @@
-import { toDateKey, toTimeKey } from './lib/date';
-import type { Schedule } from './types/model';
+import { toDateKey, toTimeKey } from '@/utils/date';
+import type { Schedule } from './types/ui-model';
 import type { ScheduleResponse, ScheduleResponseItem, ScheduleType } from './types/response';
 
 function parseDate(value: string) {
@@ -26,6 +26,20 @@ function getDateKey(item: ScheduleResponseItem) {
   return '';
 }
 
+function getEndDateKey(item: ScheduleResponseItem) {
+  const endDate = parseDate(item.endAt);
+  if (endDate) {
+    return toDateKey(endDate);
+  }
+
+  const startDate = parseDate(item.startAt);
+  if (startDate) {
+    return toDateKey(startDate);
+  }
+
+  return '';
+}
+
 function getTime(value: string) {
   const time = parseTime(value);
   if (time) {
@@ -47,15 +61,26 @@ function parseType(value: unknown): ScheduleType {
   return 'MEMBER';
 }
 
+function parseColor(value: unknown) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const hex = value.trim().replace(/^#/, '').toLowerCase();
+
+  return /^[0-9a-f]{6}$/.test(hex) ? hex : null;
+}
+
 function getTitle(item: ScheduleResponseItem) {
   return item.title.trim() ? item.title.trim() : '일정';
 }
 
 function toModel(item: ScheduleResponseItem): Schedule | null {
   const type = parseType(item.type);
-  const dateKey = getDateKey(item);
+  const startDateKey = getDateKey(item);
+  const endDateKey = getEndDateKey(item);
 
-  if (!dateKey) {
+  if (!startDateKey || !endDateKey) {
     return null;
   }
 
@@ -63,10 +88,12 @@ function toModel(item: ScheduleResponseItem): Schedule | null {
   const endAt = getTime(item.endAt);
 
   return {
+    color: parseColor(item.color),
     id: item.id,
     title: getTitle(item),
     location: item.location,
-    dateKey,
+    startDateKey,
+    endDateKey,
     startAt,
     endAt,
     type,

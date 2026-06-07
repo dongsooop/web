@@ -1,11 +1,17 @@
-import { toDateKey } from './date';
-import type { Schedule } from '../types/model';
+import { DAY_LABELS, dateKeysBetween, toDateKey } from '@/utils/date';
+import type { Schedule } from '../types/ui-model';
 
-export const WEEK_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const;
+export const WEEK_LABELS = DAY_LABELS;
 
 export type CalendarCell = {
   date: number | null;
   key: string;
+};
+
+export type MonthlyCalendarCell = {
+  key: string;
+  date: Date;
+  inMonth: boolean;
 };
 
 type VisibleSchedulesResult = {
@@ -30,6 +36,25 @@ export function buildCalendarCells(view: Date): CalendarCell[] {
   }
 
   return cells;
+}
+
+export function buildMonthlyCalendarCells(view: Date): MonthlyCalendarCell[] {
+  const year = view.getFullYear();
+  const month = view.getMonth();
+  const first = new Date(year, month, 1);
+  const start = new Date(first);
+  start.setDate(first.getDate() - first.getDay());
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+
+    return {
+      key: toDateKey(date),
+      date,
+      inMonth: date.getMonth() === month,
+    };
+  });
 }
 
 export function shiftCalendarMonth(view: Date, selectedDateKey: string, delta: number) {
@@ -59,7 +84,23 @@ export function sortSchedules(schedules: Schedule[]) {
 }
 
 export function filterSchedulesByDate(schedules: Schedule[], dateKey: string) {
-  return schedules.filter((schedule) => schedule.dateKey === dateKey);
+  return schedules.filter(
+    (schedule) => schedule.startDateKey <= dateKey && schedule.endDateKey >= dateKey,
+  );
+}
+
+export function groupSchedulesByDate(schedules: Schedule[]) {
+  return schedules.reduce<Record<string, Schedule[]>>((acc, schedule) => {
+    const keys = dateKeysBetween(schedule.startDateKey, schedule.endDateKey);
+
+    keys.forEach((dateKey) => {
+      const saved = acc[dateKey] ?? [];
+      saved.push(schedule);
+      acc[dateKey] = saved;
+    });
+
+    return acc;
+  }, {});
 }
 
 export function getVisibleSchedules(
@@ -77,5 +118,13 @@ export function getVisibleSchedules(
 }
 
 export function formatScheduleTimeLabel(schedule: Schedule) {
-  return schedule.type === 'OFFICIAL' ? '학사일정' : `${schedule.startAt} - ${schedule.endAt}`;
+  if (schedule.type === 'OFFICIAL') {
+    return '학사일정';
+  }
+
+  if (schedule.startAt === '00:00' && schedule.endAt === '23:59') {
+    return '종일';
+  }
+
+  return `${schedule.startAt} - ${schedule.endAt}`;
 }

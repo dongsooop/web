@@ -32,20 +32,20 @@ export default function Timetable({ timetable }: TimetableProps) {
     <section className="border-gray2 flex h-full flex-col rounded-2xl border bg-white p-4">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-normal font-semibold text-black">강의시간표</div>
-          <div className="text-small text-gray5">오늘 수업을 한눈에 확인하세요</div>
+          <div className="text-body font-semibold text-black">강의시간표</div>
+          <div className="text-caption text-gray5">오늘 수업을 한눈에 확인하세요</div>
         </div>
 
         {isLoggedIn ? (
           <Link
             href="/timetable"
-            className="text-small text-gray5 hover:bg-gray1 inline-flex min-h-11 items-center gap-2 rounded-full px-3 py-1"
+            className="text-caption text-gray5 hover:bg-gray1 inline-flex min-h-11 items-center gap-2 rounded-full px-3 py-1"
             aria-label="더보기"
           >
             <ChevronRight className="h-4 w-4" />
           </Link>
         ) : (
-          <span className="text-small text-gray4 inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full px-3 py-1">
+          <span className="text-caption text-gray4 inline-flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full px-3 py-1">
             <ChevronRight className="h-4 w-4" />
           </span>
         )}
@@ -54,12 +54,9 @@ export default function Timetable({ timetable }: TimetableProps) {
       <div className="bg-primary/5 relative mt-4 flex-1 rounded-xl p-4">
         {!isLoggedIn ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl">
+            <div className="absolute inset-0 rounded-xl bg-white/35" aria-hidden="true" />
             <div
-              className="absolute inset-0 rounded-xl bg-white/35"
-              aria-hidden="true"
-            />
-            <div
-              className="text-small text-gray6 relative rounded-full bg-white/90 px-4 py-2 font-semibold shadow-sm backdrop-blur-sm"
+              className="text-caption text-gray6 relative rounded-full bg-white/90 px-4 py-2 font-semibold shadow-sm backdrop-blur-sm"
               role="note"
               aria-live="polite"
             >
@@ -80,7 +77,7 @@ export default function Timetable({ timetable }: TimetableProps) {
                   className="grid grid-cols-[88px_1fr] items-center gap-3"
                 >
                   <div
-                    className="text-small text-gray5 flex h-full flex-col justify-between py-1 leading-4 font-semibold"
+                    className="text-caption text-gray5 flex h-full flex-col justify-between py-1 leading-4 font-semibold"
                     style={{ height: `${TIMETABLE_ROW_HEIGHT}px` }}
                   >
                     <span>{formatDisplayTime(slot.startAt)}</span>
@@ -92,7 +89,7 @@ export default function Timetable({ timetable }: TimetableProps) {
                     style={{ height: `${TIMETABLE_ROW_HEIGHT}px` }}
                   >
                     <div className="flex h-full min-w-0 flex-col justify-center">
-                      <div className="text-small truncate font-semibold text-white">
+                      <div className="text-caption truncate font-semibold text-white">
                         {slot.title}
                       </div>
                       <div className="text-[11px] text-white/90">
@@ -105,7 +102,7 @@ export default function Timetable({ timetable }: TimetableProps) {
               ))}
             </div>
           ) : (
-            <div className="text-small text-gray5 flex min-h-[220px] items-center justify-center">
+            <div className="text-caption text-gray5 flex min-h-[220px] items-center justify-center">
               오늘 예정된 수업이 없어요.
             </div>
           )}

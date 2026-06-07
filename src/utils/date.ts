@@ -1,0 +1,106 @@
+export const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
+function pad(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+export function toDateKey(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function toMonthKey(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
+export function toTimeKey(date: Date) {
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function fromDateKey(value?: string) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return undefined;
+  }
+
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return date;
+}
+
+export function parseMonthKey(value?: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  const match = value.match(/^\d{4}-\d{2}/);
+  return match ? match[0] : undefined;
+}
+
+export function dateKeysBetween(startKey: string, endKey: string) {
+  const [startYear, startMonth, startDay] = startKey.split('-').map(Number);
+  const [endYear, endMonth, endDay] = endKey.split('-').map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay);
+  const end = new Date(endYear, endMonth - 1, endDay);
+  const keys: string[] = [];
+
+  for (const current = new Date(start); current <= end; current.setDate(current.getDate() + 1)) {
+    keys.push(toDateKey(current));
+  }
+
+  return keys;
+}
+
+export function getWeekNumber(date: Date): number {
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+
+  return Math.ceil((((utcDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+function getWeekYear(date: Date) {
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+
+  return utcDate.getUTCFullYear();
+}
+
+export function getWeekKey(date: Date = new Date()): string {
+  return `${getWeekYear(date)}-W${getWeekNumber(date)}`;
+}
+
+export function getTodayLabel() {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const date = today.getDate();
+  const dayOfWeek = DAY_LABELS[today.getDay()];
+
+  return `${month}월 ${date}일 (${dayOfWeek})`;
+}
+
+export function formatDateLabel(dateKey: string) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+}
+
+export function formatDateWithDayLabel(dateKey: string) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const dayOfWeek = DAY_LABELS[new Date(year, month - 1, day).getDay()];
+
+  return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+}
+
+export function formatMonthLabel(date: Date) {
+  return `${date.getMonth() + 1}월`;
+}
