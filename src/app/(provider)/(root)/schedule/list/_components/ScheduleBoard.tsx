@@ -104,12 +104,25 @@ export default function ScheduleBoard() {
   }, [banner]);
 
   useEffect(() => {
-    if (!detailOpen) return;
-    if (window.matchMedia('(min-width: 768px)').matches) return;
+    const media = window.matchMedia('(min-width: 768px)');
+
+    if (!detailOpen || media.matches) {
+      unlockBody();
+      return;
+    }
 
     lockBody();
 
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        unlockBody();
+      }
+    };
+
+    media.addEventListener('change', onChange);
+
     return () => {
+      media.removeEventListener('change', onChange);
       unlockBody();
     };
   }, [detailOpen]);
