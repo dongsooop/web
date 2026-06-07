@@ -5,6 +5,8 @@ type KakaoTokenResponse = {
   access_token?: unknown;
 };
 
+const kakaoTimeout = 10_000;
+
 export async function exchangeKakaoCode(code: string, redirectUri: string) {
   const clientId = process.env.KAKAO_REST_KEY;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
@@ -24,14 +26,37 @@ export async function exchangeKakaoCode(code: string, redirectUri: string) {
     body.set('client_secret', clientSecret);
   }
 
-  const response = await fetch('https://kauth.kakao.com/oauth/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-    },
-    body: body.toString(),
-    cache: 'no-store',
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), kakaoTimeout);
+
+  let response: Response;
+
+  try {
+    response = await fetch('https://kauth.kakao.com/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+      body: body.toString(),
+      cache: 'no-store',
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError(
+        HttpStatusCode.GATEWAY_TIMEOUT,
+        '카카오 인증 요청 시간이 초과되었습니다.',
+      );
+    }
+
+    throw new ApiError(HttpStatusCode.BAD_GATEWAY, '카카오 인증 서버와 통신하지 못했습니다.');
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     throw new ApiError(HttpStatusCode.BAD_REQUEST, '카카오 인증을 완료하지 못했습니다.');
