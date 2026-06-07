@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { signInKakaoSocial } from '@/features/auth/client/auth.api';
@@ -13,7 +14,7 @@ import { getErrorMessage } from '@/lib/errors/messages';
 
 const kakaoStateKey = 'kakao_signin_state';
 
-export default function KakaoSignInCallbackPage() {
+function KakaoSignInCallbackContent() {
   const searchParams = useSearchParams();
   const setUser = useAuthStore((state) => state.setUser);
   const clearExpired = useAuthStore((state) => state.clearExpired);
@@ -50,4 +51,12 @@ export default function KakaoSignInCallbackPage() {
   });
 
   return <SocialCallbackScreen message={message} />;
+}
+
+export default function KakaoSignInCallbackPage() {
+  return (
+    <Suspense fallback={<SocialCallbackScreen message="보안 확인 중이에요." />}>
+      <KakaoSignInCallbackContent />
+    </Suspense>
+  );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api';
@@ -12,7 +13,7 @@ import SocialPageLayout from '../../_components/SocialPageLayout';
 
 const googleStateKey = 'google_oauth_state';
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode')?.trim() === 'unlink' ? 'unlink' : 'link';
   const message = useSocialCallback({
@@ -51,5 +52,19 @@ export default function GoogleCallbackPage() {
     <SocialPageLayout>
       <SocialCallbackScreen message={message} wide boxed />
     </SocialPageLayout>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <SocialPageLayout>
+          <SocialCallbackScreen message="보안 확인 중이에요." wide boxed />
+        </SocialPageLayout>
+      }
+    >
+      <GoogleCallbackContent />
+    </Suspense>
   );
 }

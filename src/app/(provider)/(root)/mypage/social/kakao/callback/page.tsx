@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { linkKakaoSocial } from '@/features/auth/client/auth.api';
@@ -16,7 +17,7 @@ import SocialPageLayout from '../../_components/SocialPageLayout';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
-export default function KakaoCallbackPage() {
+function KakaoCallbackContent() {
   const searchParams = useSearchParams();
   const message = useSocialCallback({
     result: getKakaoCallbackResult(searchParams),
@@ -48,5 +49,19 @@ export default function KakaoCallbackPage() {
     <SocialPageLayout>
       <SocialCallbackScreen message={message} wide boxed />
     </SocialPageLayout>
+  );
+}
+
+export default function KakaoCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <SocialPageLayout>
+          <SocialCallbackScreen message="보안 확인 중이에요." wide boxed />
+        </SocialPageLayout>
+      }
+    >
+      <KakaoCallbackContent />
+    </Suspense>
   );
 }
