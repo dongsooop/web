@@ -14,8 +14,14 @@ import {
 import type { BackendSignInResponse } from '@/features/auth/types/backend';
 import { ApiError } from '@/lib/api/apiError';
 
+const defaultWebOrigin = 'https://www.dongsoop.site';
+
+function getWebOrigin() {
+  return process.env.NEXT_PUBLIC_WEB_SITE?.trim() || defaultWebOrigin;
+}
+
 function getSignInPage(request: NextRequest, path = '/sign-in', message?: string) {
-  const url = new URL(path, request.url);
+  const url = new URL(path, getWebOrigin() || request.url);
 
   if (message) {
     url.searchParams.set('error', message);
@@ -83,7 +89,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const redirectUri = new URL('/bff/auth/social/kakao/callback', request.url).toString();
+    const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin()).toString();
     const token = await exchangeKakaoCode(code, redirectUri);
     const data: BackendSignInResponse = await socialSignInWithSpring(
       'kakao',

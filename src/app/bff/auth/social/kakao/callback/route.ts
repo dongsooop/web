@@ -7,8 +7,14 @@ import { exchangeKakaoCode } from '@/features/auth/server/auth.kakao';
 import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
 import { ApiError } from '@/lib/api/apiError';
 
+const defaultWebOrigin = 'https://www.dongsoop.site';
+
+function getWebOrigin() {
+  return process.env.NEXT_PUBLIC_WEB_SITE?.trim() || defaultWebOrigin;
+}
+
 function getSocialPage(request: NextRequest, path = '/mypage/social', message?: string) {
-  const url = new URL(path, request.url);
+  const url = new URL(path, getWebOrigin() || request.url);
 
   if (message) {
     url.searchParams.set('error', message);
@@ -80,7 +86,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const redirectUri = new URL('/bff/auth/social/kakao/callback', request.url).toString();
+    const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin()).toString();
     const providerToken = await exchangeKakaoCode(code, redirectUri);
     const result = await linkKakaoSocialWithSpring(providerToken, {
       accessToken: auth.accessToken,
