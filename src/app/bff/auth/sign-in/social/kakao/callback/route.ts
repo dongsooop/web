@@ -32,28 +32,60 @@ function getSignInPage(request: NextRequest, path = '/sign-in', message?: string
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')?.trim() ?? '';
-  const state = request.nextUrl.searchParams.get('state')?.trim() ?? '';
   const error = request.nextUrl.searchParams.get('error')?.trim() ?? '';
   const errorDescription = request.nextUrl.searchParams.get('error_description')?.trim() ?? '';
-  const url = getSignInPage(request, '/sign-in/kakao/callback');
-
-  if (code) {
-    url.searchParams.set('code', code);
-  }
-
-  if (state) {
-    url.searchParams.set('state', state);
-  }
 
   if (error) {
-    url.searchParams.set('error', error);
+    return NextResponse.redirect(getSignInPage(request, '/sign-in', error));
   }
 
   if (errorDescription) {
-    url.searchParams.set('error_description', errorDescription);
+    return NextResponse.redirect(getSignInPage(request, '/sign-in', errorDescription));
   }
 
-  return NextResponse.redirect(url);
+  if (!code) {
+    return NextResponse.redirect(
+      getSignInPage(request, '/sign-in', '카카오 인증 코드가 필요합니다.'),
+    );
+  }
+
+  try {
+    const redirectUri = new URL('/bff/auth/sign-in/social/kakao/callback', getWebOrigin()).toString();
+    const token = await exchangeKakaoCode(code, redirectUri);
+    const { deviceToken, deviceType } = resolveDeviceContext(request);
+    const data: BackendSignInResponse = await socialSignInWithSpring('kakao', {
+      token,
+      deviceToken,
+      deviceType,
+    });
+
+    const response = NextResponse.redirect(new URL('/', getWebOrigin()));
+
+    setAuthCookies(response, data.accessToken, data.refreshToken);
+    setDeviceCookies(response, deviceToken, deviceType);
+
+    if (data.departmentType) {
+      setDepartmentTypeCookie(response, data.departmentType);
+    }
+
+    setStoredSessionUserCookie(response, {
+      id: data.id,
+      email: data.email,
+      nickname: data.nickname,
+      departmentType: data.departmentType ?? '',
+      role: Array.isArray(data.role) ? data.role : [],
+    });
+
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.redirect(getSignInPage(request, '/sign-in', error.message));
+    }
+
+    return NextResponse.redirect(
+      getSignInPage(request, '/sign-in', '소셜 로그인 처리 중 오류가 발생했습니다.'),
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -89,7 +121,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin()).toString();
+    const redirectUri = new URL('/bff/auth/sign-in/social/kakao/callback', getWebOrigin()).toString();
     const token = await exchangeKakaoCode(code, redirectUri);
     const data: BackendSignInResponse = await socialSignInWithSpring(
       'kakao',

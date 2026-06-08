@@ -54,6 +54,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
 
   const kakao = useKakaoLink({
     jsKey: kakaoJsKey,
+    redirectPath: '/bff/auth/sign-in/social/kakao/callback',
     stateKey: 'kakao_signin_state',
     stateType: 'signin',
     onError: openSocialErrorDialog,
