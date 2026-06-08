@@ -15,16 +15,32 @@ type UseKakaoLinkOptions = UseSocialStartOptions & {
   stateType?: 'signin' | 'link';
 };
 
-function resolveRedirectUri(path?: string) {
+function getWebOrigin() {
+  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
+
+  if (site) {
+    return site;
+  }
+
   if (typeof window === 'undefined') {
     return '';
   }
 
-  if (path?.trim()) {
-    return new URL(path.trim(), window.location.origin).toString();
+  return window.location.origin;
+}
+
+function resolveRedirectUri(path?: string) {
+  const origin = getWebOrigin();
+
+  if (!origin) {
+    return '';
   }
 
-  return new URL('/bff/auth/social/kakao/callback', window.location.origin).toString();
+  if (path?.trim()) {
+    return new URL(path.trim(), origin).toString();
+  }
+
+  return new URL('/bff/auth/social/kakao/callback', origin).toString();
 }
 
 function isRateLimit(error: unknown) {

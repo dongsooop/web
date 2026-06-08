@@ -21,6 +21,20 @@ const googleScope = [
 ].join(' ');
 const googleStateKey = 'google_oauth_state';
 
+function getWebOrigin() {
+  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
+
+  if (site) {
+    return site;
+  }
+
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  return window.location.origin;
+}
+
 function isMobileBrowser() {
   if (typeof navigator === 'undefined') {
     return false;
@@ -30,11 +44,13 @@ function isMobileBrowser() {
 }
 
 function buildRedirectUri(path?: string) {
-  if (!path || typeof window === 'undefined') {
+  const origin = getWebOrigin();
+
+  if (!path || !origin) {
     return undefined;
   }
 
-  return new URL(path, window.location.origin).toString();
+  return new URL(path, origin).toString();
 }
 
 function buildAuthorizeUrl(clientId: string, redirectUri: string, state: string) {
