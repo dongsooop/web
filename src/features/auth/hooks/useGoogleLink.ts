@@ -20,6 +20,7 @@ const googleScope = [
   'https://www.googleapis.com/auth/userinfo.profile',
 ].join(' ');
 const googleStateKey = 'google_oauth_state';
+const defaultWebOrigin = 'https://www.dongsoop.site';
 
 function getWebOrigin() {
   const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
@@ -28,11 +29,7 @@ function getWebOrigin() {
     return site;
   }
 
-  if (typeof window === 'undefined') {
-    return '';
-  }
-
-  return window.location.origin;
+  return defaultWebOrigin;
 }
 
 function isMobileBrowser() {

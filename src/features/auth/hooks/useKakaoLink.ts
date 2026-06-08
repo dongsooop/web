@@ -2,6 +2,7 @@ import { getErrorMessage } from '@/lib/errors/messages';
 import { setSocialState } from '../lib/socialState';
 
 const kakaoStateKey = 'kakao_oauth_state';
+const defaultWebOrigin = 'https://www.dongsoop.site';
 
 type UseSocialStartOptions = {
   onError: (message: string) => void;
@@ -22,11 +23,7 @@ function getWebOrigin() {
     return site;
   }
 
-  if (typeof window === 'undefined') {
-    return '';
-  }
-
-  return window.location.origin;
+  return defaultWebOrigin;
 }
 
 function resolveRedirectUri(path?: string) {
