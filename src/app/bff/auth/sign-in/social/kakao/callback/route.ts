@@ -17,6 +17,29 @@ import { ApiError } from '@/lib/api/apiError';
 const defaultWebOrigin = 'https://www.dongsoop.site';
 
 function getWebOrigin(request?: NextRequest) {
+  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
+
+  if (process.env.NODE_ENV === 'production' && site) {
+    return site;
+  }
+
+  const origin = request?.headers.get('origin')?.trim();
+
+  if (origin) {
+    return origin;
+  }
+
+  const host =
+    request?.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ??
+    request?.headers.get('host')?.trim();
+  const proto =
+    request?.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() ??
+    (host?.startsWith('localhost') || host?.startsWith('127.0.0.1') ? 'http' : 'https');
+
+  if (host) {
+    return `${proto}://${host}`;
+  }
+
   if (request) {
     return new URL(request.url).origin;
   }

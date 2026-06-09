@@ -9,8 +9,35 @@ import { ApiError } from '@/lib/api/apiError';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
+function getWebOrigin(request: NextRequest) {
+  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
+
+  if (process.env.NODE_ENV === 'production' && site) {
+    return site;
+  }
+
+  const origin = request.headers.get('origin')?.trim();
+
+  if (origin) {
+    return origin;
+  }
+
+  const host =
+    request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ??
+    request.headers.get('host')?.trim();
+  const proto =
+    request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() ??
+    (host?.startsWith('localhost') || host?.startsWith('127.0.0.1') ? 'http' : 'https');
+
+  if (host) {
+    return `${proto}://${host}`;
+  }
+
+  return new URL(request.url).origin;
+}
+
 function getErrorPage(request: NextRequest, message: string) {
-  const url = new URL('/mypage/social', request.url);
+  const url = new URL('/mypage/social', getWebOrigin(request));
   url.searchParams.set('error', message);
   return url;
 }
@@ -23,7 +50,7 @@ export async function GET(request: NextRequest) {
   }
 
   const clientId = process.env.KAKAO_REST_KEY;
-  const redirectUri = new URL('/bff/auth/social/kakao/callback', request.url).toString();
+  const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin(request)).toString();
 
   if (!clientId) {
     return NextResponse.redirect(getErrorPage(request, '카카오 로그인 설정을 확인해주세요.'));
