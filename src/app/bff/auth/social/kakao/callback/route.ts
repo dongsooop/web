@@ -28,11 +28,11 @@ function getSocialPage(request: NextRequest, path = '/mypage/social', message?: 
 }
 
 function getCallbackPath(state: string) {
-  if (state.startsWith('signin:')) {
-    return '/sign-in/kakao/callback';
+  if (state.startsWith('link:')) {
+    return '/mypage/social/kakao/callback';
   }
 
-  return '/mypage/social/kakao/callback';
+  return '/sign-in/kakao/callback';
 }
 
 export async function GET(request: NextRequest) {
