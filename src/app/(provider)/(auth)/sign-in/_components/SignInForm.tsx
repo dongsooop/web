@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Script from 'next/script';
@@ -35,6 +35,25 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const [loadingPlatform, setLoadingPlatform] = useState<'google' | 'kakao' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isKakaoReady, setIsKakaoReady] = useState(false);
+
+  useEffect(() => {
+    const sdk = window.Kakao;
+
+    if (!sdk || !kakaoJsKey) {
+      setIsKakaoReady(false);
+      return;
+    }
+
+    try {
+      if (!sdk.isInitialized()) {
+        sdk.init(kakaoJsKey);
+      }
+
+      setIsKakaoReady(true);
+    } catch {
+      setIsKakaoReady(false);
+    }
+  }, [kakaoJsKey]);
 
   const openSocialErrorDialog = (message: string) => {
     setLoadingPlatform(null);
@@ -149,6 +168,9 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
         onLoad={() => {
           kakao.init();
           setIsKakaoReady(true);
+        }}
+        onError={() => {
+          setIsKakaoReady(false);
         }}
       />
 
