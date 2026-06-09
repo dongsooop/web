@@ -9,12 +9,16 @@ import { ApiError } from '@/lib/api/apiError';
 
 const defaultWebOrigin = 'https://www.dongsoop.site';
 
-function getWebOrigin() {
-  return process.env.NEXT_PUBLIC_WEB_SITE?.trim() || defaultWebOrigin;
+function getWebOrigin(request?: NextRequest) {
+  if (request) {
+    return new URL(request.url).origin;
+  }
+
+  return defaultWebOrigin;
 }
 
 function getSocialPage(request: NextRequest, path = '/mypage/social', message?: string) {
-  const url = new URL(path, getWebOrigin() || request.url);
+  const url = new URL(path, getWebOrigin(request));
 
   if (message) {
     url.searchParams.set('error', message);
@@ -86,7 +90,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin()).toString();
+    const redirectUri = new URL('/bff/auth/social/kakao/callback', getWebOrigin(request)).toString();
     const providerToken = await exchangeKakaoCode(code, redirectUri);
     const result = await linkKakaoSocialWithSpring(providerToken, {
       accessToken: auth.accessToken,

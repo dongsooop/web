@@ -17,10 +17,8 @@ type UseKakaoLinkOptions = UseSocialStartOptions & {
 };
 
 function getWebOrigin() {
-  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
-
-  if (site) {
-    return site;
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
   }
 
   return defaultWebOrigin;

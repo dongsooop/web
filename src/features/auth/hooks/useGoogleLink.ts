@@ -23,10 +23,8 @@ const googleStateKey = 'google_oauth_state';
 const defaultWebOrigin = 'https://www.dongsoop.site';
 
 function getWebOrigin() {
-  const site = process.env.NEXT_PUBLIC_WEB_SITE?.trim();
-
-  if (site) {
-    return site;
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
   }
 
   return defaultWebOrigin;

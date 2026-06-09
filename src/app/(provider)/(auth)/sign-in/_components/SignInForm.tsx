@@ -34,6 +34,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [loadingPlatform, setLoadingPlatform] = useState<'google' | 'kakao' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isKakaoReady, setIsKakaoReady] = useState(false);
 
   const openSocialErrorDialog = (message: string) => {
     setLoadingPlatform(null);
@@ -132,12 +133,24 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       return;
     }
 
+    if (!isKakaoReady) {
+      openSocialErrorDialog('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
     kakao.start();
   };
 
   return (
     <section className="flex w-full max-w-[480px] flex-col items-center gap-4 pt-4">
-      <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
+      <Script
+        src={kakaoSdkUrl}
+        strategy="afterInteractive"
+        onLoad={() => {
+          kakao.init();
+          setIsKakaoReady(true);
+        }}
+      />
 
       <div className="h-4" />
 
