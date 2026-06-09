@@ -7,6 +7,40 @@ type KakaoTokenResponse = {
 
 const kakaoTimeout = 10_000;
 
+async function readKakaoError(response: Response) {
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    try {
+      const body = (await response.json()) as {
+        error?: unknown;
+        error_description?: unknown;
+        error_code?: unknown;
+      };
+      const error =
+        typeof body.error === 'string' && body.error.trim() ? body.error.trim() : null;
+      const description =
+        typeof body.error_description === 'string' && body.error_description.trim()
+          ? body.error_description.trim()
+          : null;
+      const code =
+        typeof body.error_code === 'string' && body.error_code.trim()
+          ? body.error_code.trim()
+          : null;
+
+      return [error, description, code].filter(Boolean).join(' | ');
+    } catch {
+      return '';
+    }
+  }
+
+  try {
+    return (await response.text()).trim();
+  } catch {
+    return '';
+  }
+}
+
 export async function exchangeKakaoCode(code: string, redirectUri: string) {
   const clientId = process.env.KAKAO_REST_KEY;
   const clientSecret = process.env.KAKAO_CLIENT_SECRET;
@@ -59,7 +93,12 @@ export async function exchangeKakaoCode(code: string, redirectUri: string) {
   }
 
   if (!response.ok) {
-    throw new ApiError(HttpStatusCode.BAD_REQUEST, '카카오 인증을 완료하지 못했습니다.');
+    const detail = await readKakaoError(response);
+    const message = detail
+      ? `카카오 인증을 완료하지 못했습니다. (${detail})`
+      : '카카오 인증을 완료하지 못했습니다.';
+
+    throw new ApiError(HttpStatusCode.BAD_REQUEST, message);
   }
 
   const data = (await response.json()) as KakaoTokenResponse;
