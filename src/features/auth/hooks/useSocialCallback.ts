@@ -3,7 +3,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { ApiError } from '@/lib/api/apiError';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { resolveSocialCallbackError, type SocialCallbackResult } from '../lib/socialCallback';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -123,12 +122,7 @@ export function useSocialCallback<T>({
           return;
         }
 
-        const message =
-          error instanceof ApiError && error.message
-            ? error.message
-            : getErrorMessage('social', error, context);
-
-        move(buildErrorPath(errorPath, message));
+        move(buildErrorPath(errorPath, getErrorMessage('social', error, context)));
       }
     };
 
