@@ -47,6 +47,7 @@ const config: Config = {
 
         schedule: {
           muted: '#B7BDCC',
+          gridLine: '#C7CFDB',
           redBg: '#FCEEED',
           redLine: '#F28B82',
           redText: '#804640',
@@ -65,11 +66,47 @@ const config: Config = {
           orangeBg: '#FFF3E8',
           orangeLine: '#F2BE7A',
           orangeText: '#B45309',
+          mintBg: '#EEF9F2',
+          mintLine: '#CBE8D7',
+          mintText: '#2F6B46',
+          skyBg: '#EDF5FF',
+          skyLine: '#D9E8FF',
+          skyText: '#2D5EA8',
+          violetBg: '#F2EFFF',
+          violetLine: '#E0DAFB',
+          violetText: '#5B4BA8',
+          roseBg: '#FFF1F7',
+          roseLine: '#F4D9E8',
+          roseText: '#A14F71',
+          amberBg: '#FFF8EA',
+          amberLine: '#F4E7CB',
+          amberText: '#926F2D',
+          tealBg: '#EAF8F7',
+          tealLine: '#CBE9E6',
+          tealText: '#216B66',
+          indigoBg: '#EEF1FF',
+          indigoLine: '#D8DEFF',
+          indigoText: '#4557A8',
+          peachBg: '#FFF3EE',
+          peachLine: '#F7DDCF',
+          peachText: '#A35C3F',
+          limeBg: '#F5FAE8',
+          limeLine: '#DDE9B9',
+          limeText: '#5E7A22',
+          slateBg: '#F2F5F9',
+          slateLine: '#D8E0EA',
+          slateText: '#506072',
+          coralBg: '#FFF0EC',
+          coralLine: '#F6D2C9',
+          coralText: '#A6534A',
         },
       },
 
       maxWidth: {
         layout: '150rem',
+        timetable: '65rem',
+        'timetable-content': '58rem',
+        'timetable-grid': '52rem',
       },
 
       spacing: {
@@ -93,6 +130,18 @@ const config: Config = {
 
       gridTemplateColumns: {
         schedule: 'minmax(0, 1fr) 20rem',
+        'timetable-xs': '2.75rem minmax(0, 1fr)',
+        timetable: '4.5rem minmax(0, 1fr)',
+        'timetable-sm': '3.5rem minmax(0, 1fr)',
+      },
+
+      gridTemplateRows: {
+        timetable: 'repeat(11, minmax(0, 3.5rem))',
+        'timetable-shell': '2.25rem minmax(0, 1fr)',
+      },
+
+      borderRadius: {
+        timetable: '1.75rem',
       },
 
       fontSize: {
@@ -113,6 +162,11 @@ const config: Config = {
         'schedule-panel': '0 18px 60px rgba(37, 37, 37, 0.05)',
         'schedule-card': '0 10px 30px rgba(37, 37, 37, 0.04)',
         'schedule-icon': '0 12px 28px rgba(37, 37, 37, 0.08)',
+        'schedule-link': '0 14px 34px rgba(37, 37, 37, 0.04)',
+      },
+
+      backgroundImage: {
+        'timetable-glow': 'radial-gradient(circle at top, rgba(0, 109, 255, 0.16), transparent 58%)',
       },
     },
   },

@@ -1,0 +1,167 @@
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { BookOpen, ChevronRight, Plus } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
+import TimetableCreatePanel from './TimetableCreatePanel';
+import TimetableDetailPanel from './TimetableDetailPanel';
+import TimetableGrid from './TimetableGrid';
+import TimetablePanelEmpty from './TimetablePanelEmpty';
+import { mockTimetable, type TimetableItem } from './timetable.data';
+
+type PanelState =
+  | { type: 'create' }
+  | { id: number; type: 'detail' }
+  | { id: number; type: 'edit' }
+  | { type: 'idle' };
+
+export default function TimetablePageContent() {
+  const router = useRouter();
+  const [lectures, setLectures] = useState<TimetableItem[]>(mockTimetable);
+  const [mobileDetailId, setMobileDetailId] = useState<number | null>(null);
+  const [panel, setPanel] = useState<PanelState>({ type: 'idle' });
+
+  const activeLecture = useMemo(
+    () => ('id' in panel ? (lectures.find((lecture) => lecture.id === panel.id) ?? null) : null),
+    [lectures, panel],
+  );
+  const mobileLecture = useMemo(
+    () => lectures.find((lecture) => lecture.id === mobileDetailId) ?? null,
+    [lectures, mobileDetailId],
+  );
+
+  const saveLecture = (payload: TimetableItem) => {
+    setLectures((prev) => {
+      const exists = prev.some((lecture) => lecture.id === payload.id);
+      return exists
+        ? prev.map((lecture) => (lecture.id === payload.id ? payload : lecture))
+        : [...prev, payload];
+    });
+
+    setPanel({ id: payload.id, type: 'detail' });
+  };
+
+  const deleteLecture = (id: number) => {
+    setLectures((prev) => prev.filter((lecture) => lecture.id !== id));
+    setPanel({ type: 'idle' });
+    setMobileDetailId(null);
+  };
+
+  return (
+    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
+      <div className="max-w-timetable mx-auto w-full">
+        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-2 px-4 pt-1 pb-5 sm:px-6 lg:px-8">
+          <h1 className="text-heading sm:text-title font-bold text-black">시간표 관리</h1>
+          <p className="text-bodySm text-gray5 sm:text-body">
+            수강 중인 과목과 시간표를 확인하고 관리할 수 있어요.
+          </p>
+        </div>
+
+        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white">
+            <div className="flex min-w-0 flex-col p-5 sm:p-6">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
+                  2026년 1학기
+                </div>
+
+                <Link
+                  href="/timetable/write"
+                  className="text-primary border-primary/10 bg-primary/5 hover:bg-primary/10 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border shadow-sm transition sm:hidden"
+                >
+                  <Plus className="h-4 w-4" />
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setPanel({ type: 'create' })}
+                  className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition sm:inline-flex"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>강의 추가</span>
+                </button>
+              </div>
+
+              <div className="w-full">
+                <TimetableGrid
+                  lectures={lectures}
+                  onSelectAction={(lecture) => {
+                    setPanel({ id: lecture.id, type: 'detail' });
+                    setMobileDetailId(lecture.id);
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="border-gray2 hidden lg:block lg:border-l">
+              {panel.type === 'create' ? (
+                <TimetableCreatePanel
+                  key="create"
+                  onCloseAction={() => setPanel({ type: 'idle' })}
+                  onSaveAction={saveLecture}
+                />
+              ) : panel.type === 'edit' && activeLecture ? (
+                <TimetableCreatePanel
+                  key={`edit-${activeLecture.id}`}
+                  item={activeLecture}
+                  onCloseAction={() => setPanel({ id: activeLecture.id, type: 'detail' })}
+                  onSaveAction={saveLecture}
+                />
+              ) : panel.type === 'detail' && activeLecture ? (
+                <TimetableDetailPanel
+                  lecture={activeLecture}
+                  onCloseAction={() => setPanel({ type: 'idle' })}
+                  onDeleteAction={() => deleteLecture(activeLecture.id)}
+                  onEditAction={() => setPanel({ id: activeLecture.id, type: 'edit' })}
+                />
+              ) : (
+                <TimetablePanelEmpty onCreateAction={() => setPanel({ type: 'create' })} />
+              )}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="border-gray2 shadow-schedule-panel hover:bg-gray1/40 flex min-h-11 w-full cursor-pointer items-center gap-4 rounded-3xl border bg-white px-5 py-5 text-left transition sm:px-6"
+          >
+            <div className="bg-primary/5 flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl">
+              <BookOpen className="text-primary h-6 w-6" />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="text-body font-semibold text-black">시간표 목록</div>
+              <p className="text-bodySm text-gray5 mt-1">
+                여태까지 수강한 시간표를 확인하고 관리할 수 있어요.
+              </p>
+            </div>
+
+            <ChevronRight className="text-gray5 h-5 w-5 shrink-0" />
+          </button>
+        </div>
+      </div>
+
+      {mobileLecture ? (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-pointer bg-black/40"
+            aria-label="강의 정보 닫기"
+            onClick={() => setMobileDetailId(null)}
+          />
+
+          <div className="absolute inset-x-0 bottom-0 z-10">
+            <TimetableDetailPanel
+              lecture={mobileLecture}
+              mode="sheet"
+              onCloseAction={() => setMobileDetailId(null)}
+              onDeleteAction={() => deleteLecture(mobileLecture.id)}
+              onEditAction={() => router.push(`/timetable/write?id=${mobileLecture.id}`)}
+            />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
