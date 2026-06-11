@@ -9,8 +9,9 @@ import {
   TIMETABLE_REQUEST_WEEK,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
+import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
-import type { TimetableCreateRequest } from '@/features/timetable/types/request';
+import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
@@ -25,6 +26,7 @@ type TimetableWritePageProps = {
 export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   const router = useRouter();
   const create = useCreateTimetable();
+  const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
   const { data } = useTimetableQuery(
     DEFAULT_TIMETABLE_YEAR,
@@ -42,12 +44,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   }, [data, id]);
   const saveLecture = useCallback(
     async (payload: TimetableItem) => {
-      if (lecture) {
-        router.push('/timetable');
-        return;
-      }
-
-      const request: TimetableCreateRequest = {
+      const request = {
         endAt: payload.endAt,
         location: payload.location,
         name: payload.name,
@@ -58,15 +55,29 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
         year: Number(DEFAULT_TIMETABLE_YEAR),
       };
 
+      if (lecture) {
+        try {
+          await update.mutateAsync({
+            ...request,
+            id: lecture.id,
+          } satisfies TimetableUpdateRequest);
+          showToast('시간표가 수정되었어요!', 'success', 'shadow-none');
+          router.push('/timetable');
+        } catch (error) {
+          showToast(getErrorMessage('timetable', error, 'update'), 'error');
+        }
+        return;
+      }
+
       try {
-        await create.mutateAsync(request);
+        await create.mutateAsync(request satisfies TimetableCreateRequest);
         showToast('시간표가 추가되었어요!', 'success', 'shadow-none');
         router.push('/timetable');
       } catch (error) {
         showToast(getErrorMessage('timetable', error, 'create'), 'error');
       }
     },
-    [create, lecture, router, showToast],
+    [create, lecture, router, showToast, update],
   );
 
   return (
@@ -74,7 +85,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
       <div className="max-w-layout mx-auto w-full">
         <div className="border-gray2 overflow-hidden rounded-2xl border bg-white">
           <TimetableCreatePanel
-            isSaving={create.isPending}
+            isSaving={create.isPending || update.isPending}
             item={lecture}
             mode="page"
             onCloseAction={() => router.push('/timetable')}

@@ -10,3 +10,7 @@ export type TimetableCreateRequest = {
   year: number;
   semester: TimetableSemester;
 };
+
+export type TimetableUpdateRequest = TimetableCreateRequest & {
+  id: number;
+};

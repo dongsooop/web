@@ -12,8 +12,9 @@ import {
   TIMETABLE_SEMESTER_LABEL,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
+import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
-import type { TimetableCreateRequest } from '@/features/timetable/types/request';
+import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToastStore } from '@/store/useToastStore';
@@ -34,6 +35,7 @@ type PanelState =
 export default function TimetablePageContent() {
   const router = useRouter();
   const create = useCreateTimetable();
+  const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
   const year = DEFAULT_TIMETABLE_YEAR;
   const semester = DEFAULT_TIMETABLE_SEMESTER as TimetableSemester;
@@ -56,17 +58,7 @@ export default function TimetablePageContent() {
 
   const saveLecture = useCallback(async (payload: TimetableItem) => {
     const exists = lectures.some((lecture) => lecture.id === payload.id);
-
-    if (exists) {
-      setLocalLectures((prev) => {
-        const current = prev ?? data ?? [];
-        return current.map((lecture) => (lecture.id === payload.id ? payload : lecture));
-      });
-      setPanel({ id: payload.id, type: 'detail' });
-      return;
-    }
-
-    const request: TimetableCreateRequest = {
+    const request = {
       endAt: payload.endAt,
       location: payload.location,
       name: payload.name,
@@ -77,8 +69,24 @@ export default function TimetablePageContent() {
       year: Number(year),
     };
 
+    if (exists) {
+      try {
+        await update.mutateAsync({
+          ...request,
+          id: payload.id,
+        } satisfies TimetableUpdateRequest);
+        setLocalLectures(null);
+        setPreview(null);
+        setPanel({ id: payload.id, type: 'detail' });
+        showToast('시간표가 수정되었어요!', 'success', 'shadow-none');
+      } catch (error) {
+        showToast(getErrorMessage('timetable', error, 'update'), 'error');
+      }
+      return;
+    }
+
     try {
-      await create.mutateAsync(request);
+      await create.mutateAsync(request satisfies TimetableCreateRequest);
       setLocalLectures(null);
       setPreview(null);
       setPanel({ type: 'idle' });
@@ -86,7 +94,7 @@ export default function TimetablePageContent() {
     } catch (error) {
       showToast(getErrorMessage('timetable', error, 'create'), 'error');
     }
-  }, [create, data, lectures, semester, showToast, year]);
+  }, [create, lectures, semester, showToast, update, year]);
 
   const deleteLecture = (id: number) => {
     setLocalLectures((prev) => {
@@ -168,7 +176,7 @@ export default function TimetablePageContent() {
               ) : panel.type === 'edit' && activeLecture ? (
                 <TimetableCreatePanel
                   key={`edit-${activeLecture.id}`}
-                  isSaving={false}
+                  isSaving={update.isPending}
                   item={activeLecture}
                   onCloseAction={() => {
                     setPreview(null);

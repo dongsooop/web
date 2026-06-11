@@ -1,6 +1,10 @@
-import { createTimetableWithSpring, fetchTimetableWithSpring } from './timetable.api';
+import {
+  createTimetableWithSpring,
+  fetchTimetableWithSpring,
+  updateTimetableWithSpring,
+} from './timetable.api';
 
-import type { TimetableCreateRequest } from '../types/request';
+import type { TimetableCreateRequest, TimetableUpdateRequest } from '../types/request';
 import type { TimetableSemester } from '../types/response';
 
 type FetchTimetableOptions = {
@@ -28,6 +32,21 @@ type CreateTimetableOptions = {
 
 export async function createTimetable(options: CreateTimetableOptions) {
   return createTimetableWithSpring(options.payload, {
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+type UpdateTimetableOptions = {
+  accessToken?: string;
+  refreshToken?: string;
+  appCheckToken?: string;
+  payload: TimetableUpdateRequest;
+};
+
+export async function updateTimetable(options: UpdateTimetableOptions) {
+  return updateTimetableWithSpring(options.payload, {
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,

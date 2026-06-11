@@ -82,6 +82,12 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       );
     }
 
+    if (context === 'update') {
+      return (
+        common(err) ?? '시간표를 수정하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
+    }
+
     if (context === 'fetch') {
       return (
         common(err) ??

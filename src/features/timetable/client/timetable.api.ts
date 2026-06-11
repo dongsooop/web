@@ -1,6 +1,6 @@
 import { clientRequestAuth } from '@/lib/api/clientRequestAuth';
 
-import type { TimetableCreateRequest } from '../types/request';
+import type { TimetableCreateRequest, TimetableUpdateRequest } from '../types/request';
 import type { TimetableResponse, TimetableSemester } from '../types/response';
 
 export async function fetchTimetable(year: string, semester: TimetableSemester) {
@@ -15,6 +15,13 @@ export async function fetchTimetable(year: string, semester: TimetableSemester) 
 export async function createTimetable(payload: TimetableCreateRequest) {
   return clientRequestAuth<void>('/bff/timetable', {
     method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateTimetable(payload: TimetableUpdateRequest) {
+  return clientRequestAuth<void>('/bff/timetable', {
+    method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
