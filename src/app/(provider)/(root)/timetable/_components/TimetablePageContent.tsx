@@ -5,11 +5,20 @@ import { useRouter } from 'next/navigation';
 import { BookOpen, ChevronRight, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import {
+  DEFAULT_TIMETABLE_SEMESTER,
+  DEFAULT_TIMETABLE_YEAR,
+  TIMETABLE_SEMESTER_LABEL,
+} from '@/features/timetable/constants';
+import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
+import type { TimetableSemester } from '@/features/timetable/types/response';
+import { Skeleton } from '@/components/ui/Skeleton';
+
 import TimetableCreatePanel from './TimetableCreatePanel';
 import TimetableDetailPanel from './TimetableDetailPanel';
 import TimetableGrid from './TimetableGrid';
 import TimetablePanelEmpty from './TimetablePanelEmpty';
-import { mockTimetable, type TimetableItem } from './timetable.data';
+import type { TimetableItem } from './timetable.data';
 
 type PanelState =
   | { type: 'create' }
@@ -19,9 +28,14 @@ type PanelState =
 
 export default function TimetablePageContent() {
   const router = useRouter();
-  const [lectures, setLectures] = useState<TimetableItem[]>(mockTimetable);
+  const year = DEFAULT_TIMETABLE_YEAR;
+  const semester = DEFAULT_TIMETABLE_SEMESTER as TimetableSemester;
+  const semesterLabel = TIMETABLE_SEMESTER_LABEL[semester];
+  const { data, isLoading, isError, displayErrorMessage } = useTimetableQuery(year, semester);
+  const [localLectures, setLocalLectures] = useState<TimetableItem[] | null>(null);
   const [mobileDetailId, setMobileDetailId] = useState<number | null>(null);
   const [panel, setPanel] = useState<PanelState>({ type: 'idle' });
+  const lectures = useMemo(() => localLectures ?? data ?? [], [data, localLectures]);
 
   const activeLecture = useMemo(
     () => ('id' in panel ? (lectures.find((lecture) => lecture.id === panel.id) ?? null) : null),
@@ -33,18 +47,23 @@ export default function TimetablePageContent() {
   );
 
   const saveLecture = (payload: TimetableItem) => {
-    setLectures((prev) => {
-      const exists = prev.some((lecture) => lecture.id === payload.id);
+    setLocalLectures((prev) => {
+      const current = prev ?? data ?? [];
+      const exists = current.some((lecture) => lecture.id === payload.id);
+
       return exists
-        ? prev.map((lecture) => (lecture.id === payload.id ? payload : lecture))
-        : [...prev, payload];
+        ? current.map((lecture) => (lecture.id === payload.id ? payload : lecture))
+        : [...current, payload];
     });
 
     setPanel({ id: payload.id, type: 'detail' });
   };
 
   const deleteLecture = (id: number) => {
-    setLectures((prev) => prev.filter((lecture) => lecture.id !== id));
+    setLocalLectures((prev) => {
+      const current = prev ?? data ?? [];
+      return current.filter((lecture) => lecture.id !== id);
+    });
     setPanel({ type: 'idle' });
     setMobileDetailId(null);
   };
@@ -64,7 +83,7 @@ export default function TimetablePageContent() {
             <div className="flex min-w-0 flex-col p-5 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
-                  2026년 1학기
+                  {year}년 {semesterLabel}
                 </div>
 
                 <Link
@@ -84,14 +103,22 @@ export default function TimetablePageContent() {
                 </button>
               </div>
 
-              <div className="w-full">
-                <TimetableGrid
-                  lectures={lectures}
-                  onSelectAction={(lecture) => {
-                    setPanel({ id: lecture.id, type: 'detail' });
-                    setMobileDetailId(lecture.id);
-                  }}
-                />
+              <div className="min-h-[680px] w-full">
+                {isError ? (
+                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center">
+                    {displayErrorMessage}
+                  </div>
+                ) : isLoading && lectures.length === 0 ? (
+                  <Skeleton className="min-h-[680px] w-full rounded-2xl" />
+                ) : (
+                  <TimetableGrid
+                    lectures={lectures}
+                    onSelectAction={(lecture) => {
+                      setPanel({ id: lecture.id, type: 'detail' });
+                      setMobileDetailId(lecture.id);
+                    }}
+                  />
+                )}
               </div>
             </div>
 

@@ -3,8 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
+import { DEFAULT_TIMETABLE_SEMESTER, DEFAULT_TIMETABLE_YEAR } from '@/features/timetable/constants';
+import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
+import type { TimetableSemester } from '@/features/timetable/types/response';
+
 import TimetableCreatePanel from '../../_components/TimetableCreatePanel';
-import { mockTimetable } from '../../_components/timetable.data';
 
 type TimetableWritePageProps = {
   id?: string;
@@ -12,6 +15,11 @@ type TimetableWritePageProps = {
 
 export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   const router = useRouter();
+  const { data } = useTimetableQuery(
+    DEFAULT_TIMETABLE_YEAR,
+    DEFAULT_TIMETABLE_SEMESTER as TimetableSemester,
+  );
+
   const lecture = useMemo(() => {
     const lectureId = Number(id);
 
@@ -19,8 +27,8 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
       return undefined;
     }
 
-    return mockTimetable.find((item) => item.id === lectureId);
-  }, [id]);
+    return data?.find((item) => item.id === lectureId);
+  }, [data, id]);
 
   return (
     <div className="mx-auto w-full py-4 sm:px-4">
