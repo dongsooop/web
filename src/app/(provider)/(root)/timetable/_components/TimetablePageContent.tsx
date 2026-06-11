@@ -3,22 +3,27 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, ChevronRight, Plus } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
   DEFAULT_TIMETABLE_SEMESTER,
   DEFAULT_TIMETABLE_YEAR,
+  TIMETABLE_REQUEST_WEEK,
   TIMETABLE_SEMESTER_LABEL,
 } from '@/features/timetable/constants';
+import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
+import type { TimetableCreateRequest } from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useToastStore } from '@/store/useToastStore';
+import { getErrorMessage } from '@/lib/errors/messages';
 
 import TimetableCreatePanel from './TimetableCreatePanel';
 import TimetableDetailPanel from './TimetableDetailPanel';
 import TimetableGrid from './TimetableGrid';
 import TimetablePanelEmpty from './TimetablePanelEmpty';
-import type { TimetableItem } from './timetable.data';
+import type { TimetableItem, TimetablePreview } from './timetable.data';
 
 type PanelState =
   | { type: 'create' }
@@ -28,6 +33,8 @@ type PanelState =
 
 export default function TimetablePageContent() {
   const router = useRouter();
+  const create = useCreateTimetable();
+  const showToast = useToastStore((state) => state.showToast);
   const year = DEFAULT_TIMETABLE_YEAR;
   const semester = DEFAULT_TIMETABLE_SEMESTER as TimetableSemester;
   const semesterLabel = TIMETABLE_SEMESTER_LABEL[semester];
@@ -35,6 +42,7 @@ export default function TimetablePageContent() {
   const [localLectures, setLocalLectures] = useState<TimetableItem[] | null>(null);
   const [mobileDetailId, setMobileDetailId] = useState<number | null>(null);
   const [panel, setPanel] = useState<PanelState>({ type: 'idle' });
+  const [preview, setPreview] = useState<TimetablePreview | null>(null);
   const lectures = useMemo(() => localLectures ?? data ?? [], [data, localLectures]);
 
   const activeLecture = useMemo(
@@ -46,18 +54,39 @@ export default function TimetablePageContent() {
     [lectures, mobileDetailId],
   );
 
-  const saveLecture = (payload: TimetableItem) => {
-    setLocalLectures((prev) => {
-      const current = prev ?? data ?? [];
-      const exists = current.some((lecture) => lecture.id === payload.id);
+  const saveLecture = useCallback(async (payload: TimetableItem) => {
+    const exists = lectures.some((lecture) => lecture.id === payload.id);
 
-      return exists
-        ? current.map((lecture) => (lecture.id === payload.id ? payload : lecture))
-        : [...current, payload];
-    });
+    if (exists) {
+      setLocalLectures((prev) => {
+        const current = prev ?? data ?? [];
+        return current.map((lecture) => (lecture.id === payload.id ? payload : lecture));
+      });
+      setPanel({ id: payload.id, type: 'detail' });
+      return;
+    }
 
-    setPanel({ id: payload.id, type: 'detail' });
-  };
+    const request: TimetableCreateRequest = {
+      endAt: payload.endAt,
+      location: payload.location,
+      name: payload.name,
+      professor: payload.professor,
+      semester,
+      startAt: payload.startAt,
+      week: TIMETABLE_REQUEST_WEEK[payload.week],
+      year: Number(year),
+    };
+
+    try {
+      await create.mutateAsync(request);
+      setLocalLectures(null);
+      setPreview(null);
+      setPanel({ type: 'idle' });
+      showToast('시간표가 추가되었어요!', 'success', 'shadow-none');
+    } catch (error) {
+      showToast(getErrorMessage('timetable', error, 'create'), 'error');
+    }
+  }, [create, data, lectures, semester, showToast, year]);
 
   const deleteLecture = (id: number) => {
     setLocalLectures((prev) => {
@@ -113,7 +142,9 @@ export default function TimetablePageContent() {
                 ) : (
                   <TimetableGrid
                     lectures={lectures}
+                    preview={preview}
                     onSelectAction={(lecture) => {
+                      setPreview(null);
                       setPanel({ id: lecture.id, type: 'detail' });
                       setMobileDetailId(lecture.id);
                     }}
@@ -126,25 +157,43 @@ export default function TimetablePageContent() {
               {panel.type === 'create' ? (
                 <TimetableCreatePanel
                   key="create"
-                  onCloseAction={() => setPanel({ type: 'idle' })}
+                  isSaving={create.isPending}
+                  onCloseAction={() => {
+                    setPreview(null);
+                    setPanel({ type: 'idle' });
+                  }}
+                  onPreviewAction={setPreview}
                   onSaveAction={saveLecture}
                 />
               ) : panel.type === 'edit' && activeLecture ? (
                 <TimetableCreatePanel
                   key={`edit-${activeLecture.id}`}
+                  isSaving={false}
                   item={activeLecture}
-                  onCloseAction={() => setPanel({ id: activeLecture.id, type: 'detail' })}
+                  onCloseAction={() => {
+                    setPreview(null);
+                    setPanel({ id: activeLecture.id, type: 'detail' });
+                  }}
+                  onPreviewAction={setPreview}
                   onSaveAction={saveLecture}
                 />
               ) : panel.type === 'detail' && activeLecture ? (
                 <TimetableDetailPanel
                   lecture={activeLecture}
-                  onCloseAction={() => setPanel({ type: 'idle' })}
+                  onCloseAction={() => {
+                    setPreview(null);
+                    setPanel({ type: 'idle' });
+                  }}
                   onDeleteAction={() => deleteLecture(activeLecture.id)}
                   onEditAction={() => setPanel({ id: activeLecture.id, type: 'edit' })}
                 />
               ) : (
-                <TimetablePanelEmpty onCreateAction={() => setPanel({ type: 'create' })} />
+                <TimetablePanelEmpty
+                  onCreateAction={() => {
+                    setPreview(null);
+                    setPanel({ type: 'create' });
+                  }}
+                />
               )}
             </div>
           </div>

@@ -2,19 +2,21 @@
 
 import TimePicker from '@/components/common/date-time-picker/TimePicker';
 import { ChevronDown, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
 import { useDialogStore } from '@/store/useDialogStore';
 
 import { timeOptions, weekDays } from './timetable.data';
-import type { TimetableItem } from './timetable.data';
+import type { TimetableItem, TimetablePreview } from './timetable.data';
 
 type TimetableCreatePanelProps = {
   item?: TimetableItem;
+  isSaving?: boolean;
   mode?: 'page' | 'panel' | 'sheet';
-  onSaveAction?: (payload: TimetableItem) => void;
+  onPreviewAction?: (preview: TimetablePreview | null) => void;
+  onSaveAction?: (payload: TimetableItem) => void | Promise<void>;
   onCloseAction: () => void;
 };
 
@@ -28,11 +30,11 @@ type FormState = {
 };
 
 const baseForm: FormState = {
-  endAt: '',
+  endAt: '10:00',
   location: '',
   name: '',
   professor: '',
-  startAt: '',
+  startAt: '09:00',
   week: 'MONDAY',
 };
 
@@ -65,7 +67,9 @@ function TimeChip({ onClickAction, placeholder, value }: TimeChipProps) {
 
 export default function TimetableCreatePanel({
   item,
+  isSaving = false,
   mode = 'panel',
+  onPreviewAction,
   onSaveAction,
   onCloseAction,
 }: TimetableCreatePanelProps) {
@@ -84,6 +88,19 @@ export default function TimetableCreatePanel({
   );
   const [target, setTarget] = useState<'endAt' | 'startAt' | null>(null);
   const name = form.name.trim();
+
+  useEffect(() => {
+    if (!form.startAt || !form.endAt || !form.week) {
+      onPreviewAction?.(null);
+      return;
+    }
+
+    onPreviewAction?.({
+      endAt: `${form.endAt}:00`,
+      startAt: `${form.startAt}:00`,
+      week: form.week,
+    });
+  }, [form, onPreviewAction]);
 
   const save = () => {
     if (!name) {
@@ -257,7 +274,7 @@ export default function TimetableCreatePanel({
           <Button variant="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
             취소
           </Button>
-          <Button onClick={save}>
+          <Button isLoading={isSaving} onClick={save}>
             {item ? '수정' : '저장'}
           </Button>
         </div>

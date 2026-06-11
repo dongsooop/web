@@ -1,4 +1,12 @@
-import { days, hours, startHour, tones, type TimetableItem, type WeekKey } from './timetable.data';
+import {
+  days,
+  hours,
+  startHour,
+  tones,
+  type TimetableItem,
+  type TimetablePreview,
+  type WeekKey,
+} from './timetable.data';
 
 const dayIndexByWeek: Record<WeekKey, number> = {
   MONDAY: 0,
@@ -20,6 +28,11 @@ function hourText(value: string) {
   return Number(value.slice(0, 2));
 }
 
+function minuteText(value: string) {
+  const [hour, minute] = value.slice(0, 5).split(':').map(Number);
+  return hour * 60 + minute;
+}
+
 function cardRow(start: number) {
   return start - startHour + 1;
 }
@@ -31,9 +44,14 @@ function cardSpan(start: number, end: number) {
 type TimetableGridProps = {
   lectures: TimetableItem[];
   onSelectAction?: (lecture: TimetableItem) => void;
+  preview?: TimetablePreview | null;
 };
 
-export default function TimetableGrid({ lectures: source, onSelectAction }: TimetableGridProps) {
+export default function TimetableGrid({
+  lectures: source,
+  onSelectAction,
+  preview,
+}: TimetableGridProps) {
   const lectures = source
     .map((item, index) => ({
     id: item.id,
@@ -47,6 +65,21 @@ export default function TimetableGrid({ lectures: source, onSelectAction }: Time
     value: item,
   }))
     .filter((item) => item.day < days.length);
+  const previewDay = preview ? dayIndexByWeek[preview.week] : -1;
+  const previewStart = preview ? minuteText(preview.startAt) : 0;
+  const previewEnd = preview ? minuteText(preview.endAt) : 0;
+  const dayMinutes = startHour * 60;
+  const endMinutes = (hours[hours.length - 1] + 1) * 60;
+  const cellHeight = 56;
+  const visibleStart = Math.max(previewStart, dayMinutes);
+  const visibleEnd = Math.min(previewEnd, endMinutes);
+  const previewTop = ((visibleStart - dayMinutes) / 60) * cellHeight;
+  const previewHeight = ((visibleEnd - visibleStart) / 60) * cellHeight;
+  const showPreview =
+    previewDay >= 0 &&
+    previewDay < days.length &&
+    previewEnd > previewStart &&
+    visibleEnd > visibleStart;
 
   return (
     <div className="border-schedule-gridLine overflow-x-auto rounded-2xl border bg-white">
@@ -92,6 +125,20 @@ export default function TimetableGrid({ lectures: source, onSelectAction }: Time
               )),
             )}
           </div>
+
+          {showPreview ? (
+            <div className="pointer-events-none absolute inset-0 z-20">
+              <div
+                className="absolute bg-gray5/24"
+                style={{
+                  height: `${previewHeight}px`,
+                  left: `${previewDay * 20}%`,
+                  top: `${previewTop}px`,
+                  width: '20%',
+                }}
+              />
+            </div>
+          ) : null}
 
           <div className="grid-rows-timetable absolute inset-0 grid grid-cols-5">
             {lectures.map((lecture) => {

@@ -4,6 +4,11 @@ import type {
 } from '@/features/timetable/types/response';
 
 export type { TimetableItem, WeekKey };
+export type TimetablePreview = {
+  endAt: string;
+  startAt: string;
+  week: WeekKey;
+};
 
 export const startHour = 9;
 export const endHour = 19;
@@ -18,7 +23,7 @@ export const weekDays = [
   { key: 'FRIDAY', label: '금' },
 ] as const;
 const timeStep = 5;
-const timeStart = 7 * 60;
+const timeStart = 9 * 60;
 const timeEnd = 22 * 60;
 
 export const timeOptions = Array.from({ length: (timeEnd - timeStart) / timeStep + 1 }, (_, i) => {
