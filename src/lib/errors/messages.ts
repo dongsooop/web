@@ -76,6 +76,12 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     return common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
   },
   timetable: (err, context) => {
+    if (context === 'create') {
+      return (
+        common(err) ?? '시간표를 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
+    }
+
     if (context === 'fetch') {
       return (
         common(err) ??

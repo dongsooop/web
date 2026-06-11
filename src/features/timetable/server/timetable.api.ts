@@ -2,6 +2,7 @@ import 'server-only';
 
 import { serverFetchAuth } from '@/lib/api/serverFetchAuth';
 
+import type { TimetableCreateRequest } from '../types/request';
 import type { TimetableSemester } from '../types/response';
 
 type TimetableRequestOptions = {
@@ -33,6 +34,21 @@ export async function fetchTimetableWithSpring(
 ) {
   return serverFetchAuth(buildTimetableUrl(year, semester), {
     method: 'GET',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export async function createTimetableWithSpring(
+  payload: TimetableCreateRequest,
+  options: TimetableRequestOptions,
+) {
+  const endpoint = getRequiredTimetableEndpoint();
+
+  return serverFetchAuth(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(payload),
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
