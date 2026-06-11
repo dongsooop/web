@@ -82,6 +82,7 @@ export default function TimePicker({
 
             <div className="grid h-full grid-cols-1 items-center">
               <DateTimeWheel
+                key={`${title}-${value}`}
                 items={items}
                 value={draft}
                 widthClassName="min-w-0 px-4"
