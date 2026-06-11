@@ -25,3 +25,9 @@ export async function updateTimetable(payload: TimetableUpdateRequest) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function deleteTimetable(id: number) {
+  return clientRequestAuth<void>(`/bff/timetable/delete/${id}`, {
+    method: 'DELETE',
+  });
+}

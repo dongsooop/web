@@ -1,5 +1,6 @@
 import {
   createTimetableWithSpring,
+  deleteTimetableWithSpring,
   fetchTimetableWithSpring,
   updateTimetableWithSpring,
 } from './timetable.api';
@@ -47,6 +48,21 @@ type UpdateTimetableOptions = {
 
 export async function updateTimetable(options: UpdateTimetableOptions) {
   return updateTimetableWithSpring(options.payload, {
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+type DeleteTimetableOptions = {
+  accessToken?: string;
+  refreshToken?: string;
+  appCheckToken?: string;
+  id: number;
+};
+
+export async function deleteTimetable(options: DeleteTimetableOptions) {
+  return deleteTimetableWithSpring(options.id, {
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,

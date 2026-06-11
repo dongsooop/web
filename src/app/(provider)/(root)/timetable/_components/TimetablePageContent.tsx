@@ -12,6 +12,7 @@ import {
   TIMETABLE_SEMESTER_LABEL,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
+import { useDeleteTimetable } from '@/features/timetable/hooks/useDeleteTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
 import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
@@ -35,6 +36,7 @@ type PanelState =
 export default function TimetablePageContent() {
   const router = useRouter();
   const create = useCreateTimetable();
+  const remove = useDeleteTimetable();
   const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
   const year = DEFAULT_TIMETABLE_YEAR;
@@ -96,14 +98,21 @@ export default function TimetablePageContent() {
     }
   }, [create, lectures, semester, showToast, update, year]);
 
-  const deleteLecture = (id: number) => {
-    setLocalLectures((prev) => {
-      const current = prev ?? data ?? [];
-      return current.filter((lecture) => lecture.id !== id);
-    });
-    setPanel({ type: 'idle' });
-    setMobileDetailId(null);
-  };
+  const deleteLecture = useCallback(async (id: number) => {
+    try {
+      await remove.mutateAsync(id);
+      setLocalLectures((prev) => {
+        const current = prev ?? data ?? [];
+        return current.filter((lecture) => lecture.id !== id);
+      });
+      setPreview(null);
+      setPanel({ type: 'idle' });
+      setMobileDetailId(null);
+      showToast('시간표가 삭제되었어요!', 'success', 'shadow-none');
+    } catch (error) {
+      showToast(getErrorMessage('timetable', error, 'delete'), 'error');
+    }
+  }, [data, remove, showToast]);
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
@@ -187,6 +196,7 @@ export default function TimetablePageContent() {
                 />
               ) : panel.type === 'detail' && activeLecture ? (
                 <TimetableDetailPanel
+                  isDeleting={remove.isPending}
                   lecture={activeLecture}
                   onCloseAction={() => {
                     setPreview(null);
@@ -237,6 +247,7 @@ export default function TimetablePageContent() {
 
           <div className="absolute inset-x-0 bottom-0 z-10">
             <TimetableDetailPanel
+              isDeleting={remove.isPending}
               lecture={mobileLecture}
               mode="sheet"
               onCloseAction={() => setMobileDetailId(null)}

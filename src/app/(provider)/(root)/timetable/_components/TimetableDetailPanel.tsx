@@ -7,6 +7,7 @@ import { Divider } from '@/components/ui/Divider';
 import { type TimetableItem, weekLabel } from './timetable.data';
 
 type TimetableDetailPanelProps = {
+  isDeleting?: boolean;
   lecture: TimetableItem;
   mode?: 'panel' | 'sheet';
   onCloseAction?: () => void;
@@ -15,6 +16,7 @@ type TimetableDetailPanelProps = {
 };
 
 export default function TimetableDetailPanel({
+  isDeleting = false,
   lecture,
   mode = 'panel',
   onCloseAction,
@@ -73,10 +75,17 @@ export default function TimetableDetailPanel({
             <button
               type="button"
               onClick={onDeleteAction}
-              className="text-gray6 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-3 text-left"
+              disabled={isDeleting}
+              className="text-gray6 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-3 text-left disabled:cursor-default disabled:opacity-60"
             >
               <Trash2 className="text-gray4 h-5 w-5 shrink-0" />
               <span className="text-bodySm">강의 시간표 삭제</span>
+              {isDeleting ? (
+                <span
+                  className="ml-1 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+              ) : null}
             </button>
           </div>
         </div>

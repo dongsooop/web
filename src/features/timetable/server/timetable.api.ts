@@ -69,3 +69,14 @@ export async function updateTimetableWithSpring(
     appCheckToken: options.appCheckToken,
   });
 }
+
+export async function deleteTimetableWithSpring(id: number, options: TimetableRequestOptions) {
+  const endpoint = `${getRequiredTimetableEndpoint()}/${id}`;
+
+  return serverFetchAuth(endpoint, {
+    method: 'DELETE',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
