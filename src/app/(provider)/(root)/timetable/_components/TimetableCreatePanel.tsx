@@ -6,10 +6,13 @@ import { useEffect, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
+import {
+  timetableTimeOptions,
+  timetableWeekDays,
+  type TimetableItem,
+  type TimetablePreview,
+} from '@/features/timetable/ui';
 import { useDialogStore } from '@/store/useDialogStore';
-
-import { timeOptions, weekDays } from './timetable.data';
-import type { TimetableItem, TimetablePreview } from './timetable.data';
 
 type TimetableCreatePanelProps = {
   item?: TimetableItem;
@@ -26,7 +29,7 @@ type FormState = {
   name: string;
   professor: string;
   startAt: string;
-  week: (typeof weekDays)[number]['key'] | '';
+  week: (typeof timetableWeekDays)[number]['key'] | '';
 };
 
 const baseForm: FormState = {
@@ -180,7 +183,7 @@ export default function TimetableCreatePanel({
           <div className="space-y-5">
             <section>
               <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                과목명 <span className="text-primary ml-1">*</span>
+                강의명 <span className="text-primary ml-1">*</span>
               </label>
               <input
                 value={form.name}
@@ -226,7 +229,7 @@ export default function TimetableCreatePanel({
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {weekDays.map((day) => {
+                {timetableWeekDays.map((day) => {
                   const selected = form.week === day.key;
 
                   return (
@@ -282,14 +285,14 @@ export default function TimetableCreatePanel({
 
       <TimePicker
         open={target !== null}
-        options={timeOptions}
+        options={timetableTimeOptions}
         title="시간 선택"
         value={
           target === 'endAt'
-            ? form.endAt || timeOptions[0]
+            ? form.endAt || timetableTimeOptions[0]
             : target === 'startAt'
-              ? form.startAt || timeOptions[0]
-              : timeOptions[0]
+              ? form.startAt || timetableTimeOptions[0]
+              : timetableTimeOptions[0]
         }
         onCloseAction={() => setTarget(null)}
         onConfirmAction={(value) => {

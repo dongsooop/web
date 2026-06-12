@@ -3,8 +3,7 @@
 import { Pencil, Trash2, X } from 'lucide-react';
 
 import { Divider } from '@/components/ui/Divider';
-
-import { type TimetableItem, weekLabel } from './timetable.data';
+import { getTimetableWeekLabel, type TimetableItem } from '@/features/timetable/ui';
 
 type TimetableDetailPanelProps = {
   isDeleting?: boolean;
@@ -27,7 +26,9 @@ export default function TimetableDetailPanel({
     <aside
       className={[
         'flex min-h-0 flex-col bg-white',
-        mode === 'sheet' ? 'max-h-[78vh] rounded-t-xl border-x border-t border-b-0' : 'h-full',
+        mode === 'sheet'
+          ? 'max-h-[78vh] rounded-t-xl border-x border-t border-b-0 border-transparent'
+          : 'h-full',
       ].join(' ')}
     >
       <div className="flex items-center justify-between px-4 pt-3">
@@ -51,16 +52,20 @@ export default function TimetableDetailPanel({
 
       <div className="flex-1 px-4 pb-6">
         <div className="space-y-4">
-          <div className="space-y-1">
-            <div className="text-title font-bold text-black">{lecture.name}</div>
-            <div className="text-body text-gray5">{lecture.professor || '교수명 없음'}</div>
+          <div className="flex items-baseline gap-3">
+            <div className="text-heading min-w-0 truncate font-bold text-black">{lecture.name}</div>
+            <div className="text-bodySm text-gray5 shrink-0">{lecture.professor || ''}</div>
           </div>
 
-          <div className="text-body text-black">
-            {weekLabel(lecture.week)} {lecture.startAt.slice(0, 5)} ~ {lecture.endAt.slice(0, 5)}
-          </div>
+          <div className="space-y-2">
+            <div className="text-body text-black">
+              {getTimetableWeekLabel(lecture.week)}
+              <span className="inline-block w-3" aria-hidden="true" />
+              {lecture.startAt.slice(0, 5)} ~ {lecture.endAt.slice(0, 5)}
+            </div>
 
-          <div className="text-body text-black">{lecture.location || '강의실 정보 없음'}</div>
+            <div className="text-body text-black">{lecture.location || ''}</div>
+          </div>
 
           <div className="pt-2">
             <button
