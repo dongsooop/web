@@ -1,6 +1,6 @@
 import {
   timetableDays,
-  timetableHours,
+  timetableEndHour,
   timetableStartHour,
   timetableTones,
   type TimetableItem,
@@ -34,8 +34,8 @@ function minuteText(value: string) {
   return hour * 60 + minute;
 }
 
-function cardRow(start: number) {
-  return start - timetableStartHour + 1;
+function cardRow(start: number, visibleStartHour: number) {
+  return start - visibleStartHour + 1;
 }
 
 function cardSpan(start: number, end: number) {
@@ -53,24 +53,41 @@ export default function TimetableGrid({
   onSelectAction,
   preview,
 }: TimetableGridProps) {
+  const previewStartHour = preview ? hourText(preview.startAt) : null;
+  const previewEndHour = preview ? hourText(preview.endAt) : null;
+  const startCandidates = [
+    ...source.map((item) => hourText(item.startAt)),
+    ...(previewStartHour !== null ? [previewStartHour] : []),
+  ];
+  const endCandidates = [
+    ...source.map((item) => hourText(item.endAt)),
+    ...(previewEndHour !== null ? [previewEndHour] : []),
+  ];
+  const visibleStartHour =
+    startCandidates.length > 0 ? Math.min(...startCandidates) : timetableStartHour;
+  const visibleEndHour = endCandidates.length > 0 ? Math.max(...endCandidates) : timetableEndHour;
+  const visibleHours = Array.from(
+    { length: Math.max(visibleEndHour - visibleStartHour + 1, 1) },
+    (_, i) => visibleStartHour + i,
+  );
   const lectures = source
     .map((item, index) => ({
-    id: item.id,
-    day: dayIndexByWeek[item.week],
-    start: hourText(item.startAt),
-    end: hourText(item.endAt),
-    title: item.name,
-    room: item.location,
-    teacher: item.professor,
-    tone: toneKeys[index % toneKeys.length],
-    value: item,
-  }))
+      id: item.id,
+      day: dayIndexByWeek[item.week],
+      start: hourText(item.startAt),
+      end: hourText(item.endAt),
+      title: item.name,
+      room: item.location,
+      teacher: item.professor,
+      tone: toneKeys[index % toneKeys.length],
+      value: item,
+    }))
     .filter((item) => item.day < timetableDays.length);
   const previewDay = preview ? dayIndexByWeek[preview.week] : -1;
   const previewStart = preview ? minuteText(preview.startAt) : 0;
   const previewEnd = preview ? minuteText(preview.endAt) : 0;
-  const dayMinutes = timetableStartHour * 60;
-  const endMinutes = (timetableHours[timetableHours.length - 1] + 1) * 60;
+  const dayMinutes = visibleStartHour * 60;
+  const endMinutes = (visibleHours[visibleHours.length - 1] + 1) * 60;
   const cellHeight = 56;
   const visibleStart = Math.max(previewStart, dayMinutes);
   const visibleEnd = Math.min(previewEnd, endMinutes);
@@ -101,11 +118,11 @@ export default function TimetableGrid({
         </div>
 
         <div className="border-schedule-gridLine border-r">
-          {timetableHours.map((hour, hourIndex) => (
+          {visibleHours.map((hour, hourIndex) => (
             <div
               key={hour}
               className={`border-schedule-gridLine text-gray5 flex h-14 items-start justify-center pt-2 text-[9px] font-semibold sm:text-caption ${
-                hourIndex < timetableHours.length - 1 ? 'border-b' : ''
+                hourIndex < visibleHours.length - 1 ? 'border-b' : ''
               }`}
             >
               {timeText(hour)}
@@ -115,12 +132,12 @@ export default function TimetableGrid({
 
         <div className="relative">
           <div className="grid grid-cols-5">
-            {timetableHours.flatMap((hour, hourIndex) =>
+            {visibleHours.flatMap((hour, hourIndex) =>
               timetableDays.map((day, dayIndex) => (
                 <div
                   key={`${day}-${hour}`}
                   className={`${dayIndex < timetableDays.length - 1 ? 'border-r' : ''} ${
-                    hourIndex < timetableHours.length - 1 ? 'border-b' : ''
+                    hourIndex < visibleHours.length - 1 ? 'border-b' : ''
                   } border-schedule-gridLine h-14`}
                 />
               )),
@@ -141,7 +158,10 @@ export default function TimetableGrid({
             </div>
           ) : null}
 
-          <div className="grid-rows-timetable absolute inset-0 grid grid-cols-5">
+          <div
+            className="absolute inset-0 grid grid-cols-5"
+            style={{ gridTemplateRows: `repeat(${visibleHours.length}, minmax(0, 3.5rem))` }}
+          >
             {lectures.map((lecture) => {
               const span = cardSpan(lecture.start, lecture.end);
 
@@ -152,7 +172,7 @@ export default function TimetableGrid({
                   className={`z-10 flex min-h-11 cursor-pointer flex-col border px-1.5 py-1 text-left sm:px-3 sm:py-1.5 ${timetableTones[lecture.tone]}`}
                   style={{
                     gridColumn: lecture.day + 1,
-                    gridRow: `${cardRow(lecture.start)} / span ${span}`,
+                    gridRow: `${cardRow(lecture.start, visibleStartHour)} / span ${span}`,
                   }}
                 >
                   <div className="truncate text-[9px] font-semibold sm:text-bodySm">

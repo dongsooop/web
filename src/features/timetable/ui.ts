@@ -44,16 +44,16 @@ export const timetableTimeOptions = Array.from(
 );
 
 export const timetableTones = {
-  mint: 'border-mint bg-mint-soft text-mint-strong',
-  sky: 'border-sky bg-sky-soft text-sky-strong',
-  violet: 'border-violet bg-violet-soft text-violet-strong',
-  rose: 'border-rose bg-rose-soft text-rose-strong',
-  amber: 'border-amber bg-amber-soft text-amber-strong',
-  teal: 'border-teal bg-teal-soft text-teal-strong',
-  indigo: 'border-indigo bg-indigo-soft text-indigo-strong',
-  peach: 'border-peach bg-peach-soft text-peach-strong',
-  lime: 'border-lime bg-lime-soft text-lime-strong',
-  coral: 'border-coral bg-coral-soft text-coral-strong',
+  mint: 'border-mint-500 bg-mint-50 text-mint-700',
+  sky: 'border-sky-500 bg-sky-50 text-sky-700',
+  violet: 'border-violet-500 bg-violet-50 text-violet-700',
+  rose: 'border-rose-500 bg-rose-50 text-rose-700',
+  amber: 'border-amber-500 bg-amber-50 text-amber-700',
+  teal: 'border-teal-500 bg-teal-50 text-teal-700',
+  indigo: 'border-indigo-500 bg-indigo-50 text-indigo-700',
+  peach: 'border-peach-500 bg-peach-50 text-peach-700',
+  lime: 'border-lime-500 bg-lime-50 text-lime-700',
+  coral: 'border-coral-500 bg-coral-50 text-coral-700',
 } as const;
 
 export type TimetableToneKey = keyof typeof timetableTones;

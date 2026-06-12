@@ -133,8 +133,8 @@ export default function TimetablePageContent() {
         </div>
 
         <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white">
-            <div className="flex min-w-0 flex-col p-5 sm:p-6">
+          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white lg:min-h-[44rem]">
+            <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
                   {year}년 {semesterLabel}
@@ -157,7 +157,7 @@ export default function TimetablePageContent() {
                 </button>
               </div>
 
-              <div className="min-h-[848px] w-full">
+              <div className="w-full min-h-[44rem]">
                 {isError ? (
                   <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center">
                     {displayErrorMessage}

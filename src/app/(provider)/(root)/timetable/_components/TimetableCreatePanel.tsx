@@ -251,7 +251,7 @@ export default function TimetableCreatePanel({
               </div>
             </section>
 
-            <section>
+            <section className="pb-5">
               <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
                 시간 <span className="text-primary ml-1">*</span>
               </label>
@@ -270,16 +270,16 @@ export default function TimetableCreatePanel({
                 />
               </div>
             </section>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-3 p-4">
-          <Button variant="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
-            취소
-          </Button>
-          <Button isLoading={isSaving} onClick={save}>
-            {item ? '수정' : '저장'}
-          </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
+                취소
+              </Button>
+              <Button isLoading={isSaving} onClick={save}>
+                {item ? '수정' : '저장'}
+              </Button>
+            </div>
+          </div>
         </div>
       </aside>
 
