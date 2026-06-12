@@ -37,6 +37,14 @@ function common(err: unknown): string | null {
   return '알 수 없는 오류가 발생했어요.';
 }
 
+function commonExceptBadRequest(err: unknown): string | null {
+  if (err instanceof ApiError && err.status === HttpStatusCode.BAD_REQUEST) {
+    return null;
+  }
+
+  return common(err);
+}
+
 const socialMessages = {
   login: '소셜 로그인 중 오류가 발생했어요.',
   state: '소셜 계정 연동 정보를 불러오는 중\n오류가 발생했어요.',
@@ -77,19 +85,31 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
   },
   timetable: (err, context) => {
     if (context === 'create') {
-      return '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return (
+        commonExceptBadRequest(err) ??
+        '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
     }
 
     if (context === 'update') {
-      return '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return (
+        commonExceptBadRequest(err) ??
+        '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
     }
 
     if (context === 'delete') {
-      return '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return (
+        commonExceptBadRequest(err) ??
+        '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
     }
 
     if (context === 'fetch') {
-      return '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return (
+        commonExceptBadRequest(err) ??
+        '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
     }
 
     return (
