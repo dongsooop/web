@@ -17,6 +17,7 @@ import { useDialogStore } from '@/store/useDialogStore';
 type TimetableCreatePanelProps = {
   item?: TimetableItem;
   isSaving?: boolean;
+  lectures?: TimetableItem[];
   mode?: 'page' | 'panel' | 'sheet';
   onPreviewAction?: (preview: TimetablePreview | null) => void;
   onSaveAction?: (payload: TimetableItem) => void | Promise<void>;
@@ -40,6 +41,20 @@ const baseForm: FormState = {
   startAt: '09:00',
   week: 'MONDAY',
 };
+
+function toMinutes(value: string) {
+  const [hour, minute] = value.split(':').map(Number);
+  return hour * 60 + minute;
+}
+
+function isOverlap(startAt: string, endAt: string, lecture: TimetableItem) {
+  const start = toMinutes(startAt);
+  const end = toMinutes(endAt);
+  const lectureStart = toMinutes(lecture.startAt.slice(0, 5));
+  const lectureEnd = toMinutes(lecture.endAt.slice(0, 5));
+
+  return start < lectureEnd && end > lectureStart;
+}
 
 function fieldClass() {
   return 'border-gray2 text-bodySm focus:border-primary min-h-11 w-full rounded-xl border bg-white px-3 text-black outline-none placeholder:text-gray5';
@@ -71,6 +86,7 @@ function TimeChip({ onClickAction, placeholder, value }: TimeChipProps) {
 export default function TimetableCreatePanel({
   item,
   isSaving = false,
+  lectures = [],
   mode = 'panel',
   onPreviewAction,
   onSaveAction,
@@ -132,6 +148,35 @@ export default function TimetableCreatePanel({
       showDialog({
         title: '필수 값 확인',
         content: '강의 시간을 선택해주세요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    if (toMinutes(form.startAt) >= toMinutes(form.endAt)) {
+      showDialog({
+        title: '시간 확인',
+        content: '시작 시간은 종료 시간보다 빨라야 합니다.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    const hasOverlap = lectures.some((lecture) => {
+      if (lecture.week !== form.week) return false;
+      if (item && lecture.id === item.id) return false;
+
+      return isOverlap(form.startAt, form.endAt, lecture);
+    });
+
+    if (hasOverlap) {
+      showDialog({
+        title: '시간 확인',
+        content: '기존 강의와 시간이 겹칩니다.',
         confirm: '확인',
         isSingleAction: true,
         onConfirm: () => {},

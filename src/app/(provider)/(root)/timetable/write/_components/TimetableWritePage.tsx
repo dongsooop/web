@@ -13,6 +13,7 @@ import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery'
 import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
 import type { TimetableItem } from '@/features/timetable/ui';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
 
@@ -29,20 +30,23 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   const showToast = useToastStore((state) => state.showToast);
   const year = getCurrentTimetableYear();
   const semester = getCurrentTimetableSemester() as TimetableSemester;
-  const { data } = useTimetableQuery(
+  const { data, isLoading, isQueryReady, isError, displayErrorMessage } = useTimetableQuery(
     year,
     semester,
   );
+  const hasEditId = typeof id === 'string' && id.length > 0;
+  const lectureId = Number(id);
+  const isInvalidEditId = hasEditId && (!Number.isInteger(lectureId) || lectureId <= 0);
 
   const lecture = useMemo(() => {
-    const lectureId = Number(id);
-
-    if (!Number.isInteger(lectureId) || lectureId <= 0) {
+    if (isInvalidEditId) {
       return undefined;
     }
 
     return data?.find((item) => item.id === lectureId);
-  }, [data, id]);
+  }, [data, isInvalidEditId, lectureId]);
+
+  const isMissingLecture = hasEditId && isQueryReady && !isLoading && !lecture;
   const saveLecture = useCallback(
     async (payload: TimetableItem) => {
       const request = {
@@ -84,15 +88,28 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   return (
     <div className="mx-auto w-full py-4 sm:px-4">
       <div className="max-w-layout mx-auto w-full">
-        <div className="border-gray2 overflow-hidden rounded-2xl border bg-white">
-          <TimetableCreatePanel
-            isSaving={create.isPending || update.isPending}
-            item={lecture}
-            mode="page"
-            onCloseAction={() => router.push('/timetable')}
-            onSaveAction={saveLecture}
-          />
-        </div>
+        {!isQueryReady || isLoading ? (
+          <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
+        ) : isError ? (
+          <div className="border-gray2 flex min-h-[20rem] items-center justify-center rounded-2xl border bg-white px-6 text-center">
+            <p className="text-body text-gray5">{displayErrorMessage}</p>
+          </div>
+        ) : isInvalidEditId || isMissingLecture ? (
+          <div className="border-gray2 flex min-h-[20rem] items-center justify-center rounded-2xl border bg-white px-6 text-center">
+            <p className="text-body text-gray5">수정할 강의 정보를 찾을 수 없어요.</p>
+          </div>
+        ) : (
+          <div className="border-gray2 overflow-hidden rounded-2xl border bg-white">
+            <TimetableCreatePanel
+              isSaving={create.isPending || update.isPending}
+              item={lecture}
+              lectures={data ?? []}
+              mode="page"
+              onCloseAction={() => router.push('/timetable')}
+              onSaveAction={saveLecture}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
