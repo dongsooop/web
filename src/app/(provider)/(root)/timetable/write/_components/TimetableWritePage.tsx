@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
 import {
-  DEFAULT_TIMETABLE_SEMESTER,
-  DEFAULT_TIMETABLE_YEAR,
+  getCurrentTimetableSemester,
+  getCurrentTimetableYear,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
@@ -27,9 +27,11 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   const create = useCreateTimetable();
   const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
+  const year = getCurrentTimetableYear();
+  const semester = getCurrentTimetableSemester() as TimetableSemester;
   const { data } = useTimetableQuery(
-    DEFAULT_TIMETABLE_YEAR,
-    DEFAULT_TIMETABLE_SEMESTER as TimetableSemester,
+    year,
+    semester,
   );
 
   const lecture = useMemo(() => {
@@ -48,10 +50,10 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
         location: payload.location,
         name: payload.name,
         professor: payload.professor,
-        semester: DEFAULT_TIMETABLE_SEMESTER as TimetableSemester,
+        semester,
         startAt: payload.startAt,
         week: payload.week,
-        year: Number(DEFAULT_TIMETABLE_YEAR),
+        year: Number(year),
       };
 
       if (lecture) {
@@ -76,7 +78,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
         showToast(getErrorMessage('timetable', error, 'create'), 'error');
       }
     },
-    [create, lecture, router, showToast, update],
+    [create, lecture, router, semester, showToast, update, year],
   );
 
   return (

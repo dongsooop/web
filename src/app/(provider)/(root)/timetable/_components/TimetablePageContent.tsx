@@ -6,8 +6,8 @@ import { Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
-  DEFAULT_TIMETABLE_SEMESTER,
-  DEFAULT_TIMETABLE_YEAR,
+  getCurrentTimetableSemester,
+  getCurrentTimetableYear,
   TIMETABLE_SEMESTER_LABEL,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
@@ -41,8 +41,8 @@ export default function TimetablePageContent() {
   const remove = useDeleteTimetable();
   const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
-  const year = DEFAULT_TIMETABLE_YEAR;
-  const semester = DEFAULT_TIMETABLE_SEMESTER as TimetableSemester;
+  const year = getCurrentTimetableYear();
+  const semester = getCurrentTimetableSemester() as TimetableSemester;
   const semesterLabel = TIMETABLE_SEMESTER_LABEL[semester];
   const { data, isLoading, isError, displayErrorMessage } = useTimetableQuery(year, semester);
   const [localLectures, setLocalLectures] = useState<TimetableItem[] | null>(null);
