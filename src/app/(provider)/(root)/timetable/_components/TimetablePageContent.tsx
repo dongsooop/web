@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import {
-  getCurrentTimetableSemester,
-  getCurrentTimetableYear,
-  TIMETABLE_SEMESTER_LABEL,
-} from '@/features/timetable/constants';
+
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useDeleteTimetable } from '@/features/timetable/hooks/useDeleteTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
@@ -28,6 +24,7 @@ import TimetableDetailPanel from './TimetableDetailPanel';
 import TimetableGrid from './TimetableGrid';
 import TimetablePanelEmpty from './TimetablePanelEmpty';
 import type { TimetableItem, TimetablePreview } from '@/features/timetable/ui';
+import { getCurrentTimetableSemester, getCurrentTimetableYear, TIMETABLE_SEMESTER_LABEL } from '@/features/timetable/constants';
 
 type PanelState =
   | { type: 'create' }
@@ -41,10 +38,14 @@ export default function TimetablePageContent() {
   const remove = useDeleteTimetable();
   const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
+  const [isEditingDetail, setIsEditingDetail] = useState(false);
   const year = getCurrentTimetableYear();
   const semester = getCurrentTimetableSemester() as TimetableSemester;
   const semesterLabel = TIMETABLE_SEMESTER_LABEL[semester];
-  const { data, isLoading, isError, displayErrorMessage } = useTimetableQuery(year, semester);
+  const { data, isLoading, isError, isQueryReady, displayErrorMessage } = useTimetableQuery(
+    year,
+    semester,
+  );
   const [localLectures, setLocalLectures] = useState<TimetableItem[] | null>(null);
   const [mobileDetailId, setMobileDetailId] = useState<number | null>(null);
   const [panel, setPanel] = useState<PanelState>({ type: 'idle' });
@@ -122,6 +123,23 @@ export default function TimetablePageContent() {
     [data, remove, showToast],
   );
 
+  const openEditPanel = useCallback((id: number) => {
+    setIsEditingDetail(true);
+
+    requestAnimationFrame(() => {
+      setPanel({ id, type: 'edit' });
+      setIsEditingDetail(false);
+    });
+  }, []);
+
+  const moveToEditPage = useCallback(
+    (id: number) => {
+      setIsEditingDetail(true);
+      router.push(`/timetable/write?id=${id}`);
+    },
+    [router],
+  );
+
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
       <div className="max-w-timetable mx-auto w-full">
@@ -157,13 +175,13 @@ export default function TimetablePageContent() {
                 </button>
               </div>
 
-              <div className="w-full min-h-[44rem]">
-                {isError ? (
-                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center">
+              <div className="w-full lg:min-h-[44rem]">
+                {!isQueryReady || (isLoading && lectures.length === 0) ? (
+                  <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
+                ) : isError ? (
+                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center whitespace-pre-line text-center">
                     {displayErrorMessage}
                   </div>
-                ) : isLoading && lectures.length === 0 ? (
-                  <Skeleton className="min-h-[848px] w-full rounded-2xl" />
                 ) : (
                   <TimetableGrid
                     lectures={lectures}
@@ -183,6 +201,7 @@ export default function TimetablePageContent() {
                 <TimetableCreatePanel
                   key="create"
                   isSaving={create.isPending}
+                  lectures={lectures}
                   onCloseAction={() => {
                     setPreview(null);
                     setPanel({ type: 'idle' });
@@ -195,6 +214,7 @@ export default function TimetablePageContent() {
                   key={`edit-${activeLecture.id}`}
                   isSaving={update.isPending}
                   item={activeLecture}
+                  lectures={lectures}
                   onCloseAction={() => {
                     setPreview(null);
                     setPanel({ id: activeLecture.id, type: 'detail' });
@@ -205,13 +225,15 @@ export default function TimetablePageContent() {
               ) : panel.type === 'detail' && activeLecture ? (
                 <TimetableDetailPanel
                   isDeleting={remove.isPending}
+                  isEditing={isEditingDetail}
                   lecture={activeLecture}
                   onCloseAction={() => {
                     setPreview(null);
+                    setIsEditingDetail(false);
                     setPanel({ type: 'idle' });
                   }}
                   onDeleteAction={() => deleteLecture(activeLecture.id)}
-                  onEditAction={() => setPanel({ id: activeLecture.id, type: 'edit' })}
+                  onEditAction={() => openEditPanel(activeLecture.id)}
                 />
               ) : (
                 <TimetablePanelEmpty
@@ -239,11 +261,12 @@ export default function TimetablePageContent() {
           <div className="absolute inset-x-0 bottom-0 z-10">
             <TimetableDetailPanel
               isDeleting={remove.isPending}
+              isEditing={isEditingDetail}
               lecture={mobileLecture}
               mode="sheet"
               onCloseAction={() => setMobileDetailId(null)}
               onDeleteAction={() => deleteLecture(mobileLecture.id)}
-              onEditAction={() => router.push(`/timetable/write?id=${mobileLecture.id}`)}
+              onEditAction={() => moveToEditPage(mobileLecture.id)}
             />
           </div>
         </div>

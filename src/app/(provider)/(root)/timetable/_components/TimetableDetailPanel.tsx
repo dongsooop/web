@@ -7,6 +7,7 @@ import { getTimetableWeekLabel, type TimetableItem } from '@/features/timetable/
 
 type TimetableDetailPanelProps = {
   isDeleting?: boolean;
+  isEditing?: boolean;
   lecture: TimetableItem;
   mode?: 'panel' | 'sheet';
   onCloseAction?: () => void;
@@ -16,6 +17,7 @@ type TimetableDetailPanelProps = {
 
 export default function TimetableDetailPanel({
   isDeleting = false,
+  isEditing = false,
   lecture,
   mode = 'panel',
   onCloseAction,
@@ -50,7 +52,7 @@ export default function TimetableDetailPanel({
 
       <Divider />
 
-      <div className="flex-1 px-4 pb-6">
+      <div className="flex-1 p-4">
         <div className="space-y-4">
           <div className="flex items-baseline gap-3">
             <div className="text-heading min-w-0 truncate font-bold text-black">{lecture.name}</div>
@@ -71,10 +73,17 @@ export default function TimetableDetailPanel({
             <button
               type="button"
               onClick={onEditAction}
-              className="text-gray6 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-3 text-left"
+              disabled={isEditing}
+              className="text-gray6 flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-1 py-3 text-left disabled:cursor-default disabled:opacity-60"
             >
               <Pencil className="text-gray4 h-5 w-5 shrink-0" />
               <span className="text-bodySm">강의 정보 수정</span>
+              {isEditing ? (
+                <span
+                  className="ml-1 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+              ) : null}
             </button>
 
             <button
