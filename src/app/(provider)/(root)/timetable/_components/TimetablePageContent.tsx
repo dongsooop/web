@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, ChevronRight, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
@@ -14,7 +14,10 @@ import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetabl
 import { useDeleteTimetable } from '@/features/timetable/hooks/useDeleteTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
-import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
+import type {
+  TimetableCreateRequest,
+  TimetableUpdateRequest,
+} from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToastStore } from '@/store/useToastStore';
@@ -57,61 +60,67 @@ export default function TimetablePageContent() {
     [lectures, mobileDetailId],
   );
 
-  const saveLecture = useCallback(async (payload: TimetableItem) => {
-    const exists = lectures.some((lecture) => lecture.id === payload.id);
-    const request = {
-      endAt: payload.endAt,
-      location: payload.location,
-      name: payload.name,
-      professor: payload.professor,
-      semester,
-      startAt: payload.startAt,
-      week: payload.week,
-      year: Number(year),
-    };
+  const saveLecture = useCallback(
+    async (payload: TimetableItem) => {
+      const exists = lectures.some((lecture) => lecture.id === payload.id);
+      const request = {
+        endAt: payload.endAt,
+        location: payload.location,
+        name: payload.name,
+        professor: payload.professor,
+        semester,
+        startAt: payload.startAt,
+        week: payload.week,
+        year: Number(year),
+      };
 
-    if (exists) {
+      if (exists) {
+        try {
+          await update.mutateAsync({
+            ...request,
+            id: payload.id,
+          } satisfies TimetableUpdateRequest);
+          setLocalLectures(null);
+          setPreview(null);
+          setPanel({ id: payload.id, type: 'detail' });
+          showToast('시간표가 수정되었어요!', 'success', 'shadow-none');
+        } catch (error) {
+          showToast(getErrorMessage('timetable', error, 'update'), 'error');
+        }
+        return;
+      }
+
       try {
-        await update.mutateAsync({
-          ...request,
-          id: payload.id,
-        } satisfies TimetableUpdateRequest);
+        await create.mutateAsync(request satisfies TimetableCreateRequest);
         setLocalLectures(null);
         setPreview(null);
-        setPanel({ id: payload.id, type: 'detail' });
-        showToast('시간표가 수정되었어요!', 'success', 'shadow-none');
+        setPanel({ type: 'idle' });
+        showToast('시간표가 추가되었어요!', 'success', 'shadow-none');
       } catch (error) {
-        showToast(getErrorMessage('timetable', error, 'update'), 'error');
+        showToast(getErrorMessage('timetable', error, 'create'), 'error');
       }
-      return;
-    }
+    },
+    [create, lectures, semester, showToast, update, year],
+  );
 
-    try {
-      await create.mutateAsync(request satisfies TimetableCreateRequest);
-      setLocalLectures(null);
-      setPreview(null);
-      setPanel({ type: 'idle' });
-      showToast('시간표가 추가되었어요!', 'success', 'shadow-none');
-    } catch (error) {
-      showToast(getErrorMessage('timetable', error, 'create'), 'error');
-    }
-  }, [create, lectures, semester, showToast, update, year]);
-
-  const deleteLecture = useCallback(async (id: number) => {
-    try {
-      await remove.mutateAsync(id);
-      setLocalLectures((prev) => {
-        const current = prev ?? data ?? [];
-        return current.filter((lecture) => lecture.id !== id);
-      });
-      setPreview(null);
-      setPanel({ type: 'idle' });
-      setMobileDetailId(null);
-      showToast('시간표가 삭제되었어요!', 'success', 'shadow-none');
-    } catch (error) {
-      showToast(getErrorMessage('timetable', error, 'delete'), 'error');
-    }
-  }, [data, remove, showToast]);
+  const deleteLecture = useCallback(
+    async (id: number) => {
+      try {
+        await remove.mutateAsync(id);
+        setLocalLectures((prev) => {
+          const current = prev ?? data ?? [];
+          return current.filter((lecture) => lecture.id !== id);
+        });
+        setPreview(null);
+        setPanel({ type: 'idle' });
+        setMobileDetailId(null);
+        showToast('시간표가 삭제되었어요!', 'success', 'shadow-none');
+      } catch (error) {
+        showToast(getErrorMessage('timetable', error, 'delete'), 'error');
+      }
+    },
+    [data, remove, showToast],
+  );
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
@@ -148,13 +157,13 @@ export default function TimetablePageContent() {
                 </button>
               </div>
 
-              <div className="min-h-[680px] w-full">
+              <div className="min-h-[848px] w-full">
                 {isError ? (
                   <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center">
                     {displayErrorMessage}
                   </div>
                 ) : isLoading && lectures.length === 0 ? (
-                  <Skeleton className="min-h-[680px] w-full rounded-2xl" />
+                  <Skeleton className="min-h-[848px] w-full rounded-2xl" />
                 ) : (
                   <TimetableGrid
                     lectures={lectures}
@@ -215,23 +224,6 @@ export default function TimetablePageContent() {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="border-gray2 shadow-schedule-panel hover:bg-gray1/40 flex min-h-11 w-full cursor-pointer items-center gap-4 rounded-3xl border bg-white px-5 py-5 text-left transition sm:px-6"
-          >
-            <div className="bg-primary/5 flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl">
-              <BookOpen className="text-primary h-6 w-6" />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="text-body font-semibold text-black">시간표 목록</div>
-              <p className="text-bodySm text-gray5 mt-1">
-                여태까지 수강한 시간표를 확인하고 관리할 수 있어요.
-              </p>
-            </div>
-
-            <ChevronRight className="text-gray5 h-5 w-5 shrink-0" />
-          </button>
         </div>
       </div>
 

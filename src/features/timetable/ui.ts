@@ -12,7 +12,7 @@ export type TimetablePreview = {
 };
 
 export const timetableStartHour = 9;
-export const timetableEndHour = 19;
+export const timetableEndHour = 22;
 
 export const timetableDays = ['월', '화', '수', '목', '금'] as const;
 export const timetableHours = Array.from(
@@ -44,16 +44,16 @@ export const timetableTimeOptions = Array.from(
 );
 
 export const timetableTones = {
-  mint: 'border-schedule-mintLine bg-schedule-mintBg text-schedule-mintText',
-  sky: 'border-schedule-skyLine bg-schedule-skyBg text-schedule-skyText',
-  violet: 'border-schedule-violetLine bg-schedule-violetBg text-schedule-violetText',
-  rose: 'border-schedule-roseLine bg-schedule-roseBg text-schedule-roseText',
-  amber: 'border-schedule-amberLine bg-schedule-amberBg text-schedule-amberText',
-  teal: 'border-schedule-tealLine bg-schedule-tealBg text-schedule-tealText',
-  indigo: 'border-schedule-indigoLine bg-schedule-indigoBg text-schedule-indigoText',
-  peach: 'border-schedule-peachLine bg-schedule-peachBg text-schedule-peachText',
-  lime: 'border-schedule-limeLine bg-schedule-limeBg text-schedule-limeText',
-  coral: 'border-schedule-coralLine bg-schedule-coralBg text-schedule-coralText',
+  mint: 'border-mint bg-mint-soft text-mint-strong',
+  sky: 'border-sky bg-sky-soft text-sky-strong',
+  violet: 'border-violet bg-violet-soft text-violet-strong',
+  rose: 'border-rose bg-rose-soft text-rose-strong',
+  amber: 'border-amber bg-amber-soft text-amber-strong',
+  teal: 'border-teal bg-teal-soft text-teal-strong',
+  indigo: 'border-indigo bg-indigo-soft text-indigo-strong',
+  peach: 'border-peach bg-peach-soft text-peach-strong',
+  lime: 'border-lime bg-lime-soft text-lime-strong',
+  coral: 'border-coral bg-coral-soft text-coral-strong',
 } as const;
 
 export type TimetableToneKey = keyof typeof timetableTones;
