@@ -30,7 +30,7 @@ export const timetableWeekDays = [
 
 const timeStep = 5;
 const timeStart = timetableStartHour * 60;
-const timeEnd = 22 * 60;
+const timeEnd = timetableEndHour * 60;
 
 export const timetableTimeOptions = Array.from(
   { length: (timeEnd - timeStart) / timeStep + 1 },
