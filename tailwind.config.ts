@@ -45,8 +45,60 @@ const config: Config = {
           DEFAULT: '#D90000',
         },
 
+        mint: {
+          50: '#EEF9F2',
+          500: '#CBE8D7',
+          700: '#2F6B46',
+        },
+        sky: {
+          50: '#EDF5FF',
+          500: '#D9E8FF',
+          700: '#2D5EA8',
+        },
+        violet: {
+          50: '#F2EFFF',
+          500: '#E0DAFB',
+          700: '#5B4BA8',
+        },
+        rose: {
+          50: '#FFF1F7',
+          500: '#F4D9E8',
+          700: '#A14F71',
+        },
+        amber: {
+          50: '#FFF8EA',
+          500: '#F4E7CB',
+          700: '#926F2D',
+        },
+        teal: {
+          50: '#EAF8F7',
+          500: '#CBE9E6',
+          700: '#216B66',
+        },
+        indigo: {
+          50: '#EEF1FF',
+          500: '#D8DEFF',
+          700: '#4557A8',
+        },
+        peach: {
+          50: '#FFF3EE',
+          500: '#F7DDCF',
+          700: '#A35C3F',
+        },
+        lime: {
+          50: '#F5FAE8',
+          500: '#DDE9B9',
+          700: '#5E7A22',
+        },
+        coral: {
+          50: '#FFF0EC',
+          500: '#F6D2C9',
+          700: '#A6534A',
+        },
+
         schedule: {
           muted: '#B7BDCC',
+          gridLine: '#C7CFDB',
           redBg: '#FCEEED',
           redLine: '#F28B82',
           redText: '#804640',
@@ -65,11 +117,17 @@ const config: Config = {
           orangeBg: '#FFF3E8',
           orangeLine: '#F2BE7A',
           orangeText: '#B45309',
+          slateBg: '#F2F5F9',
+          slateLine: '#D8E0EA',
+          slateText: '#506072',
         },
       },
 
       maxWidth: {
         layout: '150rem',
+        timetable: '65rem',
+        'timetable-content': '58rem',
+        'timetable-grid': '52rem',
       },
 
       spacing: {
@@ -93,6 +151,18 @@ const config: Config = {
 
       gridTemplateColumns: {
         schedule: 'minmax(0, 1fr) 20rem',
+        'timetable-xs': '2.75rem minmax(0, 1fr)',
+        timetable: '4.5rem minmax(0, 1fr)',
+        'timetable-sm': '3.5rem minmax(0, 1fr)',
+      },
+
+      gridTemplateRows: {
+        timetable: 'repeat(14, minmax(0, 3.5rem))',
+        'timetable-shell': '2.25rem minmax(0, 1fr)',
+      },
+
+      borderRadius: {
+        timetable: '1.75rem',
       },
 
       fontSize: {
@@ -113,6 +183,11 @@ const config: Config = {
         'schedule-panel': '0 18px 60px rgba(37, 37, 37, 0.05)',
         'schedule-card': '0 10px 30px rgba(37, 37, 37, 0.04)',
         'schedule-icon': '0 12px 28px rgba(37, 37, 37, 0.08)',
+        'schedule-link': '0 14px 34px rgba(37, 37, 37, 0.04)',
+      },
+
+      backgroundImage: {
+        'timetable-glow': 'radial-gradient(circle at top, rgba(0, 109, 255, 0.16), transparent 58%)',
       },
     },
   },
