@@ -77,28 +77,19 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
   },
   timetable: (err, context) => {
     if (context === 'create') {
-      return (
-        common(err) ?? '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-      );
+      return '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     if (context === 'update') {
-      return (
-        common(err) ?? '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-      );
+      return '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     if (context === 'delete') {
-      return (
-        common(err) ?? '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-      );
+      return '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     if (context === 'fetch') {
-      return (
-        common(err) ??
-        '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
-      );
+      return '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     return (

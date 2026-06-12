@@ -161,7 +161,9 @@ export default function TimetableGrid({
             {lectures.map((lecture) => {
               const top = ((lecture.start - dayMinutes) / 60) * cellHeight;
               const height = ((lecture.end - lecture.start) / 60) * cellHeight;
-              const showTeacher = lecture.teacher && lecture.end - lecture.start > 60;
+              const duration = lecture.end - lecture.start;
+              const showRoom = lecture.room && duration > 60;
+              const showTeacher = lecture.teacher && duration > 120;
 
               return (
                 <article
@@ -178,7 +180,7 @@ export default function TimetableGrid({
                   <div className="truncate text-[9px] font-semibold sm:text-bodySm">
                     {lecture.title}
                   </div>
-                  {lecture.room ? (
+                  {showRoom ? (
                     <div className="mt-0.5 text-[8px] font-semibold sm:mt-1 sm:text-caption">
                       {lecture.room}
                     </div>
