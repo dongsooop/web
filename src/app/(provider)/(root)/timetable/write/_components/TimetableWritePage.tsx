@@ -6,18 +6,17 @@ import { useCallback, useMemo } from 'react';
 import {
   DEFAULT_TIMETABLE_SEMESTER,
   DEFAULT_TIMETABLE_YEAR,
-  TIMETABLE_REQUEST_WEEK,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
 import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
 import type { TimetableSemester } from '@/features/timetable/types/response';
+import type { TimetableItem } from '@/features/timetable/ui';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
 
 import TimetableCreatePanel from '../../_components/TimetableCreatePanel';
-import type { TimetableItem } from '../../_components/timetable.data';
 
 type TimetableWritePageProps = {
   id?: string;
@@ -51,7 +50,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
         professor: payload.professor,
         semester: DEFAULT_TIMETABLE_SEMESTER as TimetableSemester,
         startAt: payload.startAt,
-        week: TIMETABLE_REQUEST_WEEK[payload.week],
+        week: payload.week,
         year: Number(DEFAULT_TIMETABLE_YEAR),
       };
 

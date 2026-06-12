@@ -8,7 +8,6 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   DEFAULT_TIMETABLE_SEMESTER,
   DEFAULT_TIMETABLE_YEAR,
-  TIMETABLE_REQUEST_WEEK,
   TIMETABLE_SEMESTER_LABEL,
 } from '@/features/timetable/constants';
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
@@ -25,7 +24,7 @@ import TimetableCreatePanel from './TimetableCreatePanel';
 import TimetableDetailPanel from './TimetableDetailPanel';
 import TimetableGrid from './TimetableGrid';
 import TimetablePanelEmpty from './TimetablePanelEmpty';
-import type { TimetableItem, TimetablePreview } from './timetable.data';
+import type { TimetableItem, TimetablePreview } from '@/features/timetable/ui';
 
 type PanelState =
   | { type: 'create' }
@@ -67,7 +66,7 @@ export default function TimetablePageContent() {
       professor: payload.professor,
       semester,
       startAt: payload.startAt,
-      week: TIMETABLE_REQUEST_WEEK[payload.week],
+      week: payload.week,
       year: Number(year),
     };
 
