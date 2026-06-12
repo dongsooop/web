@@ -11,7 +11,6 @@ import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetabl
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
 import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
-import type { TimetableSemester } from '@/features/timetable/types/response';
 import type { TimetableItem } from '@/features/timetable/ui';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -29,7 +28,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   const update = useUpdateTimetable();
   const showToast = useToastStore((state) => state.showToast);
   const year = getCurrentTimetableYear();
-  const semester = getCurrentTimetableSemester() as TimetableSemester;
+  const semester = getCurrentTimetableSemester();
   const { data, isLoading, isQueryReady, isError, displayErrorMessage } = useTimetableQuery(
     year,
     semester,

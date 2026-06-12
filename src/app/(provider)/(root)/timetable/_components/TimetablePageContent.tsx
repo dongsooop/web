@@ -14,7 +14,6 @@ import type {
   TimetableCreateRequest,
   TimetableUpdateRequest,
 } from '@/features/timetable/types/request';
-import type { TimetableSemester } from '@/features/timetable/types/response';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToastStore } from '@/store/useToastStore';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -24,7 +23,11 @@ import TimetableDetailPanel from './TimetableDetailPanel';
 import TimetableGrid from './TimetableGrid';
 import TimetablePanelEmpty from './TimetablePanelEmpty';
 import type { TimetableItem, TimetablePreview } from '@/features/timetable/ui';
-import { getCurrentTimetableSemester, getCurrentTimetableYear, TIMETABLE_SEMESTER_LABEL } from '@/features/timetable/constants';
+import {
+  getCurrentTimetableSemester,
+  getCurrentTimetableYear,
+  TIMETABLE_SEMESTER_LABEL,
+} from '@/features/timetable/constants';
 
 type PanelState =
   | { type: 'create' }
@@ -40,7 +43,7 @@ export default function TimetablePageContent() {
   const showToast = useToastStore((state) => state.showToast);
   const [isEditingDetail, setIsEditingDetail] = useState(false);
   const year = getCurrentTimetableYear();
-  const semester = getCurrentTimetableSemester() as TimetableSemester;
+  const semester = getCurrentTimetableSemester();
   const semesterLabel = TIMETABLE_SEMESTER_LABEL[semester];
   const { data, isLoading, isError, isQueryReady, displayErrorMessage } = useTimetableQuery(
     year,
