@@ -34,12 +34,8 @@ function minuteText(value: string) {
   return hour * 60 + minute;
 }
 
-function cardRow(start: number, visibleStartHour: number) {
-  return start - visibleStartHour + 1;
-}
-
-function cardSpan(start: number, end: number) {
-  return Math.max(end - start, 1);
+function endHourText(value: string) {
+  return Math.floor((minuteText(value) - 1) / 60);
 }
 
 type TimetableGridProps = {
@@ -54,13 +50,13 @@ export default function TimetableGrid({
   preview,
 }: TimetableGridProps) {
   const previewStartHour = preview ? hourText(preview.startAt) : null;
-  const previewEndHour = preview ? hourText(preview.endAt) : null;
+  const previewEndHour = preview ? endHourText(preview.endAt) : null;
   const startCandidates = [
     ...source.map((item) => hourText(item.startAt)),
     ...(previewStartHour !== null ? [previewStartHour] : []),
   ];
   const endCandidates = [
-    ...source.map((item) => hourText(item.endAt)),
+    ...source.map((item) => endHourText(item.endAt)),
     ...(previewEndHour !== null ? [previewEndHour] : []),
   ];
   const visibleStartHour =
@@ -74,8 +70,8 @@ export default function TimetableGrid({
     .map((item, index) => ({
       id: item.id,
       day: dayIndexByWeek[item.week],
-      start: hourText(item.startAt),
-      end: hourText(item.endAt),
+      end: minuteText(item.endAt),
+      start: minuteText(item.startAt),
       title: item.name,
       room: item.location,
       teacher: item.professor,
@@ -163,16 +159,20 @@ export default function TimetableGrid({
             style={{ gridTemplateRows: `repeat(${visibleHours.length}, minmax(0, 3.5rem))` }}
           >
             {lectures.map((lecture) => {
-              const span = cardSpan(lecture.start, lecture.end);
+              const top = ((lecture.start - dayMinutes) / 60) * cellHeight;
+              const height = ((lecture.end - lecture.start) / 60) * cellHeight;
+              const showTeacher = lecture.teacher && lecture.end - lecture.start > 60;
 
               return (
                 <article
                   key={lecture.id}
                   onClick={() => onSelectAction?.(lecture.value)}
-                  className={`z-10 flex min-h-11 cursor-pointer flex-col border px-1.5 py-1 text-left sm:px-3 sm:py-1.5 ${timetableTones[lecture.tone]}`}
+                  className={`absolute z-10 flex min-h-11 cursor-pointer flex-col border px-1.5 py-1 text-left sm:px-3 sm:py-1.5 ${timetableTones[lecture.tone]}`}
                   style={{
-                    gridColumn: lecture.day + 1,
-                    gridRow: `${cardRow(lecture.start, visibleStartHour)} / span ${span}`,
+                    height: `${height}px`,
+                    left: `${lecture.day * 20}%`,
+                    top: `${top}px`,
+                    width: '20%',
                   }}
                 >
                   <div className="truncate text-[9px] font-semibold sm:text-bodySm">
@@ -183,7 +183,7 @@ export default function TimetableGrid({
                       {lecture.room}
                     </div>
                   ) : null}
-                  {lecture.teacher && span > 1 ? (
+                  {showTeacher ? (
                     <div className="mt-0.5 line-clamp-2 text-[8px] sm:text-caption">
                       {lecture.teacher}
                     </div>
