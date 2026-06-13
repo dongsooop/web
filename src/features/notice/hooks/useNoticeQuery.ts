@@ -2,6 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 
@@ -9,15 +10,17 @@ import { fetchNoticePage } from '../client/notice.api';
 import type { NoticeTab } from '../types/ui-model';
 
 export function useNoticeQuery(tab: NoticeTab) {
+  const { isLoggedIn, isReady, user } = useAuth();
   const isInitialized = useAppCheckStore((state) => state.isInitialized);
+  const departmentType = user?.departmentType ?? 'guest';
 
   const query = useInfiniteQuery({
-    queryKey: ['notice-page', tab],
+    queryKey: ['notice-page', tab, isLoggedIn ? departmentType : 'guest'],
     queryFn: ({ pageParam }) => fetchNoticePage(tab, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
     staleTime: 1000 * 60,
-    enabled: isInitialized,
+    enabled: isInitialized && isReady,
   });
 
   return {

@@ -47,6 +47,8 @@ export default function NoticeBoard() {
   const [tab, setTab] = useState<NoticeTab>('ALL');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const currentTab = !isLoggedIn && tab === 'DEPARTMENT' ? 'ALL' : tab;
+  const expanded = isLoggedIn ? isExpanded : false;
   const {
     items,
     hasMore,
@@ -55,7 +57,7 @@ export default function NoticeBoard() {
     isFetchingNextPage,
     fetchNextPage,
     displayErrorMessage,
-  } = useNoticeQuery(tab);
+  } = useNoticeQuery(currentTab);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 639px)');
@@ -68,7 +70,7 @@ export default function NoticeBoard() {
   }, []);
 
   const initialCount = isMobile ? MOBILE_COUNT : DESKTOP_COUNT;
-  const visibleItems = isExpanded ? items : items.slice(0, initialCount);
+  const visibleItems = expanded ? items : items.slice(0, initialCount);
 
   if (isError) {
     return (
