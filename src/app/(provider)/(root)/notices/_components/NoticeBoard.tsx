@@ -48,7 +48,6 @@ export default function NoticeBoard() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const currentTab = !isLoggedIn && tab === 'DEPARTMENT' ? 'ALL' : tab;
-  const expanded = isLoggedIn ? isExpanded : false;
   const {
     items,
     hasMore,
@@ -70,7 +69,7 @@ export default function NoticeBoard() {
   }, []);
 
   const initialCount = isMobile ? MOBILE_COUNT : DESKTOP_COUNT;
-  const visibleItems = expanded ? items : items.slice(0, initialCount);
+  const visibleItems = isExpanded ? items : items.slice(0, initialCount);
 
   if (isError) {
     return (
@@ -99,7 +98,7 @@ export default function NoticeBoard() {
 
             <div className="flex flex-wrap gap-4 pb-3">
               {TABS.map((it) => {
-                const active = it.id === tab;
+                const active = it.id === currentTab;
 
                 return (
                   <button
