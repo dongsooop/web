@@ -111,12 +111,13 @@ export async function GET(request: NextRequest) {
 
   const tab = parseTab(request.nextUrl.searchParams.get('tab'));
   const page = parsePage(request.nextUrl.searchParams.get('page'));
-  const schoolEndpoint = getRequiredEnv('SCHOOL_NOTICE_ENDPOINT');
-  const departmentRoot = getRequiredEnv('DEPARTMENT_NOTICE_ENDPOINT');
-  const schoolUrl = getRequiredEnv('SCHOOL_URL');
-  const { departmentType } = extractAuthContext(request);
 
   try {
+    const schoolEndpoint = getRequiredEnv('SCHOOL_NOTICE_ENDPOINT');
+    const departmentRoot = getRequiredEnv('DEPARTMENT_NOTICE_ENDPOINT');
+    const schoolUrl = getRequiredEnv('SCHOOL_URL');
+    const { departmentType } = extractAuthContext(request);
+
     if (tab === 'OFFICIAL') {
       const school = normalizePage(
         await requestNoticePage(schoolEndpoint, appCheckToken, page - 1, PAGE_SIZE),
