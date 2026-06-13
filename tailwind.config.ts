@@ -128,6 +128,12 @@ const config: Config = {
         timetable: '65rem',
         'timetable-content': '58rem',
         'timetable-grid': '52rem',
+        notice: '61.25rem',
+      },
+
+      maxHeight: {
+        'notice-mobile': '35.25rem',
+        'notice-desktop': '48.25rem',
       },
 
       spacing: {

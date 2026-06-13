@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 import CommonTag from '@/components/ui/CommonTag';
-import PageHeader from '@/components/ui/PageHeader';
 import { useNoticeQuery } from '@/features/notice/hooks/useNoticeQuery';
 import type { NoticeTab, NoticeUiItem } from '@/features/notice/types/ui-model';
 
@@ -17,7 +16,7 @@ const TABS = [
 
 const MOBILE_COUNT = 5;
 const DESKTOP_COUNT = 7;
-const EXPANDED_LIST_HEIGHT = 'max-h-[564px] sm:max-h-[772px]';
+const EXPANDED_LIST_HEIGHT = 'max-h-notice-mobile sm:max-h-notice-desktop';
 
 function NoticeCard({ notice }: { notice: NoticeUiItem }) {
   return (
@@ -25,7 +24,7 @@ function NoticeCard({ notice }: { notice: NoticeUiItem }) {
       href={notice.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="border-gray2 hover:border-primary/20 group flex min-h-24 cursor-pointer flex-col gap-3 rounded-[22px] border bg-white px-4 py-4 transition sm:px-5"
+      className="border-gray2 hover:border-primary/20 group flex min-h-24 cursor-pointer flex-col gap-3 rounded-3xl border bg-white px-4 py-4 transition sm:px-5"
     >
       <div className="flex flex-wrap gap-2">
         {notice.tags.map((tag, idx) => (
@@ -69,7 +68,7 @@ export default function NoticeBoard() {
 
   if (isError) {
     return (
-      <div className="mx-auto flex min-h-[60vh] w-full max-w-[1440px] items-center justify-center px-4 text-center">
+      <div className="max-w-layout mx-auto flex min-h-[60vh] w-full items-center justify-center px-4 text-center">
         <p className="text-body text-gray5">{displayErrorMessage}</p>
       </div>
     );
@@ -77,26 +76,22 @@ export default function NoticeBoard() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto w-full max-w-[980px] px-3 pt-3 pb-6 sm:px-4">
-        <div className="flex flex-col rounded-[28px] bg-white px-5 py-6 sm:px-7 sm:py-7">
+      <div className="max-w-notice mx-auto w-full px-3 pt-3 pb-6 sm:px-4">
+        <div className="rounded-timetable flex flex-col bg-white px-5 py-6 sm:px-7 sm:py-7">
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <PageHeader
-                title="공지"
-                description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
-              />
+            <div className="flex flex-col gap-4">
+              <h1 className="text-heading sm:text-title font-bold text-black">공지</h1>
 
-              <div className="w-full max-w-[360px] flex-none">
-                <div className="border-gray2 flex h-13 cursor-pointer items-center gap-3 rounded-2xl border bg-white px-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-bodySm text-gray5 truncate">공지 제목을 검색하세요</p>
-                  </div>
-                  <Search className="text-gray5 h-5 w-5 flex-none" />
-                </div>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+                <p className="text-gray6 text-sm sm:text-base">
+                  최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요.
+                </p>
+
+                <div className="hidden flex-none sm:block sm:w-90" aria-hidden="true" />
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-7 border-b border-black/8 pb-3">
+            <div className="flex flex-wrap gap-4 pb-3">
               {TABS.map((it) => {
                 const active = it.id === tab;
 
@@ -108,7 +103,7 @@ export default function NoticeBoard() {
                       setTab(it.id);
                       setIsExpanded(false);
                     }}
-                    className={`text-bodySm relative cursor-pointer pb-2 font-semibold transition ${
+                    className={`text-bodySm relative inline-flex h-11 min-w-5 cursor-pointer items-center justify-center px-2 pb-2 font-semibold transition ${
                       active ? 'text-primary' : 'text-gray6 hover:text-black'
                     }`}
                   >
@@ -131,14 +126,14 @@ export default function NoticeBoard() {
               <div className="flex flex-col gap-3 pb-6">
                 {isLoading ? (
                   Array.from({ length: initialCount }).map((_, idx) => (
-                    <div key={idx} className="skeleton-base h-24 rounded-[22px]" />
+                    <div key={idx} className="skeleton-base h-24 rounded-3xl" />
                   ))
                 ) : visibleItems.length > 0 ? (
                   visibleItems.map((notice) => (
                     <NoticeCard key={`${notice.link}-${notice.title}`} notice={notice} />
                   ))
                 ) : (
-                  <div className="border-gray2 flex min-h-56 items-center justify-center rounded-[22px] border bg-white px-6 text-center">
+                  <div className="border-gray2 flex min-h-56 items-center justify-center rounded-3xl border bg-white px-6 text-center">
                     <p className="text-body text-gray5">선택한 분류의 공지가 아직 없어요.</p>
                   </div>
                 )}
@@ -154,7 +149,7 @@ export default function NoticeBoard() {
                     void fetchNextPage();
                   }}
                   disabled={isFetchingNextPage}
-                  className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
+                  className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
                 >
                   {isFetchingNextPage ? '불러오는 중...' : '더보기'}
                   <ChevronDown className="h-4 w-4" />
