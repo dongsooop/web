@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import CommonTag from '@/components/ui/CommonTag';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 import { useNoticeQuery } from '@/features/notice/hooks/useNoticeQuery';
 import type { NoticeTab, NoticeUiItem } from '@/features/notice/types/ui-model';
 
@@ -40,6 +42,8 @@ function NoticeCard({ notice }: { notice: NoticeUiItem }) {
 }
 
 export default function NoticeBoard() {
+  const { isLoggedIn } = useAuth();
+  const openLoginDialog = useLoginRequiredDialog();
   const [tab, setTab] = useState<NoticeTab>('ALL');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -100,6 +104,11 @@ export default function NoticeBoard() {
                     key={it.id}
                     type="button"
                     onClick={() => {
+                      if (it.id === 'DEPARTMENT' && !isLoggedIn) {
+                        openLoginDialog();
+                        return;
+                      }
+
                       setTab(it.id);
                       setIsExpanded(false);
                     }}
