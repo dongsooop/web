@@ -59,16 +59,14 @@ function buildResponse(result: Awaited<ReturnType<typeof createTimetable>>) {
   });
 }
 
-function parseBody(rawBody: unknown) {
-  const body = (rawBody ?? {}) as Partial<TimetableUpdateRequest>;
+function parseBaseBody(rawBody: unknown) {
+  const body = (rawBody ?? {}) as Partial<TimetableCreateRequest>;
   const week = trimValue(body.week);
   const semester = trimValue(body.semester);
   const year = Number(body.year);
-  const id = Number(body.id);
 
   return {
     endAt: trimValue(body.endAt),
-    id,
     location: trimValue(body.location),
     name: trimValue(body.name),
     professor: trimValue(body.professor),
@@ -79,17 +77,20 @@ function parseBody(rawBody: unknown) {
   };
 }
 
-function validateBody(payload: ReturnType<typeof parseBody>, requireId = false) {
+function parseUpdateBody(rawBody: unknown) {
+  const body = (rawBody ?? {}) as Partial<TimetableUpdateRequest>;
+  const payload = parseBaseBody(rawBody);
+
+  return {
+    ...payload,
+    id: Number(body.id),
+  };
+}
+
+function validateBody(payload: ReturnType<typeof parseBaseBody>) {
   if (!payload.name || !payload.week || !payload.startAt || !payload.endAt) {
     return NextResponse.json(
       { message: '시간표 정보를 올바르게 입력해 주세요.' },
-      { status: HttpStatusCode.BAD_REQUEST },
-    );
-  }
-
-  if (requireId && (!Number.isInteger(payload.id) || payload.id <= 0)) {
-    return NextResponse.json(
-      { message: '수정할 시간표 정보를 찾을 수 없어요.' },
       { status: HttpStatusCode.BAD_REQUEST },
     );
   }
@@ -111,6 +112,23 @@ function validateBody(payload: ReturnType<typeof parseBody>, requireId = false) 
   if (!isValidRange(payload.startAt, payload.endAt)) {
     return NextResponse.json(
       { message: '강의 시간을 올바르게 입력해 주세요.' },
+      { status: HttpStatusCode.BAD_REQUEST },
+    );
+  }
+
+  return null;
+}
+
+function validateUpdateBody(payload: ReturnType<typeof parseUpdateBody>) {
+  const invalid = validateBody(payload);
+
+  if (invalid) {
+    return invalid;
+  }
+
+  if (!Number.isInteger(payload.id) || payload.id <= 0) {
+    return NextResponse.json(
+      { message: '수정할 시간표 정보를 찾을 수 없어요.' },
       { status: HttpStatusCode.BAD_REQUEST },
     );
   }
@@ -140,7 +158,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const payload = parseBody(rawBody);
+    const payload = parseBaseBody(rawBody);
     const invalid = validateBody(payload);
 
     if (invalid) {
@@ -189,8 +207,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const payload = parseBody(rawBody);
-    const invalid = validateBody(payload, true);
+    const payload = parseUpdateBody(rawBody);
+    const invalid = validateUpdateBody(payload);
 
     if (invalid) {
       return invalid;
