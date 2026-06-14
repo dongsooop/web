@@ -1,7 +1,7 @@
 'use client';
 
 import { signInGoogleSocial } from '@/features/auth/client/auth.api';
-import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { toUserModel } from '@/features/auth/mapper';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
@@ -46,5 +46,5 @@ export default function GoogleSignInCallbackPage() {
     },
   });
 
-  return <SocialCallbackScreen message={message} />;
+  return <LoadingScreen message={message} />;
 }

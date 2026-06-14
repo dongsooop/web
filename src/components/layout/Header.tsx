@@ -6,8 +6,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { isNavActive, NAV } from './Sidebar';
+
+const LOGOUT_DELAY = 2000;
+const LOGOUT_FADE_DELAY = 250;
 
 export default function Header() {
   const router = useRouter();
@@ -21,17 +25,28 @@ export default function Header() {
     if (isLoggingOut) return;
 
     setIsLoggingOut(true);
+    setIsMenuOpen(false);
+    const start = Date.now();
 
     try {
       await logout();
     } catch {
     } finally {
-      if (pathname.startsWith('/schedule')) {
+      const remain = LOGOUT_DELAY - (Date.now() - start);
+
+      if (remain > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, remain));
+      }
+
+      if (pathname.startsWith('/schedule') || pathname.startsWith('/timetable')) {
         router.replace('/mypage');
       } else {
         router.refresh();
       }
-      setIsLoggingOut(false);
+
+      window.setTimeout(() => {
+        setIsLoggingOut(false);
+      }, LOGOUT_FADE_DELAY);
     }
   };
 
@@ -61,7 +76,7 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             {!isReady ? (
               <div className="inline-flex min-h-11 items-center justify-center px-3 text-bodySm text-gray-400">
                 ...
@@ -134,6 +149,12 @@ export default function Header() {
           })}
         </nav>
       </aside>
+
+      {isLoggingOut ? (
+        <div className="border-gray2 fixed inset-x-0 bottom-0 top-14 z-[80] border-t bg-white">
+          <LoadingScreen message="로그아웃 중이에요." fill />
+        </div>
+      ) : null}
     </>
   );
 }

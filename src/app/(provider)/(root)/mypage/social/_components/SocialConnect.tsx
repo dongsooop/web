@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { CheckCircle2, CircleAlert } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/Skeleton';
 import { getSocialState, linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuthGuard } from '@/features/auth/hooks/useAuthGuard';
 import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
 import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
 import { useSocialError } from '@/features/auth/hooks/useSocialError';
@@ -39,8 +38,7 @@ function getListErrorMessage(error: unknown) {
 }
 
 export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
-  const router = useRouter();
-  const { isLoggedIn, isReady } = useAuth();
+  const { isRedirecting } = useAuthGuard('/mypage');
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
   const [listErrorMessage, setListErrorMessage] = useState<string | null>(null);
@@ -121,21 +119,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   });
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    if (!isLoggedIn) {
-      router.replace('/mypage');
-    }
-  }, [isLoggedIn, isReady, router]);
-
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    if (!isLoggedIn) {
+    if (isRedirecting) {
       return;
     }
 
@@ -168,7 +152,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     return () => {
       active = false;
     };
-  }, [isLoggedIn, isReady]);
+  }, [isRedirecting]);
 
   useEffect(() => {
     if (!actionMessage) {
@@ -245,7 +229,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     }
   };
 
-  if (isReady && !isLoggedIn) {
+  if (isRedirecting) {
     return null;
   }
 

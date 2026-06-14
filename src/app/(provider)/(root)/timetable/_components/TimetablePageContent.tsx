@@ -10,6 +10,7 @@ import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetabl
 import { useDeleteTimetable } from '@/features/timetable/hooks/useDeleteTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
+import { useAuthGuard } from '@/features/auth/hooks/useAuthGuard';
 import type {
   TimetableCreateRequest,
   TimetableUpdateRequest,
@@ -37,6 +38,7 @@ type PanelState =
 
 export default function TimetablePageContent() {
   const router = useRouter();
+  const { isRedirecting } = useAuthGuard('/mypage');
   const create = useCreateTimetable();
   const remove = useDeleteTimetable();
   const update = useUpdateTimetable();
@@ -142,6 +144,10 @@ export default function TimetablePageContent() {
     },
     [router],
   );
+
+  if (isRedirecting) {
+    return <div className="mx-auto min-h-[calc(100dvh-2rem)] w-full lg:min-h-[calc(100dvh-3rem)]" />;
+  }
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
