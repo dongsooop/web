@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { linkGoogleSocial, unlinkSocial } from '@/features/auth/client/auth.api';
-import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
 import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
@@ -50,7 +50,7 @@ function GoogleCallbackContent() {
 
   return (
     <SocialPageLayout>
-      <SocialCallbackScreen message={message} wide boxed />
+      <LoadingScreen message={message} wide boxed />
     </SocialPageLayout>
   );
 }
@@ -60,7 +60,7 @@ export default function GoogleCallbackPage() {
     <Suspense
       fallback={
         <SocialPageLayout>
-          <SocialCallbackScreen message="보안 확인 중이에요." wide boxed />
+          <LoadingScreen message="보안 확인 중이에요." wide boxed />
         </SocialPageLayout>
       }
     >

@@ -27,7 +27,6 @@ export default function DateTimeWheel({
   onChangeAction,
 }: WheelProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const readyRef = useRef(false);
 
   const repeatedItems = useMemo(
     () =>
@@ -64,14 +63,11 @@ export default function DateTimeWheel({
   };
 
   useEffect(() => {
-    if (readyRef.current) return;
-
     const node = ref.current;
 
     if (!node) return;
 
     alignMiddle(centerIndex);
-    readyRef.current = true;
   }, [centerIndex]);
 
   const setNextFocus = (nextIndex: number) => {

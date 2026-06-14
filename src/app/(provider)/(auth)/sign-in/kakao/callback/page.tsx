@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { signInKakaoSocial } from '@/features/auth/client/auth.api';
-import { SocialCallbackScreen } from '@/features/auth/components/SocialCallbackScreen';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getKakaoCallbackResult } from '@/features/auth/lib/socialCallback';
 import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
@@ -50,12 +50,12 @@ function KakaoSignInCallbackContent() {
     },
   });
 
-  return <SocialCallbackScreen message={message} />;
+  return <LoadingScreen message={message} />;
 }
 
 export default function KakaoSignInCallbackPage() {
   return (
-    <Suspense fallback={<SocialCallbackScreen message="보안 확인 중이에요." />}>
+    <Suspense fallback={<LoadingScreen message="보안 확인 중이에요." />}>
       <KakaoSignInCallbackContent />
     </Suspense>
   );

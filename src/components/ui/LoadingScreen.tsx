@@ -2,23 +2,29 @@
 
 import { CircleAlert } from 'lucide-react';
 
-type SocialCallbackScreenProps = {
+type LoadingScreenProps = {
   message: string;
   wide?: boolean;
   tone?: 'loading' | 'error';
   boxed?: boolean;
+  fill?: boolean;
 };
 
-export function SocialCallbackScreen({
+export function LoadingScreen({
   message,
   wide = false,
   tone = 'loading',
   boxed = false,
-}: SocialCallbackScreenProps) {
+  fill = false,
+}: LoadingScreenProps) {
   return (
     <div
       className={`flex w-full items-center justify-center px-6 py-8 ${
-        boxed ? 'min-h-[252px] bg-transparent' : 'min-h-screen bg-white'
+        fill
+          ? 'h-full min-h-full bg-transparent'
+          : boxed
+            ? 'min-h-[252px] bg-transparent'
+            : 'min-h-screen bg-white'
       }`}
     >
       <div
