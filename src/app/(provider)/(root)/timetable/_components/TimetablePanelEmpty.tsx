@@ -1,12 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 
-type TimetablePanelEmptyProps = {
-  onCreateAction: () => void;
-};
-
-export default function TimetablePanelEmpty({ onCreateAction }: TimetablePanelEmptyProps) {
-  void onCreateAction;
-
+export default function TimetablePanelEmpty() {
   return (
     <aside className="flex min-h-0 flex-col bg-white">
       <div className="flex flex-1 px-6 pt-[5.625rem] pb-6">

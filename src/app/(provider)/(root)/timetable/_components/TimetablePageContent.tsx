@@ -245,12 +245,7 @@ export default function TimetablePageContent() {
                   onEditAction={() => openEditPanel(activeLecture.id)}
                 />
               ) : (
-                <TimetablePanelEmpty
-                  onCreateAction={() => {
-                    setPreview(null);
-                    setPanel({ type: 'create' });
-                  }}
-                />
+                <TimetablePanelEmpty />
               )}
             </div>
           </div>
