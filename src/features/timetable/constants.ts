@@ -1,4 +1,20 @@
-import type { TimetableSemester } from './types/response';
+import type { TimetableSemester, TimetableWeekKey } from './types/response';
+
+export const TIMETABLE_WEEKDAYS = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+] as const satisfies readonly TimetableWeekKey[];
+
+export const TIMETABLE_WEEKDAY_LABELS = [
+  { key: 'MONDAY', label: '월' },
+  { key: 'TUESDAY', label: '화' },
+  { key: 'WEDNESDAY', label: '수' },
+  { key: 'THURSDAY', label: '목' },
+  { key: 'FRIDAY', label: '금' },
+] as const satisfies readonly { key: TimetableWeekKey; label: string }[];
 
 export const TIMETABLE_SEMESTER_LABEL = {
   FIRST: '1학기',

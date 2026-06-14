@@ -2,6 +2,7 @@ import type {
   TimetableLectureResponse as TimetableItem,
   TimetableWeekKey as WeekKey,
 } from './types/response';
+import { TIMETABLE_WEEKDAY_LABELS } from './constants';
 
 export type { TimetableItem, WeekKey };
 
@@ -20,13 +21,7 @@ export const timetableHours = Array.from(
   (_, i) => timetableStartHour + i,
 );
 
-export const timetableWeekDays = [
-  { key: 'MONDAY', label: '월' },
-  { key: 'TUESDAY', label: '화' },
-  { key: 'WEDNESDAY', label: '수' },
-  { key: 'THURSDAY', label: '목' },
-  { key: 'FRIDAY', label: '금' },
-] as const;
+export const timetableWeekDays = TIMETABLE_WEEKDAY_LABELS;
 
 const timeStep = 5;
 const timeStart = timetableStartHour * 60;

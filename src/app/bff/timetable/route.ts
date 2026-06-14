@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
 import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
+import { TIMETABLE_WEEKDAYS } from '@/features/timetable/constants';
 import { createTimetable, updateTimetable } from '@/features/timetable/server/timetable.service';
 import type {
   TimetableCreateRequest,
@@ -16,9 +17,7 @@ function trimValue(value: unknown) {
 }
 
 function isValidWeek(value: string): value is TimetableWeekKey {
-  return ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].includes(
-    value,
-  );
+  return TIMETABLE_WEEKDAYS.includes(value as (typeof TIMETABLE_WEEKDAYS)[number]);
 }
 
 function isValidSemester(value: string): value is TimetableSemester {
