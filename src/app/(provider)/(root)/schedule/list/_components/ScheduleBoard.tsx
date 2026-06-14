@@ -8,6 +8,7 @@ import ToastView from '@/components/ui/ToastView';
 import { ScheduleCreateProvider } from '../../_components/ScheduleCreateContext';
 import ScheduleCreatePanel from '../../_components/ScheduleCreatePanel';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
 import { useUpdateSchedule } from '@/features/schedule/hooks/useUpdateSchedule';
@@ -53,6 +54,7 @@ function descriptionText() {
 export default function ScheduleBoard() {
   const router = useRouter();
   const { isLoggedIn, isReady } = useAuth();
+  const openLoginDialog = useLoginRequiredDialog();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -126,19 +128,6 @@ export default function ScheduleBoard() {
       unlockBody();
     };
   }, [detailOpen]);
-
-  const openLoginDialog = useCallback(() => {
-    showDialog({
-      title: '로그인이 필요한 서비스예요',
-      content: '로그인 화면으로 이동하시겠습니까?',
-      cancel: '취소',
-      confirm: '로그인',
-      variant: 'primary',
-      onConfirm: () => {
-        router.push('/sign-in');
-      },
-    });
-  }, [router, showDialog]);
 
   const moveMonth = useCallback((delta: number) => {
     setViewState((state) => {
