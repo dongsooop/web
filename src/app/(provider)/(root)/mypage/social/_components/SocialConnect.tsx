@@ -38,7 +38,7 @@ function getListErrorMessage(error: unknown) {
 }
 
 export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
-  const { isRedirecting } = useAuthGuard('/mypage');
+  const { isReady, isRedirecting } = useAuthGuard('/mypage');
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
   const [listErrorMessage, setListErrorMessage] = useState<string | null>(null);
@@ -119,7 +119,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   });
 
   useEffect(() => {
-    if (isRedirecting) {
+    if (!isReady || isRedirecting) {
       return;
     }
 
@@ -152,7 +152,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     return () => {
       active = false;
     };
-  }, [isRedirecting]);
+  }, [isReady, isRedirecting]);
 
   useEffect(() => {
     if (!actionMessage) {
@@ -229,7 +229,7 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
     }
   };
 
-  if (isRedirecting) {
+  if (!isReady || isRedirecting) {
     return null;
   }
 
