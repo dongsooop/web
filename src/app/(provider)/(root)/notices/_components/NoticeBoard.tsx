@@ -69,6 +69,8 @@ export default function NoticeBoard() {
   }, []);
 
   const initialCount = isMobile ? MOBILE_COUNT : DESKTOP_COUNT;
+  const canExpand = !isExpanded && items.length > initialCount;
+  const showMoreButton = canExpand || hasMore;
   const visibleItems = isExpanded ? items : items.slice(0, initialCount);
 
   if (isError) {
@@ -151,12 +153,15 @@ export default function NoticeBoard() {
             </section>
 
             <div className="flex justify-center pt-3 pb-1">
-              {hasMore ? (
+              {showMoreButton ? (
                 <button
                   type="button"
                   onClick={() => {
                     setIsExpanded(true);
-                    void fetchNextPage();
+
+                    if (hasMore) {
+                      void fetchNextPage();
+                    }
                   }}
                   disabled={isFetchingNextPage}
                   className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
