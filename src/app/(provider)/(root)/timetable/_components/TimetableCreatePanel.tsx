@@ -47,6 +47,11 @@ function toMinutes(value: string) {
   return hour * 60 + minute;
 }
 
+function createTempId() {
+  const value = crypto.getRandomValues(new Uint32Array(1))[0];
+  return -Number(value || 1);
+}
+
 function isOverlap(startAt: string, endAt: string, lecture: TimetableItem) {
   const start = toMinutes(startAt);
   const end = toMinutes(endAt);
@@ -186,7 +191,7 @@ export default function TimetableCreatePanel({
 
     onSaveAction?.({
       endAt: `${form.endAt}:00`,
-      id: item?.id ?? Date.now(),
+      id: item?.id ?? createTempId(),
       location: form.location.trim(),
       name,
       professor: form.professor.trim(),
