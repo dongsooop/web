@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -11,6 +16,10 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-24.04-arm
+
+    environment:
+      name: Production
+      url: https://www.dongsoop.site/
 
     steps:
       - name: Checkout source
