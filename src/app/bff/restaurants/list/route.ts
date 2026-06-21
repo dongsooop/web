@@ -7,7 +7,11 @@ import {
   fetchRestaurantListWithSpring,
 } from '@/features/restaurant/server/restaurant.api';
 import type { RestaurantListResponse } from '@/features/restaurant/types/response';
-import type { RestaurantCategoryKey, RestaurantPageUi, RestaurantUiItem } from '@/features/restaurant/types/ui-model';
+import type {
+  RestaurantCategoryKey,
+  RestaurantPageUi,
+  RestaurantUiItem,
+} from '@/features/restaurant/types/ui-model';
 import { ApiError } from '@/lib/api/apiError';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -54,13 +58,6 @@ function buildRestaurantPage(items: RestaurantUiItem[], hasMore: boolean): Resta
     items,
     hasMore,
   };
-}
-
-function logRestaurantListResult(source: 'auth' | 'guest', items: RestaurantListResponse) {
-  console.info('[restaurants:list]', {
-    source,
-    items,
-  });
 }
 
 async function hasNextGuestRestaurant(options: {
@@ -136,7 +133,6 @@ export async function GET(request: NextRequest) {
 
       if (result.response.status !== HttpStatusCode.UNAUTHORIZED) {
         const rawItems = (await result.response.json()) as RestaurantListResponse;
-        logRestaurantListResult('auth', rawItems);
         const items = mapRestaurantListResponseToUi(rawItems);
         const probe =
           items.length === size
@@ -174,7 +170,6 @@ export async function GET(request: NextRequest) {
         category,
       });
       const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
-      logRestaurantListResult('guest', rawGuestItems);
       const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
       const hasMore =
         guestItems.length === size
@@ -201,7 +196,6 @@ export async function GET(request: NextRequest) {
       category,
     });
     const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
-    logRestaurantListResult('guest', rawGuestItems);
     const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
     const hasMore =
       guestItems.length === size
