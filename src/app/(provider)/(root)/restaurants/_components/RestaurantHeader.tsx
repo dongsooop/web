@@ -2,17 +2,17 @@
 
 import { Plus, Search } from 'lucide-react';
 
-import { restaurantCategories, type RestaurantCategoryFilter } from '@/features/restaurant/constants';
+import {
+  restaurantCategories,
+  type RestaurantCategoryFilter,
+} from '@/features/restaurant/constants';
 
 type RestaurantHeaderProps = {
   selectedCategory: RestaurantCategoryFilter;
   onCategoryAction: (category: RestaurantCategoryFilter) => void;
 };
 
-export function RestaurantHeader({
-  selectedCategory,
-  onCategoryAction,
-}: RestaurantHeaderProps) {
+export function RestaurantHeader({ selectedCategory, onCategoryAction }: RestaurantHeaderProps) {
   return (
     <section className="border-gray2 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-7">
       <div className="flex flex-col gap-5">
@@ -57,7 +57,7 @@ export function RestaurantHeader({
                 className={`text-bodySm h-11 cursor-pointer rounded-full border px-4 font-semibold transition ${
                   selectedCategory === category.value
                     ? 'border-primary bg-primary text-white'
-                    : 'border-gray2 bg-white text-gray6'
+                    : 'border-gray2 text-gray6 bg-white'
                 }`}
               >
                 {category.label}

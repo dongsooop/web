@@ -5,7 +5,8 @@ import { ChevronDown, Plus } from 'lucide-react';
 import { INITIAL_VISIBLE_COUNT } from '@/features/restaurant/constants';
 import { useRestaurantList } from '@/features/restaurant/hooks/useRestaurantList';
 
-import { RestaurantCard, RestaurantCardSkeleton } from './RestaurantCard';
+import { RestaurantCard } from './RestaurantCard';
+import { RestaurantCardSkeleton } from './RestaurantCardSkeleton';
 import { RestaurantHeader } from './RestaurantHeader';
 
 export default function RestaurantsPageContent() {
@@ -46,8 +47,10 @@ export default function RestaurantsPageContent() {
                 ))}
 
             {!isInitialLoading && !items.length ? (
-              <div className="text-bodySm text-gray5 flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-gray2 px-4 text-center">
-                {isError && displayErrorMessage ? displayErrorMessage : '조건에 맞는 맛집이 없어요.'}
+              <div className="text-bodySm text-gray5 border-gray2 flex min-h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center">
+                {isError && displayErrorMessage
+                  ? displayErrorMessage
+                  : '조건에 맞는 맛집이 없어요.'}
               </div>
             ) : null}
           </div>

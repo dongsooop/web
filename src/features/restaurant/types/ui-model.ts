@@ -12,10 +12,10 @@ export type RestaurantUiItem = {
   name: string;
   distance: number;
   distanceText: string;
+  placeUrl: string;
   likeCount: number;
   likeText: string;
   tags: string[];
-  externalMapId: string;
   category: RestaurantCategoryKey;
   categoryLabel: string;
   isLikedByMe: boolean;

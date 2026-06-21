@@ -20,9 +20,9 @@ export type RestaurantItemResponse = {
   id: number;
   name: string;
   distance: number;
+  placeUrl: string;
   likeCount: number;
   tags: RestaurantTagResponse[];
-  externalMapId: string;
   category: RestaurantCategoryResponse;
   isLikedByMe: boolean;
 };
