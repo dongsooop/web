@@ -1,16 +1,8 @@
 'use client';
 
-import {
-  Coffee,
-  Hamburger,
-  Pizza,
-  Soup,
-  UtensilsCrossed,
-  Fish,
-} from 'lucide-react';
+import { Coffee, Hamburger, Pizza, Soup, UtensilsCrossed, Fish } from 'lucide-react';
 
-import { restaurantCategories } from './options';
-import type { RestaurantCategoryKey } from './types/ui-model';
+import { restaurantCategories, type RestaurantCategoryKey } from './options';
 
 export const INITIAL_VISIBLE_COUNT = 7;
 

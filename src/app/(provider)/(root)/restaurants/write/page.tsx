@@ -1,4 +1,4 @@
-import RestaurantWriteContent from './_components/RestaurantWriteContent';
+import RestaurantWrite from './_components/RestaurantWrite';
 
 type RestaurantWritePageProps = {
   searchParams?: Promise<{
@@ -33,7 +33,7 @@ export default async function RestaurantWritePage({ searchParams }: RestaurantWr
       : null;
 
   return (
-    <RestaurantWriteContent
+    <RestaurantWrite
       key={selectedPlace?.externalMapId ?? 'empty'}
       selectedPlace={selectedPlace}
     />

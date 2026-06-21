@@ -5,14 +5,14 @@ import { useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-
 import { getErrorMessage } from '@/lib/errors/messages';
 
 import { toggleRestaurantLike } from '../client/restaurant.api';
-import type { RestaurantPageUi } from '../types/ui-model';
+import type { RestaurantPage } from '../types/ui-model';
 
 type ToggleVars = {
   id: number;
   isAdding: boolean;
 };
 
-function patchRestaurantPage(data: InfiniteData<RestaurantPageUi> | undefined, vars: ToggleVars) {
+function patchRestaurantPage(data: InfiniteData<RestaurantPage> | undefined, vars: ToggleVars) {
   if (!data) {
     return data;
   }
@@ -49,11 +49,11 @@ export function useToggleRestaurantLike() {
         queryKey: ['restaurant-list'],
       });
 
-      const snapshots = queryClient.getQueriesData<InfiniteData<RestaurantPageUi>>({
+      const snapshots = queryClient.getQueriesData<InfiniteData<RestaurantPage>>({
         queryKey: ['restaurant-list'],
       });
 
-      queryClient.setQueriesData<InfiniteData<RestaurantPageUi>>(
+      queryClient.setQueriesData<InfiniteData<RestaurantPage>>(
         { queryKey: ['restaurant-list'] },
         (data) => patchRestaurantPage(data, vars),
       );

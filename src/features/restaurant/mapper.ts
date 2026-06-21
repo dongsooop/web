@@ -1,33 +1,12 @@
 import type {
-  RestaurantCategoryResponse,
-  RestaurantItemResponse,
+  RestaurantCategoryLabel,
   RestaurantListResponse,
-  RestaurantSearchItemResponse,
+  RestaurantResponse,
   RestaurantSearchResponse,
+  RestaurantSearchListResponse,
 } from './types/response';
-import type {
-  RestaurantCategoryKey,
-  RestaurantSearchItemUi,
-  RestaurantUiItem,
-} from './types/ui-model';
-import { CATEGORY_LABEL_MAP, TAG_LABEL_MAP } from './options';
-
-const CATEGORY_KEY_MAP: Record<RestaurantCategoryResponse, RestaurantCategoryKey> = {
-  KOREAN: 'KOREAN',
-  CHINESE: 'CHINESE',
-  JAPANESE: 'JAPANESE',
-  WESTERN: 'WESTERN',
-  BUNSIK: 'BUNSIK',
-  FAST_FOOD: 'FAST_FOOD',
-  CAFE_DESSERT: 'CAFE_DESSERT',
-  한식: 'KOREAN',
-  중식: 'CHINESE',
-  일식: 'JAPANESE',
-  양식: 'WESTERN',
-  분식: 'BUNSIK',
-  패스트푸드: 'FAST_FOOD',
-  '카페/디저트': 'CAFE_DESSERT',
-};
+import type { RestaurantItem, RestaurantSearchItem } from './types/ui-model';
+import { CATEGORY_LABEL_MAP, TAG_LABEL_MAP, type RestaurantCategoryKey } from './options';
 
 function formatDistance(distance: number) {
   return `${Math.round(distance)}m`;
@@ -37,12 +16,31 @@ function formatLikes(likeCount: number) {
   return `${likeCount}명이 좋아하는 가게예요`;
 }
 
-function mapTagLabel(tag: string) {
+function mapTag(tag: string) {
   return TAG_LABEL_MAP[tag as keyof typeof TAG_LABEL_MAP] ?? tag;
 }
 
-function mapRestaurantItem(item: RestaurantItemResponse): RestaurantUiItem {
-  const category = CATEGORY_KEY_MAP[item.category];
+function toCategoryKey(category: RestaurantCategoryLabel): RestaurantCategoryKey {
+  switch (category) {
+    case '한식':
+      return 'KOREAN';
+    case '중식':
+      return 'CHINESE';
+    case '일식':
+      return 'JAPANESE';
+    case '양식':
+      return 'WESTERN';
+    case '분식':
+      return 'BUNSIK';
+    case '패스트푸드':
+      return 'FAST_FOOD';
+    case '카페/디저트':
+      return 'CAFE_DESSERT';
+  }
+}
+
+function toItem(item: RestaurantResponse): RestaurantItem {
+  const category = toCategoryKey(item.category);
 
   return {
     id: item.id,
@@ -52,15 +50,15 @@ function mapRestaurantItem(item: RestaurantItemResponse): RestaurantUiItem {
     placeUrl: item.placeUrl,
     likeCount: item.likeCount,
     likeText: formatLikes(item.likeCount),
-    tags: (item.tags ?? []).map(mapTagLabel),
+    tags: (item.tags ?? []).map(mapTag),
     category,
     categoryLabel: CATEGORY_LABEL_MAP[category],
     isLikedByMe: item.isLikedByMe,
   };
 }
 
-export function mapRestaurantListResponseToUi(items: RestaurantListResponse): RestaurantUiItem[] {
-  return (items ?? []).map(mapRestaurantItem);
+export function mapList(items: RestaurantListResponse): RestaurantItem[] {
+  return (items ?? []).map(toItem);
 }
 
 function normalizeSearchDistance(value: number | string | null | undefined) {
@@ -79,7 +77,7 @@ function normalizeSearchDistance(value: number | string | null | undefined) {
   return 0;
 }
 
-function mapRestaurantSearchItem(item: RestaurantSearchItemResponse): RestaurantSearchItemUi {
+function toSearchItem(item: RestaurantSearchResponse): RestaurantSearchItem {
   return {
     externalMapId: item.id.trim(),
     name: item.place_name.trim(),
@@ -89,10 +87,6 @@ function mapRestaurantSearchItem(item: RestaurantSearchItemResponse): Restaurant
   };
 }
 
-export function mapRestaurantSearchResponseToUi(
-  items: RestaurantSearchResponse,
-): RestaurantSearchItemUi[] {
-  return (items ?? [])
-    .map(mapRestaurantSearchItem)
-    .filter((item) => item.externalMapId && item.name);
+export function mapSearch(items: RestaurantSearchListResponse): RestaurantSearchItem[] {
+  return (items ?? []).map(toSearchItem).filter((item) => item.externalMapId && item.name);
 }

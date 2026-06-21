@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
-import type { RestaurantSearchItemUi } from '@/features/restaurant/types/ui-model';
+import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
-function buildWriteUrl(restaurant: RestaurantSearchItemUi) {
+function buildWriteUrl(restaurant: RestaurantSearchItem) {
   const query = new URLSearchParams({
     externalMapId: restaurant.externalMapId,
     name: restaurant.name,
@@ -20,7 +20,7 @@ function buildWriteUrl(restaurant: RestaurantSearchItemUi) {
   return `/restaurants/write?${query.toString()}`;
 }
 
-export default function RestaurantSearchContent() {
+export default function RestaurantSearch() {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');

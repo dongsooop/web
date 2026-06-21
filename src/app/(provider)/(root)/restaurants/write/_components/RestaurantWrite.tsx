@@ -1,18 +1,18 @@
 'use client';
 
 import { useRestaurantWrite } from '@/features/restaurant/hooks/useRestaurantWrite';
-import type { RestaurantSearchItemUi } from '@/features/restaurant/types/ui-model';
+import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
 import { RestaurantWriteForm } from './RestaurantWriteForm';
 import { RestaurantWriteHeader } from './RestaurantWriteHeader';
 
-type RestaurantWriteContentProps = {
-  selectedPlace: RestaurantSearchItemUi | null;
+type RestaurantWriteProps = {
+  selectedPlace: RestaurantSearchItem | null;
 };
 
-export default function RestaurantWriteContent({
+export default function RestaurantWrite({
   selectedPlace,
-}: RestaurantWriteContentProps) {
+}: RestaurantWriteProps) {
   const {
     category,
     selectedTags,

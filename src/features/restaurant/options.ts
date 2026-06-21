@@ -1,5 +1,14 @@
-import type { RestaurantCategoryKey } from './types/ui-model';
+export const restaurantCategoryValues = [
+  'KOREAN',
+  'CHINESE',
+  'JAPANESE',
+  'WESTERN',
+  'BUNSIK',
+  'FAST_FOOD',
+  'CAFE_DESSERT',
+] as const;
 
+export type RestaurantCategoryKey = (typeof restaurantCategoryValues)[number];
 export type RestaurantCategoryFilter = RestaurantCategoryKey | 'ALL';
 
 export type RestaurantTagKey =

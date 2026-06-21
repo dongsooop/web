@@ -1,13 +1,6 @@
-export type RestaurantCategoryKey =
-  | 'KOREAN'
-  | 'CHINESE'
-  | 'JAPANESE'
-  | 'WESTERN'
-  | 'BUNSIK'
-  | 'FAST_FOOD'
-  | 'CAFE_DESSERT';
+import type { RestaurantCategoryKey } from '../options';
 
-export type RestaurantUiItem = {
+export type RestaurantItem = {
   id: number;
   name: string;
   distance: number;
@@ -21,12 +14,12 @@ export type RestaurantUiItem = {
   isLikedByMe: boolean;
 };
 
-export type RestaurantPageUi = {
-  items: RestaurantUiItem[];
+export type RestaurantPage = {
+  items: RestaurantItem[];
   hasMore: boolean;
 };
 
-export type RestaurantSearchItemUi = {
+export type RestaurantSearchItem = {
   externalMapId: string;
   name: string;
   address: string;

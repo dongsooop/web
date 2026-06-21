@@ -3,8 +3,8 @@ import 'server-only';
 import { serverFetch } from '@/lib/api/serverFetch';
 import { serverFetchAuth } from '@/lib/api/serverFetchAuth';
 
+import type { RestaurantCategoryKey } from '../options';
 import type { RestaurantCreateRequest } from '../types/request';
-import type { RestaurantCategoryKey } from '../types/ui-model';
 
 type RestaurantRequestOptions = {
   appCheckToken?: string;

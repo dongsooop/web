@@ -5,8 +5,9 @@ import { useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 
-import { INITIAL_VISIBLE_COUNT, type RestaurantCategoryFilter } from '../constants';
-import type { RestaurantUiItem } from '../types/ui-model';
+import { INITIAL_VISIBLE_COUNT } from '../constants';
+import type { RestaurantCategoryFilter } from '../options';
+import type { RestaurantItem } from '../types/ui-model';
 import { useRestaurantQuery } from './useRestaurantQuery';
 import { useToggleRestaurantLike } from './useToggleRestaurantLike';
 
@@ -26,7 +27,7 @@ export function useRestaurantList() {
     setVisibleCount(INITIAL_VISIBLE_COUNT);
   }
 
-  function likeRestaurant(restaurant: RestaurantUiItem) {
+  function likeRestaurant(restaurant: RestaurantItem) {
     if (!isLoggedIn) {
       openLoginDialog();
       return;

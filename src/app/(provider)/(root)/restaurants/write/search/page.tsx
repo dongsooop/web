@@ -1,5 +1,5 @@
-import RestaurantSearchContent from './_components/RestaurantSearchContent';
+import RestaurantSearch from './_components/RestaurantSearch';
 
 export default function RestaurantSearchPage() {
-  return <RestaurantSearchContent />;
+  return <RestaurantSearch />;
 }

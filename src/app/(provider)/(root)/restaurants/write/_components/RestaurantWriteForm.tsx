@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { Search } from 'lucide-react';
 
 import { restaurantCategories } from '@/features/restaurant/constants';
-import { restaurantTags, type RestaurantTagKey } from '@/features/restaurant/options';
-import type {
-  RestaurantCategoryKey,
-  RestaurantSearchItemUi,
-} from '@/features/restaurant/types/ui-model';
+import {
+  restaurantTags,
+  type RestaurantCategoryKey,
+  type RestaurantTagKey,
+} from '@/features/restaurant/options';
+import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
 type FieldTitleProps = {
   children: React.ReactNode;
@@ -84,7 +85,7 @@ function isWriteCategoryOption(item: RestaurantCategoryOption): item is WriteCat
 }
 
 type RestaurantWriteFormProps = {
-  selectedPlace: RestaurantSearchItemUi | null;
+  selectedPlace: RestaurantSearchItem | null;
   category: RestaurantCategoryKey | null;
   selectedTags: RestaurantTagKey[];
   tagCount: number;
@@ -138,16 +139,14 @@ export function RestaurantWriteForm({
             <FieldTitle required>카테고리</FieldTitle>
 
             <HorizontalChips>
-              {restaurantCategories
-                .filter(isWriteCategoryOption)
-                .map((item) => (
-                  <SelectChip
-                    key={item.value}
-                    label={item.label}
-                    selected={category === item.value}
-                    onClickAction={() => selectCategoryAction(item.value)}
-                  />
-                ))}
+              {restaurantCategories.filter(isWriteCategoryOption).map((item) => (
+                <SelectChip
+                  key={item.value}
+                  label={item.label}
+                  selected={category === item.value}
+                  onClickAction={() => selectCategoryAction(item.value)}
+                />
+              ))}
             </HorizontalChips>
           </section>
 

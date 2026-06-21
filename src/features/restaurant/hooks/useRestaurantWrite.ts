@@ -7,11 +7,11 @@ import { getErrorMessage } from '@/lib/errors/messages';
 import { useToastStore } from '@/store/useToastStore';
 
 import type { RestaurantCreateRequest } from '../types/request';
-import type { RestaurantSearchItemUi } from '../types/ui-model';
+import type { RestaurantSearchItem } from '../types/ui-model';
 import type { RestaurantTagKey } from '../options';
 import { useCreateRestaurant } from './useCreateRestaurant';
 
-export function useRestaurantWrite(selectedPlace: RestaurantSearchItemUi | null) {
+export function useRestaurantWrite(selectedPlace: RestaurantSearchItem | null) {
   const router = useRouter();
   const showToast = useToastStore((state) => state.showToast);
   const createRestaurant = useCreateRestaurant();

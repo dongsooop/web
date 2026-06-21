@@ -3,7 +3,7 @@
 import { Heart, MapPin } from 'lucide-react';
 
 import { restaurantCategoryIcon } from '@/features/restaurant/constants';
-import type { RestaurantUiItem } from '@/features/restaurant/types/ui-model';
+import type { RestaurantItem } from '@/features/restaurant/types/ui-model';
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
@@ -14,9 +14,9 @@ function Tag({ children }: { children: React.ReactNode }) {
 }
 
 type RestaurantCardProps = {
-  restaurant: RestaurantUiItem;
+  restaurant: RestaurantItem;
   isLiking: boolean;
-  onLikeAction: (restaurant: RestaurantUiItem) => void;
+  onLikeAction: (restaurant: RestaurantItem) => void;
 };
 
 export function RestaurantCard({ restaurant, isLiking, onLikeAction }: RestaurantCardProps) {

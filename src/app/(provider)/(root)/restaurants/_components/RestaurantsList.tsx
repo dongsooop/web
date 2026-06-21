@@ -7,10 +7,10 @@ import { INITIAL_VISIBLE_COUNT } from '@/features/restaurant/constants';
 import { useRestaurantList } from '@/features/restaurant/hooks/useRestaurantList';
 
 import { RestaurantCard } from './RestaurantCard';
-import { RestaurantCardSkeleton } from './RestaurantCardSkeleton';
+import { RestaurantSkeleton } from './RestaurantSkeleton';
 import { RestaurantHeader } from './RestaurantHeader';
 
-export default function RestaurantsContent() {
+export default function RestaurantsList() {
   const {
     selectedCategory,
     selectCategory,
@@ -36,7 +36,7 @@ export default function RestaurantsContent() {
           <div className="flex flex-col gap-3">
             {isInitialLoading
               ? Array.from({ length: INITIAL_VISIBLE_COUNT }, (_, index) => (
-                  <RestaurantCardSkeleton key={index} />
+                  <RestaurantSkeleton key={index} />
                 ))
               : visibleItems.map((restaurant) => (
                   <RestaurantCard

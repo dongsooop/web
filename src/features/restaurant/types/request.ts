@@ -1,5 +1,5 @@
-import type { RestaurantCategoryKey } from './ui-model';
 import type { RestaurantTagKey } from '../options';
+import type { RestaurantCategoryKey } from '../options';
 
 export type RestaurantCreateRequest = {
   externalMapId: string;

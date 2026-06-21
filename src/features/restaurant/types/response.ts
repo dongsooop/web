@@ -1,11 +1,5 @@
-export type RestaurantCategoryResponse =
-  | 'KOREAN'
-  | 'CHINESE'
-  | 'JAPANESE'
-  | 'WESTERN'
-  | 'BUNSIK'
-  | 'FAST_FOOD'
-  | 'CAFE_DESSERT'
+export type RestaurantTagResponse = string;
+export type RestaurantCategoryLabel =
   | '한식'
   | '중식'
   | '일식'
@@ -14,22 +8,20 @@ export type RestaurantCategoryResponse =
   | '패스트푸드'
   | '카페/디저트';
 
-export type RestaurantTagResponse = string;
-
-export type RestaurantItemResponse = {
+export type RestaurantResponse = {
   id: number;
   name: string;
   distance: number;
   placeUrl: string;
   likeCount: number;
   tags: RestaurantTagResponse[];
-  category: RestaurantCategoryResponse;
+  category: RestaurantCategoryLabel;
   isLikedByMe: boolean;
 };
 
-export type RestaurantListResponse = RestaurantItemResponse[];
+export type RestaurantListResponse = RestaurantResponse[];
 
-export type RestaurantSearchItemResponse = {
+export type RestaurantSearchResponse = {
   id: string;
   place_name: string;
   road_address_name: string;
@@ -37,4 +29,4 @@ export type RestaurantSearchItemResponse = {
   distance?: string;
 };
 
-export type RestaurantSearchResponse = RestaurantSearchItemResponse[];
+export type RestaurantSearchListResponse = RestaurantSearchResponse[];

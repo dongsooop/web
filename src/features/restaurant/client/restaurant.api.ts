@@ -1,11 +1,8 @@
 import { clientRequestAuth } from '@/lib/api/clientRequestAuth';
 
+import type { RestaurantCategoryKey } from '../options';
 import type { RestaurantCreateRequest } from '../types/request';
-import type {
-  RestaurantCategoryKey,
-  RestaurantPageUi,
-  RestaurantSearchItemUi,
-} from '../types/ui-model';
+import type { RestaurantPage, RestaurantSearchItem } from '../types/ui-model';
 
 export async function fetchRestaurantPage(
   category: RestaurantCategoryKey | 'ALL',
@@ -21,7 +18,7 @@ export async function fetchRestaurantPage(
     query.set('category', category);
   }
 
-  return clientRequestAuth<RestaurantPageUi>(`/bff/restaurants/list?${query.toString()}`, {
+  return clientRequestAuth<RestaurantPage>(`/bff/restaurants/list?${query.toString()}`, {
     method: 'GET',
   });
 }
@@ -41,12 +38,9 @@ export async function searchRestaurants(queryText: string) {
     query: queryText,
   });
 
-  return clientRequestAuth<RestaurantSearchItemUi[]>(
-    `/bff/restaurants/search?${query.toString()}`,
-    {
-      method: 'GET',
-    },
-  );
+  return clientRequestAuth<RestaurantSearchItem[]>(`/bff/restaurants/search?${query.toString()}`, {
+    method: 'GET',
+  });
 }
 
 export async function createRestaurant(payload: RestaurantCreateRequest) {

@@ -2,7 +2,7 @@
 
 import { Skeleton, SkeletonCircle, SkeletonText } from '@/components/ui/Skeleton';
 
-export function RestaurantCardSkeleton() {
+export function RestaurantSkeleton() {
   return (
     <article className="border-gray2 min-h-14 rounded-2xl border bg-white px-4 py-4 sm:px-5">
       <div className="flex items-start gap-3 sm:gap-4">

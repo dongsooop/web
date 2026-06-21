@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
-import { mapRestaurantSearchResponseToUi } from '@/features/restaurant/mapper';
+import { mapSearch } from '@/features/restaurant/mapper';
 import { searchRestaurantsWithKakao } from '@/features/restaurant/server/restaurant.api';
-import type { RestaurantSearchResponse } from '@/features/restaurant/types/response';
+import type { RestaurantSearchListResponse } from '@/features/restaurant/types/response';
 
 export async function GET(request: NextRequest) {
   const { appCheckToken } = extractAuthContext(request);
@@ -38,10 +38,10 @@ export async function GET(request: NextRequest) {
     }
 
     const payload = (await response.json()) as {
-      documents?: RestaurantSearchResponse;
+      documents?: RestaurantSearchListResponse;
     };
 
-    return NextResponse.json(mapRestaurantSearchResponseToUi(payload.documents ?? []), {
+    return NextResponse.json(mapSearch(payload.documents ?? []), {
       status: HttpStatusCode.OK,
     });
   } catch (error: unknown) {

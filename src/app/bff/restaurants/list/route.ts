@@ -1,17 +1,14 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
 import { applyAuthResult } from '@/features/auth/server/auth.route';
-import { mapRestaurantListResponseToUi } from '@/features/restaurant/mapper';
+import { mapList } from '@/features/restaurant/mapper';
 import {
   fetchGuestRestaurantListWithSpring,
   fetchRestaurantListWithSpring,
 } from '@/features/restaurant/server/restaurant.api';
+import type { RestaurantCategoryKey } from '@/features/restaurant/options';
 import type { RestaurantListResponse } from '@/features/restaurant/types/response';
-import type {
-  RestaurantCategoryKey,
-  RestaurantPageUi,
-  RestaurantUiItem,
-} from '@/features/restaurant/types/ui-model';
+import type { RestaurantPage, RestaurantItem } from '@/features/restaurant/types/ui-model';
 import { ApiError } from '@/lib/api/apiError';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -53,7 +50,7 @@ function parseCategory(value: string | null): RestaurantCategoryKey | undefined 
   return CATEGORY_VALUES.find((item) => item === value);
 }
 
-function buildRestaurantPage(items: RestaurantUiItem[], hasMore: boolean): RestaurantPageUi {
+function buildRestaurantPage(items: RestaurantItem[], hasMore: boolean): RestaurantPage {
   return {
     items,
     hasMore,
@@ -133,7 +130,7 @@ export async function GET(request: NextRequest) {
 
       if (result.response.status !== HttpStatusCode.UNAUTHORIZED) {
         const rawItems = (await result.response.json()) as RestaurantListResponse;
-        const items = mapRestaurantListResponseToUi(rawItems);
+        const items = mapList(rawItems);
         const probe =
           items.length === size
             ? await hasNextRestaurant({
@@ -170,7 +167,7 @@ export async function GET(request: NextRequest) {
         category,
       });
       const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
-      const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
+      const guestItems = mapList(rawGuestItems);
       const hasMore =
         guestItems.length === size
           ? await hasNextGuestRestaurant({
@@ -196,7 +193,7 @@ export async function GET(request: NextRequest) {
       category,
     });
     const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
-    const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
+    const guestItems = mapList(rawGuestItems);
     const hasMore =
       guestItems.length === size
         ? await hasNextGuestRestaurant({
