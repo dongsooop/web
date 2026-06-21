@@ -38,13 +38,17 @@ export function useRestaurantList() {
     });
   }
 
-  function showMore() {
+  async function showMore() {
     if (visibleCount < query.items.length) {
       setVisibleCount((count) => count + INITIAL_VISIBLE_COUNT);
       return;
     }
 
-    void query.fetchNextPage();
+    const result = await query.fetchNextPage();
+
+    if (!result.isError) {
+      setVisibleCount((count) => count + INITIAL_VISIBLE_COUNT);
+    }
   }
 
   return {
