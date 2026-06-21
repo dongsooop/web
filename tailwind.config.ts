@@ -124,6 +124,8 @@ const config: Config = {
       },
 
       maxWidth: {
+        content: '90rem',
+        form: '48.75rem',
         layout: '150rem',
         timetable: '65rem',
         'timetable-content': '58rem',

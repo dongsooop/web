@@ -28,7 +28,12 @@ export function isNavActive(pathname: string, href: string) {
   }
 
   if (href === '/') {
-    return pathname === href || pathname.startsWith('/home') || pathname.startsWith('/notices');
+    return (
+      pathname === href ||
+      pathname.startsWith('/home') ||
+      pathname.startsWith('/notices') ||
+      pathname.startsWith('/restaurants')
+    );
   }
 
   return pathname === href || pathname.startsWith(href + '/');
