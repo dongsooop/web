@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Coffee,
   ChevronDown,
@@ -14,26 +15,14 @@ import {
   Fish,
 } from 'lucide-react';
 
+import { Skeleton, SkeletonCircle, SkeletonText } from '@/components/ui/Skeleton';
+import { useRestaurantQuery } from '@/features/restaurant/hooks/useRestaurantQuery';
+import type { RestaurantCategoryKey, RestaurantUiItem } from '@/features/restaurant/types/ui-model';
+
 type Category = {
   label: string;
-  active?: boolean;
+  value: RestaurantCategoryKey | 'ALL';
 };
-
-type RestaurantCategory =
-  | 'KOREAN'
-  | 'CHINESE'
-  | 'JAPANESE'
-  | 'WESTERN'
-  | 'BUNSIK'
-  | 'FAST_FOOD'
-  | 'CAFE_DESSERT'
-  | '한식'
-  | '중식'
-  | '일식'
-  | '양식'
-  | '분식'
-  | '패스트푸드'
-  | '카페/디저트';
 
 function BowlChopsticksIcon() {
   return (
@@ -56,28 +45,18 @@ function BowlChopsticksIcon() {
   );
 }
 
-type Restaurant = {
-  id: number;
-  name: string;
-  distance: number;
-  likeCount: number;
-  category: RestaurantCategory;
-  notes: string[];
-  likedByMe: boolean;
-};
-
 const categories: Category[] = [
-  { label: '전체', active: true },
-  { label: '한식' },
-  { label: '중식' },
-  { label: '일식' },
-  { label: '양식' },
-  { label: '분식' },
-  { label: '패스트푸드' },
-  { label: '카페/디저트' },
+  { label: '전체', value: 'ALL' },
+  { label: '한식', value: 'KOREAN' },
+  { label: '중식', value: 'CHINESE' },
+  { label: '일식', value: 'JAPANESE' },
+  { label: '양식', value: 'WESTERN' },
+  { label: '분식', value: 'BUNSIK' },
+  { label: '패스트푸드', value: 'FAST_FOOD' },
+  { label: '카페/디저트', value: 'CAFE_DESSERT' },
 ];
 
-const categoryIcon: Record<RestaurantCategory, React.ReactNode> = {
+const categoryIcon: Record<RestaurantCategoryKey, React.ReactNode> = {
   KOREAN: <UtensilsCrossed className="h-7 w-7" />,
   CHINESE: <BowlChopsticksIcon />,
   JAPANESE: <Fish className="h-7 w-7" />,
@@ -85,105 +64,7 @@ const categoryIcon: Record<RestaurantCategory, React.ReactNode> = {
   BUNSIK: <Soup className="h-7 w-7" />,
   FAST_FOOD: <Hamburger className="h-7 w-7" />,
   CAFE_DESSERT: <Coffee className="h-7 w-7" />,
-  한식: <UtensilsCrossed className="h-7 w-7" />,
-  중식: <BowlChopsticksIcon />,
-  일식: <Fish className="h-7 w-7" />,
-  양식: <Pizza className="h-7 w-7" />,
-  분식: <Soup className="h-7 w-7" />,
-  패스트푸드: <Hamburger className="h-7 w-7" />,
-  '카페/디저트': <Coffee className="h-7 w-7" />,
 };
-
-const restaurants: Restaurant[] = [
-  {
-    id: 1,
-    name: '돈전성시',
-    distance: 159,
-    likeCount: 5,
-    category: 'KOREAN',
-    notes: ['점심으로 편안해요', '음식이 맛있어요'],
-    likedByMe: false,
-  },
-  {
-    id: 2,
-    name: '고척칼국수',
-    distance: 285,
-    likeCount: 4,
-    category: 'BUNSIK',
-    notes: ['양이 많아요', '음식이 맛있어요', '가성비가 좋아요'],
-    likedByMe: false,
-  },
-  {
-    id: 3,
-    name: '시골집',
-    distance: 96,
-    likeCount: 2,
-    category: 'CHINESE',
-    notes: ['음식이 맛있어요', '가성비가 좋아요', '양이 많아요'],
-    likedByMe: true,
-  },
-  {
-    id: 4,
-    name: '지지고 동양미래대점',
-    distance: 102,
-    likeCount: 2,
-    category: 'FAST_FOOD',
-    notes: ['음식이 맛있어요', '점심으로 편안해요', '가성비가 좋아요'],
-    likedByMe: false,
-  },
-  {
-    id: 5,
-    name: '전주식당',
-    distance: 135,
-    likeCount: 2,
-    category: 'WESTERN',
-    notes: ['음식이 맛있어요', '점심으로 편안해요', '혼밥하기 좋아요'],
-    likedByMe: false,
-  },
-  {
-    id: 6,
-    name: '스시하루',
-    distance: 210,
-    likeCount: 3,
-    category: 'JAPANESE',
-    notes: ['깔끔해요', '혼밥하기 좋아요'],
-    likedByMe: true,
-  },
-  {
-    id: 7,
-    name: '카페온',
-    distance: 188,
-    likeCount: 3,
-    category: 'CAFE_DESSERT',
-    notes: ['디저트가 맛있어요', '조용해요'],
-    likedByMe: false,
-  },
-];
-
-const categoryLabel: Record<RestaurantCategory, string> = {
-  KOREAN: '한식',
-  CHINESE: '중식',
-  JAPANESE: '일식',
-  WESTERN: '양식',
-  BUNSIK: '분식',
-  FAST_FOOD: '패스트푸드',
-  CAFE_DESSERT: '카페/디저트',
-  한식: '한식',
-  중식: '중식',
-  일식: '일식',
-  양식: '양식',
-  분식: '분식',
-  패스트푸드: '패스트푸드',
-  '카페/디저트': '카페/디저트',
-};
-
-function formatDistance(distance: number) {
-  return `${distance}m`;
-}
-
-function formatLikes(likeCount: number) {
-  return `${likeCount}명이 좋아하는 가게예요`;
-}
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
@@ -193,9 +74,9 @@ function Tag({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+function RestaurantCard({ restaurant }: { restaurant: RestaurantUiItem }) {
   return (
-    <article className="border-gray2 min-h-14 rounded-2xl border bg-white px-4 py-4 sm:px-5">
+    <article className="border-gray2 min-h-14 cursor-pointer rounded-2xl border bg-white px-4 py-4 sm:px-5">
       <div className="flex items-start gap-3 sm:gap-4">
         <div className="text-primary bg-gray7 flex h-14 w-14 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16">
           {categoryIcon[restaurant.category]}
@@ -208,11 +89,11 @@ function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
               <div className="text-caption text-gray5 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="inline-flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5" />
-                  {formatDistance(restaurant.distance)}
+                  {restaurant.distanceText}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Heart className="h-3.5 w-3.5" />
-                  {formatLikes(restaurant.likeCount)}
+                  <Heart className="h-3.5 w-3.5 fill-current" />
+                  {restaurant.likeText}
                 </span>
               </div>
             </div>
@@ -227,9 +108,9 @@ function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <Tag>{categoryLabel[restaurant.category]}</Tag>
-            {restaurant.notes.map((note) => (
-              <Tag key={note}>{note}</Tag>
+            <Tag>{restaurant.categoryLabel}</Tag>
+            {restaurant.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
             ))}
           </div>
         </div>
@@ -238,7 +119,38 @@ function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
   );
 }
 
+function RestaurantCardSkeleton() {
+  return (
+    <article className="border-gray2 min-h-14 rounded-2xl border bg-white px-4 py-4 sm:px-5">
+      <div className="flex items-start gap-3 sm:gap-4">
+        <SkeletonCircle className="h-14 w-14 sm:h-16 sm:w-16" />
+        <div className="flex-1 space-y-3">
+          <SkeletonText className="h-6 w-32" />
+          <SkeletonText className="w-44" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-7 w-14 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-full" />
+            <Skeleton className="h-7 w-20 rounded-full" />
+          </div>
+        </div>
+        <SkeletonCircle className="h-11 w-11" />
+      </div>
+    </article>
+  );
+}
+
 export default function RestaurantsPageContent() {
+  const [selectedCategory, setSelectedCategory] = useState<RestaurantCategoryKey | 'ALL'>('ALL');
+  const {
+    items,
+    hasMore,
+    isInitialLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    isError,
+    displayErrorMessage,
+  } = useRestaurantQuery(selectedCategory);
+
   return (
     <div className="w-full">
       <div className="max-w-content mx-auto flex w-full flex-col gap-4 px-4 pb-8 sm:gap-5">
@@ -279,12 +191,15 @@ export default function RestaurantsPageContent() {
               <div className="flex min-w-max gap-2">
                 {categories.map((category) => (
                   <button
-                    key={category.label}
+                    key={category.value}
                     type="button"
+                    onClick={() => {
+                      setSelectedCategory(category.value);
+                    }}
                     className={`text-bodySm h-11 cursor-pointer rounded-full border px-4 font-semibold transition ${
-                      category.active
+                      selectedCategory === category.value
                         ? 'border-primary bg-primary text-white'
-                        : 'border-gray2 text-gray6 bg-white'
+                        : 'border-gray2 bg-white text-gray6'
                     }`}
                   >
                     {category.label}
@@ -297,19 +212,37 @@ export default function RestaurantsPageContent() {
 
         <section className="border-gray2 rounded-3xl border bg-white px-3 py-3 sm:px-4 sm:py-4">
           <div className="flex flex-col gap-3">
-            {restaurants.map((restaurant) => (
-              <RestaurantCard key={restaurant.name} restaurant={restaurant} />
-            ))}
+            {isInitialLoading
+              ? Array.from({ length: 7 }, (_, index) => <RestaurantCardSkeleton key={index} />)
+              : items.map((restaurant) => <RestaurantCard key={restaurant.id} restaurant={restaurant} />)}
+
+            {!isInitialLoading && !items.length ? (
+              <div className="text-bodySm text-gray5 flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-gray2 px-4 text-center">
+                {isError && displayErrorMessage ? displayErrorMessage : '조건에 맞는 맛집이 없어요.'}
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-4 flex justify-center">
-            <button
-              type="button"
-              className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition"
-            >
-              더 많은 맛집 보기
-              <ChevronDown className="h-4 w-4" />
-            </button>
+            {hasMore ? (
+              <button
+                type="button"
+                onClick={() => {
+                  fetchNextPage();
+                }}
+                disabled={isFetchingNextPage}
+                className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition disabled:cursor-default disabled:opacity-60"
+              >
+                {isFetchingNextPage ? (
+                  <span
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                    aria-hidden="true"
+                  />
+                ) : null}
+                더 많은 맛집 보기
+                {!isFetchingNextPage ? <ChevronDown className="h-4 w-4" /> : null}
+              </button>
+            ) : null}
           </div>
         </section>
       </div>
