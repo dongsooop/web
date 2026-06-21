@@ -20,3 +20,13 @@ export async function fetchRestaurantPage(
     method: 'GET',
   });
 }
+
+export async function toggleRestaurantLike(id: number, isAdding: boolean) {
+  const query = new URLSearchParams({
+    isAdding: String(isAdding),
+  });
+
+  return clientRequestAuth<void>(`/bff/restaurants/like/${id}?${query.toString()}`, {
+    method: 'POST',
+  });
+}

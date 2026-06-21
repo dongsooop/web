@@ -56,6 +56,13 @@ function buildRestaurantPage(items: RestaurantUiItem[], hasMore: boolean): Resta
   };
 }
 
+function logRestaurantListResult(source: 'auth' | 'guest', items: RestaurantListResponse) {
+  console.info('[restaurants:list]', {
+    source,
+    items,
+  });
+}
+
 async function hasNextGuestRestaurant(options: {
   appCheckToken?: string;
   page: number;
@@ -128,9 +135,9 @@ export async function GET(request: NextRequest) {
       });
 
       if (result.response.status !== HttpStatusCode.UNAUTHORIZED) {
-        const items = mapRestaurantListResponseToUi(
-          (await result.response.json()) as RestaurantListResponse,
-        );
+        const rawItems = (await result.response.json()) as RestaurantListResponse;
+        logRestaurantListResult('auth', rawItems);
+        const items = mapRestaurantListResponseToUi(rawItems);
         const probe =
           items.length === size
             ? await hasNextRestaurant({
@@ -166,9 +173,9 @@ export async function GET(request: NextRequest) {
         size,
         category,
       });
-      const guestItems = mapRestaurantListResponseToUi(
-        (await guestResponse.json()) as RestaurantListResponse,
-      );
+      const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
+      logRestaurantListResult('guest', rawGuestItems);
+      const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
       const hasMore =
         guestItems.length === size
           ? await hasNextGuestRestaurant({
@@ -193,9 +200,9 @@ export async function GET(request: NextRequest) {
       size,
       category,
     });
-    const guestItems = mapRestaurantListResponseToUi(
-      (await guestResponse.json()) as RestaurantListResponse,
-    );
+    const rawGuestItems = (await guestResponse.json()) as RestaurantListResponse;
+    logRestaurantListResult('guest', rawGuestItems);
+    const guestItems = mapRestaurantListResponseToUi(rawGuestItems);
     const hasMore =
       guestItems.length === size
         ? await hasNextGuestRestaurant({

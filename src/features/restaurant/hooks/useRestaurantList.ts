@@ -1,0 +1,61 @@
+'use client';
+
+import { useState } from 'react';
+
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
+
+import { INITIAL_VISIBLE_COUNT, type RestaurantCategoryFilter } from '../constants';
+import type { RestaurantUiItem } from '../types/ui-model';
+import { useRestaurantQuery } from './useRestaurantQuery';
+import { useToggleRestaurantLike } from './useToggleRestaurantLike';
+
+export function useRestaurantList() {
+  const [selectedCategory, setSelectedCategory] = useState<RestaurantCategoryFilter>('ALL');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const { isLoggedIn } = useAuth();
+  const openLoginDialog = useLoginRequiredDialog();
+  const toggleLike = useToggleRestaurantLike();
+  const query = useRestaurantQuery(selectedCategory);
+
+  const visibleItems = query.items.slice(0, visibleCount);
+  const canShowMore = visibleCount < query.items.length || query.hasMore;
+
+  function selectCategory(category: RestaurantCategoryFilter) {
+    setSelectedCategory(category);
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  }
+
+  function likeRestaurant(restaurant: RestaurantUiItem) {
+    if (!isLoggedIn) {
+      openLoginDialog();
+      return;
+    }
+
+    toggleLike.mutate({
+      id: restaurant.id,
+      isAdding: !restaurant.isLikedByMe,
+    });
+  }
+
+  function showMore() {
+    if (visibleCount < query.items.length) {
+      setVisibleCount((count) => count + INITIAL_VISIBLE_COUNT);
+      return;
+    }
+
+    void query.fetchNextPage();
+  }
+
+  return {
+    selectedCategory,
+    visibleItems,
+    canShowMore,
+    showMore,
+    selectCategory,
+    likeRestaurant,
+    isLiking: toggleLike.isPending,
+    likingId: toggleLike.variables?.id ?? null,
+    ...query,
+  };
+}

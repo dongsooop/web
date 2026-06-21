@@ -69,7 +69,7 @@ function mapRestaurantItem(item: RestaurantItemResponse): RestaurantUiItem {
     externalMapId: item.externalMapId,
     category,
     categoryLabel: CATEGORY_LABEL_MAP[category],
-    likedByMe: item.likedByMe,
+    isLikedByMe: item.isLikedByMe,
   };
 }
 

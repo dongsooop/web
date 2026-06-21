@@ -13,10 +13,10 @@ const PAGE_SIZE = 7;
 
 export function useRestaurantQuery(category: RestaurantCategoryKey | 'ALL') {
   const isInitialized = useAppCheckStore((state) => state.isInitialized);
-  const { isReady } = useAuth();
+  const { isLoggedIn, isReady } = useAuth();
 
   const query = useInfiniteQuery({
-    queryKey: ['restaurant-list', category],
+    queryKey: ['restaurant-list', category, isLoggedIn],
     queryFn: ({ pageParam }) => fetchRestaurantPage(category, pageParam, PAGE_SIZE),
     initialPageParam: 0,
     placeholderData: keepPreviousData,

@@ -18,7 +18,7 @@ export type RestaurantUiItem = {
   externalMapId: string;
   category: RestaurantCategoryKey;
   categoryLabel: string;
-  likedByMe: boolean;
+  isLikedByMe: boolean;
 };
 
 export type RestaurantPageUi = {

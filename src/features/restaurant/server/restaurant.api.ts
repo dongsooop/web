@@ -14,6 +14,26 @@ type RestaurantAuthRequestOptions = RestaurantRequestOptions & {
   refreshToken?: string;
 };
 
+function getRequiredRestaurantLikeEndpoint() {
+  const endpoint = process.env.RESTAURANT_LIKE?.trim();
+
+  if (!endpoint) {
+    throw new Error('RESTAURANT_LIKE_MISSING');
+  }
+
+  return endpoint;
+}
+
+function getRequiredRestaurantEndpoint() {
+  const endpoint = process.env.RESTAURANT?.trim();
+
+  if (!endpoint) {
+    throw new Error('RESTAURANT_MISSING');
+  }
+
+  return endpoint;
+}
+
 function getRequiredRestaurantsEndpoint() {
   const endpoint = process.env.RESTAURANTS?.trim();
 
@@ -41,6 +61,14 @@ function buildRestaurantUrl(options: {
   return `${getRequiredRestaurantsEndpoint()}?${query.toString()}`;
 }
 
+function buildRestaurantLikeUrl(id: number, isAdding: boolean) {
+  const query = new URLSearchParams({
+    isAdding: String(isAdding),
+  });
+
+  return `${getRequiredRestaurantEndpoint()}/${id}${getRequiredRestaurantLikeEndpoint()}?${query.toString()}`;
+}
+
 export function fetchGuestRestaurantListWithSpring(
   options: RestaurantRequestOptions & {
     page: number;
@@ -63,6 +91,20 @@ export function fetchRestaurantListWithSpring(
 ) {
   return serverFetchAuth(buildRestaurantUrl(options), {
     method: 'GET',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export function toggleRestaurantLikeWithSpring(
+  options: RestaurantAuthRequestOptions & {
+    id: number;
+    isAdding: boolean;
+  },
+) {
+  return serverFetchAuth(buildRestaurantLikeUrl(options.id, options.isAdding), {
+    method: 'POST',
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,

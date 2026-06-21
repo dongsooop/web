@@ -24,7 +24,7 @@ export type RestaurantItemResponse = {
   tags: RestaurantTagResponse[];
   externalMapId: string;
   category: RestaurantCategoryResponse;
-  likedByMe: boolean;
+  isLikedByMe: boolean;
 };
 
 export type RestaurantListResponse = RestaurantItemResponse[];
