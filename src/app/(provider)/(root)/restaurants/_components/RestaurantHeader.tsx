@@ -1,11 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { Plus, Search } from 'lucide-react';
 
-import {
-  restaurantCategories,
-  type RestaurantCategoryFilter,
-} from '@/features/restaurant/constants';
+import { restaurantCategories } from '@/features/restaurant/constants';
+import type { RestaurantCategoryFilter } from '@/features/restaurant/options';
 
 type RestaurantHeaderProps = {
   selectedCategory: RestaurantCategoryFilter;
@@ -28,13 +27,13 @@ export function RestaurantHeader({ selectedCategory, onCategoryAction }: Restaur
           </div>
 
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:pt-4">
-            <button
-              type="button"
+            <Link
+              href="/restaurants/write"
               className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition lg:inline-flex"
             >
               <Plus className="h-4 w-4" />
               맛집 추가하기
-            </button>
+            </Link>
 
             <label className="border-gray2 flex min-h-11 w-full cursor-text items-center gap-2 rounded-2xl border bg-white px-4 lg:w-[240px]">
               <Search className="text-gray5 h-4 w-4 cursor-pointer" />

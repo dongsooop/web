@@ -9,14 +9,8 @@ import {
   Fish,
 } from 'lucide-react';
 
+import { restaurantCategories } from './options';
 import type { RestaurantCategoryKey } from './types/ui-model';
-
-export type RestaurantCategoryFilter = RestaurantCategoryKey | 'ALL';
-
-type RestaurantCategoryOption = {
-  label: string;
-  value: RestaurantCategoryFilter;
-};
 
 export const INITIAL_VISIBLE_COUNT = 7;
 
@@ -41,16 +35,7 @@ function BowlChopsticksIcon() {
   );
 }
 
-export const restaurantCategories: RestaurantCategoryOption[] = [
-  { label: '전체', value: 'ALL' },
-  { label: '한식', value: 'KOREAN' },
-  { label: '중식', value: 'CHINESE' },
-  { label: '일식', value: 'JAPANESE' },
-  { label: '양식', value: 'WESTERN' },
-  { label: '분식', value: 'BUNSIK' },
-  { label: '패스트푸드', value: 'FAST_FOOD' },
-  { label: '카페/디저트', value: 'CAFE_DESSERT' },
-];
+export { restaurantCategories };
 
 export const restaurantCategoryIcon: Record<RestaurantCategoryKey, React.ReactNode> = {
   KOREAN: <UtensilsCrossed className="h-7 w-7" />,

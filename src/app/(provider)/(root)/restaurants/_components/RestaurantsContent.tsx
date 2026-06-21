@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ChevronDown, Plus } from 'lucide-react';
 
 import { INITIAL_VISIBLE_COUNT } from '@/features/restaurant/constants';
@@ -9,7 +10,7 @@ import { RestaurantCard } from './RestaurantCard';
 import { RestaurantCardSkeleton } from './RestaurantCardSkeleton';
 import { RestaurantHeader } from './RestaurantHeader';
 
-export default function RestaurantsPageContent() {
+export default function RestaurantsContent() {
   const {
     selectedCategory,
     selectCategory,
@@ -77,13 +78,13 @@ export default function RestaurantsPageContent() {
         </section>
       </div>
 
-      <button
-        type="button"
+      <Link
+        href="/restaurants/write"
         className="bg-primary fixed right-5 bottom-6 z-30 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full text-white lg:hidden"
         aria-label="맛집 추가하기"
       >
         <Plus className="h-6 w-6" />
-      </button>
+      </Link>
     </div>
   );
 }
