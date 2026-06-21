@@ -69,7 +69,19 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
-  restaurant: (err) => {
+  restaurant: (err, context) => {
+    if (context === 'search') {
+      return common(err) ?? '가게를 검색하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'create') {
+      return common(err) ?? '맛집을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'like') {
+      return common(err) ?? '좋아요를 처리하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
     return (
       common(err) ?? '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );

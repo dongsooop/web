@@ -28,3 +28,13 @@ export type RestaurantItemResponse = {
 };
 
 export type RestaurantListResponse = RestaurantItemResponse[];
+
+export type RestaurantSearchItemResponse = {
+  id: string;
+  place_name: string;
+  road_address_name: string;
+  place_url: string;
+  distance?: string;
+};
+
+export type RestaurantSearchResponse = RestaurantSearchItemResponse[];

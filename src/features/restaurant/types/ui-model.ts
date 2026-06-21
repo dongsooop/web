@@ -25,3 +25,11 @@ export type RestaurantPageUi = {
   items: RestaurantUiItem[];
   hasMore: boolean;
 };
+
+export type RestaurantSearchItemUi = {
+  externalMapId: string;
+  name: string;
+  address: string;
+  placeUrl: string;
+  distance: number;
+};

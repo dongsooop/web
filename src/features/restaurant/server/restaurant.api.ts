@@ -3,6 +3,7 @@ import 'server-only';
 import { serverFetch } from '@/lib/api/serverFetch';
 import { serverFetchAuth } from '@/lib/api/serverFetchAuth';
 
+import type { RestaurantCreateRequest } from '../types/request';
 import type { RestaurantCategoryKey } from '../types/ui-model';
 
 type RestaurantRequestOptions = {
@@ -44,6 +45,36 @@ function getRequiredRestaurantsEndpoint() {
   return endpoint;
 }
 
+function getRequiredCreateRestaurantEndpoint() {
+  const endpoint = process.env.CREATE_RESTAURANTS?.trim();
+
+  if (!endpoint) {
+    throw new Error('CREATE_RESTAURANTS_MISSING');
+  }
+
+  return endpoint;
+}
+
+function getRequiredRestaurantSearchEndpoint() {
+  const endpoint = process.env.KAKAO_URL?.trim();
+
+  if (!endpoint) {
+    throw new Error('KAKAO_URL_MISSING');
+  }
+
+  return endpoint;
+}
+
+function getRequiredKakaoApiKey() {
+  const apiKey = process.env.KAKAO_API_KEY?.trim();
+
+  if (!apiKey) {
+    throw new Error('KAKAO_API_KEY_MISSING');
+  }
+
+  return apiKey;
+}
+
 function buildRestaurantUrl(options: {
   page: number;
   size: number;
@@ -67,6 +98,17 @@ function buildRestaurantLikeUrl(id: number, isAdding: boolean) {
   });
 
   return `${getRequiredRestaurantEndpoint()}/${id}${getRequiredRestaurantLikeEndpoint()}?${query.toString()}`;
+}
+
+function buildRestaurantSearchUrl(queryText: string) {
+  const query = new URLSearchParams({
+    y: '37.5002972',
+    x: '126.8680825',
+    radius: '1000',
+    query: queryText,
+  });
+
+  return `${getRequiredRestaurantSearchEndpoint()}?${query.toString()}`;
 }
 
 export function fetchGuestRestaurantListWithSpring(
@@ -105,6 +147,40 @@ export function toggleRestaurantLikeWithSpring(
 ) {
   return serverFetchAuth(buildRestaurantLikeUrl(options.id, options.isAdding), {
     method: 'POST',
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export function searchRestaurantsWithKakao(
+  options: RestaurantRequestOptions & {
+    query: string;
+  },
+) {
+  const headers = new Headers();
+
+  if (options.appCheckToken) {
+    headers.set('X-Firebase-AppCheck', options.appCheckToken);
+  }
+
+  headers.set('Authorization', `KakaoAK ${getRequiredKakaoApiKey()}`);
+
+  return fetch(buildRestaurantSearchUrl(options.query), {
+    method: 'GET',
+    headers,
+    cache: 'no-store',
+  });
+}
+
+export function createRestaurantWithSpring(
+  options: RestaurantAuthRequestOptions & {
+    payload: RestaurantCreateRequest;
+  },
+) {
+  return serverFetchAuth(getRequiredCreateRestaurantEndpoint(), {
+    method: 'POST',
+    body: JSON.stringify(options.payload),
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
