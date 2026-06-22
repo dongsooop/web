@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { checkRestaurantDuplication } from '@/features/restaurant/client/restaurant.api';
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { useToastStore } from '@/store/useToastStore';
 import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
@@ -25,6 +26,7 @@ function buildWriteUrl(restaurant: RestaurantSearchItem) {
 
 export default function RestaurantSearch() {
   const router = useRouter();
+  const isInitialized = useAppCheckStore((state) => state.isInitialized);
   const showToast = useToastStore((state) => state.showToast);
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
@@ -52,6 +54,11 @@ export default function RestaurantSearch() {
 
   async function selectRestaurant(restaurant: RestaurantSearchItem) {
     if (checkingId) {
+      return;
+    }
+
+    if (!isInitialized) {
+      showToast('앱 인증 준비 중이에요. 잠시 후 다시 시도해주세요.', 'error');
       return;
     }
 
