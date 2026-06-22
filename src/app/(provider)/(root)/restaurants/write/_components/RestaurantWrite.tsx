@@ -26,7 +26,7 @@ export default function RestaurantWrite({ selectedPlace }: RestaurantWriteProps)
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col py-4">
-      <div className="max-w-content mx-auto flex w-full flex-col sm:gap-5">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-4">
         <RestaurantWriteHeader />
         <RestaurantWriteForm
           selectedPlace={selectedPlace}

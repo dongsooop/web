@@ -4,7 +4,7 @@ import { useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-
 
 import { getErrorMessage } from '@/lib/errors/messages';
 
-import { toggleRestaurantLike } from '../client/restaurant.api';
+import { likeRestaurant } from '../client/restaurant.api';
 import type { RestaurantPage } from '../types/ui-model';
 
 type ToggleVars = {
@@ -32,18 +32,17 @@ function patchRestaurantPage(data: InfiniteData<RestaurantPage> | undefined, var
           ...restaurant,
           isLikedByMe: vars.isAdding,
           likeCount,
-          likeText: `${likeCount}명이 좋아하는 가게예요`,
         };
       }),
     })),
   };
 }
 
-export function useToggleRestaurantLike() {
+export function useRestaurantLike() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, isAdding }: ToggleVars) => toggleRestaurantLike(id, isAdding),
+    mutationFn: ({ id, isAdding }: ToggleVars) => likeRestaurant(id, isAdding),
     onMutate: async (vars) => {
       await queryClient.cancelQueries({
         queryKey: ['restaurant-list'],

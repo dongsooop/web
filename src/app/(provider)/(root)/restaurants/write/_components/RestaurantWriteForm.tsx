@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 
-import { restaurantCategories } from '@/features/restaurant/constants';
+import { categoryOptions } from '@/features/restaurant/category';
 import {
   restaurantTags,
   type RestaurantCategoryKey,
@@ -75,7 +75,7 @@ const tagRows = [
   restaurantTags.slice(Math.ceil(restaurantTags.length / 2)),
 ];
 
-type RestaurantCategoryOption = (typeof restaurantCategories)[number];
+type RestaurantCategoryOption = (typeof categoryOptions)[number];
 type WriteCategoryOption = RestaurantCategoryOption & {
   value: RestaurantCategoryKey;
 };
@@ -149,7 +149,7 @@ export function RestaurantWriteForm({
             <FieldTitle required>카테고리</FieldTitle>
 
             <HorizontalChips>
-              {restaurantCategories.filter(isWriteCategoryOption).map((item) => (
+              {categoryOptions.filter(isWriteCategoryOption).map((item) => (
                 <SelectChip
                   key={item.value}
                   label={item.label}

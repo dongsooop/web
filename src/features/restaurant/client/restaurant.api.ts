@@ -19,12 +19,12 @@ export async function fetchRestaurantPage(
     query.set('category', category);
   }
 
-  return clientRequestAuth<RestaurantPage>(`/bff/restaurants/list?${query.toString()}`, {
+  return clientRequestAuth<RestaurantPage>(`/bff/restaurants?${query.toString()}`, {
     method: 'GET',
   });
 }
 
-export async function toggleRestaurantLike(id: number, isAdding: boolean) {
+export async function likeRestaurant(id: number, isAdding: boolean) {
   const query = new URLSearchParams({
     isAdding: String(isAdding),
   });
@@ -45,7 +45,7 @@ export async function searchRestaurants(queryText: string, signal?: AbortSignal)
   });
 }
 
-export async function checkRestaurantDuplication(externalMapId: string) {
+export async function checkDuplication(externalMapId: string) {
   const query = new URLSearchParams({
     externalMapId,
   });
@@ -59,7 +59,7 @@ export async function checkRestaurantDuplication(externalMapId: string) {
 }
 
 export async function createRestaurant(payload: RestaurantCreateRequest) {
-  return clientRequestAuth<void>('/bff/restaurants/write', {
+  return clientRequestAuth<void>('/bff/restaurants', {
     method: 'POST',
     body: JSON.stringify(payload),
   });

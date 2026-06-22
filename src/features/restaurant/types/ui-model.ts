@@ -1,16 +1,13 @@
-import type { RestaurantCategoryKey } from '../options';
+import type { RestaurantCategoryLabel } from '../options';
 
 export type RestaurantItem = {
   id: number;
   name: string;
   distance: number;
-  distanceText: string;
   placeUrl: string;
   likeCount: number;
-  likeText: string;
   tags: string[];
-  category: RestaurantCategoryKey;
-  categoryLabel: string;
+  category: RestaurantCategoryLabel;
   isLikedByMe: boolean;
 };
 

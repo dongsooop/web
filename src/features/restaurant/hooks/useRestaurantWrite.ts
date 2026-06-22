@@ -9,20 +9,22 @@ import { useToastStore } from '@/store/useToastStore';
 import type { RestaurantCreateRequest } from '../types/request';
 import type { RestaurantSearchItem } from '../types/ui-model';
 import type { RestaurantTagKey } from '../options';
-import { useCreateRestaurant } from './useCreateRestaurant';
+import { useRestaurantCreate } from './useRestaurantCreate';
 import { useRestaurantDuplication } from './useRestaurantDuplication';
 
 export function useRestaurantWrite(selectedPlace: RestaurantSearchItem | null) {
   const router = useRouter();
   const showToast = useToastStore((state) => state.showToast);
-  const createRestaurant = useCreateRestaurant();
+  const createRestaurant = useRestaurantCreate();
   const duplication = useRestaurantDuplication(selectedPlace?.externalMapId);
   const [category, setCategory] = useState<RestaurantCreateRequest['category'] | null>(null);
   const [selectedTags, setSelectedTags] = useState<RestaurantTagKey[]>([]);
 
   const displayErrorMessage =
     duplication.displayErrorMessage ??
-    (createRestaurant.error ? getErrorMessage('restaurant', createRestaurant.error, 'create') : null);
+    (createRestaurant.error
+      ? getErrorMessage('restaurant', createRestaurant.error, 'create')
+      : null);
 
   function toggleTag(tag: RestaurantTagKey) {
     setSelectedTags((prev) => {

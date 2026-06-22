@@ -7,7 +7,7 @@ import { getErrorMessage } from '@/lib/errors/messages';
 import { createRestaurant } from '../client/restaurant.api';
 import type { RestaurantCreateRequest } from '../types/request';
 
-export function useCreateRestaurant() {
+export function useRestaurantCreate() {
   const queryClient = useQueryClient();
 
   return useMutation({

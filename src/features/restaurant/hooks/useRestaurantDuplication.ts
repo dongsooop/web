@@ -4,14 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getErrorMessage } from '@/lib/errors/messages';
 
-import { checkRestaurantDuplication } from '../client/restaurant.api';
+import { checkDuplication } from '../client/restaurant.api';
 
 export function useRestaurantDuplication(externalMapId?: string) {
   const normalized = externalMapId?.trim() ?? '';
 
   const duplication = useQuery({
     queryKey: ['restaurant-duplication', normalized],
-    queryFn: () => checkRestaurantDuplication(normalized),
+    queryFn: () => checkDuplication(normalized),
     enabled: normalized.length > 0,
     staleTime: 1000 * 60 * 5,
   });

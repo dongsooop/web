@@ -1,12 +1,6 @@
+import type { RestaurantCategoryLabel } from '../options';
+
 export type RestaurantTagResponse = string;
-export type RestaurantCategoryLabel =
-  | '한식'
-  | '중식'
-  | '일식'
-  | '양식'
-  | '분식'
-  | '패스트푸드'
-  | '카페/디저트';
 
 export type RestaurantResponse = {
   id: number;

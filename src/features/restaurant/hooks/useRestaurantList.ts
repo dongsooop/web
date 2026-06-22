@@ -5,18 +5,19 @@ import { useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 
-import { INITIAL_VISIBLE_COUNT } from '../constants';
 import type { RestaurantCategoryFilter } from '../options';
 import type { RestaurantItem } from '../types/ui-model';
 import { useRestaurantQuery } from './useRestaurantQuery';
-import { useToggleRestaurantLike } from './useToggleRestaurantLike';
+import { useRestaurantLike } from './useRestaurantLike';
+
+const INITIAL_VISIBLE_COUNT = 7;
 
 export function useRestaurantList() {
   const [selectedCategory, setSelectedCategory] = useState<RestaurantCategoryFilter>('ALL');
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const { isLoggedIn } = useAuth();
   const openLoginDialog = useLoginRequiredDialog();
-  const toggleLike = useToggleRestaurantLike();
+  const toggleLike = useRestaurantLike();
   const query = useRestaurantQuery(selectedCategory);
 
   const visibleItems = query.items.slice(0, visibleCount);

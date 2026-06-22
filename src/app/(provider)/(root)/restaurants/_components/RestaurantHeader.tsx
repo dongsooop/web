@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Plus, Search } from 'lucide-react';
 
-import { restaurantCategories } from '@/features/restaurant/constants';
+import { categoryOptions } from '@/features/restaurant/category';
 import type { RestaurantCategoryFilter } from '@/features/restaurant/options';
 
 type RestaurantHeaderProps = {
@@ -40,7 +40,7 @@ export function RestaurantHeader({ selectedCategory, onCategoryAction }: Restaur
 
         <div className="scrollbar-hidden overflow-x-auto overflow-y-visible py-1">
           <div className="flex min-w-max gap-2">
-            {restaurantCategories.map((category) => (
+            {categoryOptions.map((category) => (
               <button
                 key={category.value}
                 type="button"

@@ -5,7 +5,7 @@ import { ArrowLeft, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { checkRestaurantDuplication } from '@/features/restaurant/client/restaurant.api';
+import { checkDuplication } from '@/features/restaurant/client/restaurant.api';
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
@@ -65,7 +65,7 @@ export default function RestaurantSearch() {
     setCheckingId(restaurant.externalMapId);
 
     try {
-      const result = await checkRestaurantDuplication(restaurant.externalMapId);
+      const result = await checkDuplication(restaurant.externalMapId);
 
       if (result.isDuplicate) {
         showToast('이미 등록된 맛집이에요.', 'error');

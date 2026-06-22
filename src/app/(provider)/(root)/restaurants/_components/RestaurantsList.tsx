@@ -29,7 +29,7 @@ export default function RestaurantsList() {
 
   return (
     <div className="w-full">
-      <div className="max-w-content mx-auto flex w-full flex-col gap-4 pb-8 sm:gap-5">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-4 pb-8">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
             <Link
@@ -52,10 +52,10 @@ export default function RestaurantsList() {
 
         <RestaurantHeader selectedCategory={selectedCategory} onCategoryAction={selectCategory} />
 
-        <section className="border-gray2 rounded-3xl border bg-white px-4 py-8">
+        <section className="border-gray2 rounded-3xl border bg-white px-4">
           <div className="flex flex-col">
             {isInitialLoading ? (
-              <Skeleton className="h-120 rounded-2xl sm:h-130" />
+              <Skeleton className="h-[44rem] rounded-2xl sm:h-[46rem]" />
             ) : (
               visibleItems.map((restaurant, index) => (
                 <div key={restaurant.id}>
@@ -64,21 +64,23 @@ export default function RestaurantsList() {
                     isLiking={isLiking && likingId === restaurant.id}
                     onLikeAction={likeRestaurant}
                   />
-                  {index < visibleItems.length - 1 ? <Divider className="py-6" /> : null}
+                  {index < visibleItems.length - 1 ? <Divider spacing={false} /> : null}
                 </div>
               ))
             )}
 
             {!isInitialLoading && !items.length ? (
-              <div className="text-bodySm text-gray5 border-gray2 flex min-h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center">
-                {isError && displayErrorMessage
-                  ? displayErrorMessage
-                  : '조건에 맞는 맛집이 없어요.'}
+              <div className="text-bodySm text-gray5 flex min-h-40 items-center justify-center rounded-2xl px-4 text-center">
+                <span className="inline-flex items-center leading-none">
+                  {isError && displayErrorMessage
+                    ? displayErrorMessage
+                    : '조건에 맞는 맛집이 없어요.'}
+                </span>
               </div>
             ) : null}
           </div>
 
-          <div className="mt-6 flex justify-center">
+          <div className="my-6 flex justify-center">
             {canShowMore ? (
               <button
                 type="button"
