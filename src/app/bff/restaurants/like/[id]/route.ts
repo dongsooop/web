@@ -9,11 +9,11 @@ import { ApiError } from '@/lib/api/apiError';
 function parseRestaurantId(value: string) {
   const id = Number(value);
 
-  if (!Number.isFinite(id) || id <= 0) {
+  if (!Number.isInteger(id) || id <= 0) {
     return null;
   }
 
-  return Math.floor(id);
+  return id;
 }
 
 function parseIsAdding(value: string | null) {

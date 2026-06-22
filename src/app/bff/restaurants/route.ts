@@ -20,24 +20,28 @@ import type { RestaurantListResponse } from '@/features/restaurant/types/respons
 import type { RestaurantItem, RestaurantPage } from '@/features/restaurant/types/ui-model';
 import { ApiError } from '@/lib/api/apiError';
 
+const DEFAULT_SIZE = 7;
+const MAX_SIZE = 50;
+const MAX_TAGS = 3;
+
 function parsePage(value: string | null) {
   const parsed = Number(value);
 
-  if (!Number.isFinite(parsed) || parsed < 0) {
+  if (!Number.isInteger(parsed) || parsed < 0) {
     return 0;
   }
 
-  return Math.floor(parsed);
+  return parsed;
 }
 
 function parseSize(value: string | null) {
   const parsed = Number(value);
 
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    return 7;
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return DEFAULT_SIZE;
   }
 
-  return Math.floor(parsed);
+  return Math.min(parsed, MAX_SIZE);
 }
 
 function parseCategory(value: string | null): RestaurantCategoryKey | undefined {
@@ -48,19 +52,33 @@ function parseCategory(value: string | null): RestaurantCategoryKey | undefined 
   return categoryKeys.find((key) => key === value);
 }
 
+function parseCreateCategory(value: unknown): RestaurantCategoryKey | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const category = value.trim();
+
+  if (!category) {
+    return null;
+  }
+
+  return categoryKeys.find((key) => key === category) ?? null;
+}
+
 function trimValue(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
 function parseDistance(value: unknown) {
-  if (typeof value === 'number' && Number.isFinite(value)) {
+  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
     return value;
   }
 
   if (typeof value === 'string') {
     const parsed = Number(value);
 
-    if (Number.isFinite(parsed)) {
+    if (Number.isFinite(parsed) && parsed >= 0) {
       return parsed;
     }
   }
@@ -72,11 +90,46 @@ function isRestaurantTagKey(value: unknown): value is RestaurantTagKey {
   return typeof value === 'string' && restaurantTags.some((tag) => tag.value === value);
 }
 
+function parseTags(value: unknown): RestaurantTagKey[] | null {
+  if (value == null) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  if (value.length > MAX_TAGS || value.some((tag) => !isRestaurantTagKey(tag))) {
+    return null;
+  }
+
+  return value;
+}
+
 function buildRestaurantPage(items: RestaurantItem[], hasMore: boolean): RestaurantPage {
   return {
     items,
     hasMore,
   };
+}
+
+async function readHasMore(response: Response) {
+  if (!response.ok) {
+    return false;
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    return false;
+  }
+
+  try {
+    const items = (await response.json()) as RestaurantListResponse;
+    return Array.isArray(items) && items.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 async function hasNextGuestRestaurant(options: {
@@ -87,13 +140,12 @@ async function hasNextGuestRestaurant(options: {
 }) {
   const probe = await fetchGuestRestaurantListWithSpring({
     appCheckToken: options.appCheckToken,
-    page: options.page * options.size + options.size,
-    size: 1,
+    page: options.page + 1,
+    size: options.size,
     category: options.category,
   });
-  const items = (await probe.json()) as RestaurantListResponse;
 
-  return items.length > 0;
+  return readHasMore(probe);
 }
 
 async function hasNextRestaurant(options: {
@@ -108,8 +160,8 @@ async function hasNextRestaurant(options: {
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
-    page: options.page * options.size + options.size,
-    size: 1,
+    page: options.page + 1,
+    size: options.size,
     category: options.category,
   });
 
@@ -117,10 +169,8 @@ async function hasNextRestaurant(options: {
     return null;
   }
 
-  const items = (await result.response.json()) as RestaurantListResponse;
-
   return {
-    hasMore: items.length > 0,
+    hasMore: await readHasMore(result.response),
     result,
   };
 }
@@ -273,27 +323,34 @@ export async function POST(request: NextRequest) {
   try {
     const body = (rawBody ?? {}) as Partial<RestaurantCreateRequest>;
     const distance = parseDistance(body.distance);
-    const payload: RestaurantCreateRequest = {
-      externalMapId: trimValue(body.externalMapId),
-      name: trimValue(body.name),
-      placeUrl: trimValue(body.placeUrl),
-      distance: distance ?? 0,
-      category: trimValue(body.category) as RestaurantCreateRequest['category'],
-      tags: Array.isArray(body.tags) ? body.tags.filter(isRestaurantTagKey) : [],
-    };
+    const category = parseCreateCategory(body.category);
+    const tags = parseTags(body.tags);
+    const externalMapId = trimValue(body.externalMapId);
+    const name = trimValue(body.name);
+    const placeUrl = trimValue(body.placeUrl);
 
     if (
-      !payload.externalMapId ||
-      !payload.name ||
-      !payload.placeUrl ||
+      !externalMapId ||
+      !name ||
+      !placeUrl ||
       distance === null ||
-      !payload.category
+      !category ||
+      tags === null
     ) {
       return NextResponse.json(
         { message: '맛집 정보를 올바르게 입력해 주세요.' },
         { status: HttpStatusCode.BAD_REQUEST },
       );
     }
+
+    const payload: RestaurantCreateRequest = {
+      externalMapId,
+      name,
+      placeUrl,
+      distance,
+      category,
+      tags,
+    };
 
     const result = await createRestaurantWithSpring({
       accessToken,
