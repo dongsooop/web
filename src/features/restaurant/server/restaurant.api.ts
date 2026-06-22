@@ -15,6 +15,8 @@ type RestaurantAuthRequestOptions = RestaurantRequestOptions & {
   refreshToken?: string;
 };
 
+const kakaoTimeout = 10_000;
+
 function getRequiredRestaurantLikeEndpoint() {
   const endpoint = process.env.RESTAURANT_LIKE?.trim();
 
@@ -125,9 +127,13 @@ function buildRestaurantDuplicationUrl(externalMapId: string) {
   const query = new URLSearchParams({
     externalMapId,
   });
-  const endpoint = getRequiredRestaurantDuplicationEndpoint();
+  const url = new URL(getRequiredRestaurantDuplicationEndpoint(), 'http://localhost');
 
-  return endpoint.includes('?') ? `${endpoint}${query.toString()}` : `${endpoint}?${query.toString()}`;
+  query.forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
+
+  return `${url.pathname}${url.search}`;
 }
 
 export function fetchGuestRestaurantListWithSpring(
@@ -185,10 +191,16 @@ export function searchRestaurantsWithKakao(
 
   headers.set('Authorization', `KakaoAK ${getRequiredKakaoApiKey()}`);
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), kakaoTimeout);
+
   return fetch(buildRestaurantSearchUrl(options.query), {
     method: 'GET',
     headers,
     cache: 'no-store',
+    signal: controller.signal,
+  }).finally(() => {
+    clearTimeout(timeoutId);
   });
 }
 
