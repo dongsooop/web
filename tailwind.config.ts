@@ -124,13 +124,12 @@ const config: Config = {
       },
 
       maxWidth: {
-        content: '90rem',
+        content: '61.25rem',
         form: '48.75rem',
         layout: '150rem',
         timetable: '65rem',
         'timetable-content': '58rem',
         'timetable-grid': '52rem',
-        notice: '61.25rem',
       },
 
       maxHeight: {
@@ -195,7 +194,8 @@ const config: Config = {
       },
 
       backgroundImage: {
-        'timetable-glow': 'radial-gradient(circle at top, rgba(0, 109, 255, 0.16), transparent 58%)',
+        'timetable-glow':
+          'radial-gradient(circle at top, rgba(0, 109, 255, 0.16), transparent 58%)',
       },
     },
   },

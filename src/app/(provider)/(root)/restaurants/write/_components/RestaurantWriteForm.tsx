@@ -51,10 +51,10 @@ function SelectChip({ label, selected, onClickAction }: SelectChipProps) {
     <button
       type="button"
       onClick={onClickAction}
-      className={`text-bodySm inline-flex h-11 min-h-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border px-5 font-semibold transition ${
+      className={`text-bodySm inline-flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border px-3 py-2 font-semibold transition ${
         selected
           ? 'border-primary bg-primary/5 text-primary'
-          : 'border-gray2 text-gray6 hover:border-primary/20 hover:bg-primary/5 bg-white'
+          : 'border-gray2 text-gray4 hover:border-primary/20 hover:bg-primary/5 bg-white'
       }`}
     >
       {label}
@@ -64,7 +64,7 @@ function SelectChip({ label, selected, onClickAction }: SelectChipProps) {
 
 function HorizontalChips({ children }: { children: React.ReactNode }) {
   return (
-    <div className="scrollbar-hidden mt-3 overflow-x-auto overflow-y-visible py-1">
+    <div className="scrollbar-hidden mt-3 overflow-x-auto overflow-y-visible">
       <div className="flex min-w-max gap-3">{children}</div>
     </div>
   );
@@ -90,6 +90,8 @@ type RestaurantWriteFormProps = {
   selectedTags: RestaurantTagKey[];
   tagCount: number;
   isSubmitting: boolean;
+  isCheckingDuplicate: boolean;
+  isDuplicate: boolean;
   displayErrorMessage: string | null;
   selectCategoryAction: (category: RestaurantCategoryKey) => void;
   toggleTagAction: (tag: RestaurantTagKey) => void;
@@ -102,13 +104,17 @@ export function RestaurantWriteForm({
   selectedTags,
   tagCount,
   isSubmitting,
+  isCheckingDuplicate,
+  isDuplicate,
   displayErrorMessage,
   selectCategoryAction,
   toggleTagAction,
   onSubmitAction,
 }: RestaurantWriteFormProps) {
+  const isSubmitDisabled = isSubmitting || isCheckingDuplicate || isDuplicate;
+
   return (
-    <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-content mx-auto flex w-full flex-col gap-4 sm:px-6 lg:px-8">
       <div className="border-gray2 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
         <div className="space-y-6 sm:space-y-7">
           <section>
@@ -133,6 +139,10 @@ export function RestaurantWriteForm({
             {selectedPlace?.address ? (
               <p className="text-caption text-gray5 mt-2">{selectedPlace.address}</p>
             ) : null}
+
+            {selectedPlace && isDuplicate ? (
+              <p className="text-caption text-warning-100 mt-2">이미 등록된 맛집이에요.</p>
+            ) : null}
           </section>
 
           <section>
@@ -155,10 +165,7 @@ export function RestaurantWriteForm({
 
             <div className="mt-3 space-y-3">
               {tagRows.map((row, index) => (
-                <div
-                  key={index}
-                  className="scrollbar-hidden overflow-x-auto overflow-y-visible py-1"
-                >
+                <div key={index} className="scrollbar-hidden overflow-x-auto overflow-y-visible">
                   <div className="flex min-w-max gap-3">
                     {row.map((item) => (
                       <SelectChip
@@ -173,7 +180,7 @@ export function RestaurantWriteForm({
               ))}
             </div>
 
-            <p className="text-caption text-gray5 mt-5">{tagCount} / 3개 선택</p>
+            <p className="text-caption text-gray5 mt-4">{tagCount} / 3개 선택</p>
           </section>
         </div>
       </div>
@@ -195,7 +202,7 @@ export function RestaurantWriteForm({
         <button
           type="button"
           onClick={onSubmitAction}
-          disabled={isSubmitting}
+          disabled={isSubmitDisabled}
           className="text-bodySm bg-primary inline-flex min-h-11 min-w-36 cursor-pointer items-center justify-center rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
         >
           <span className="inline-flex items-center gap-2">
@@ -214,7 +221,7 @@ export function RestaurantWriteForm({
         <button
           type="button"
           onClick={onSubmitAction}
-          disabled={isSubmitting}
+          disabled={isSubmitDisabled}
           className="text-bodySm bg-primary inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
         >
           <span className="inline-flex items-center gap-2">

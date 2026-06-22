@@ -46,9 +46,9 @@ export default function RestaurantSearch() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
-      <div className="max-w-timetable mx-auto w-full">
-        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-6 px-4 pt-1 pb-5 sm:px-6 lg:px-8">
+    <div className="mx-auto flex min-h-screen w-full flex-col py-4">
+      <div className="mx-auto w-full">
+        <div className="mx-auto flex w-full flex-col gap-4 pb-5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <Link
               href="/restaurants/write"
@@ -58,7 +58,7 @@ export default function RestaurantSearch() {
               <ArrowLeft className="h-5 w-5 text-black" />
             </Link>
 
-            <h1 className="text-heading sm:text-title font-bold text-black">학교 근처 맛집 추천</h1>
+            <h1 className="text-heading sm:text-title font-bold text-black">학교 근처 맛집 검색</h1>
           </div>
 
           <form
@@ -93,11 +93,13 @@ export default function RestaurantSearch() {
                 onClick={() => router.push(buildWriteUrl(restaurant))}
                 className="border-gray2 flex h-20 cursor-pointer items-center gap-4 border-b text-left"
               >
-                <MapPin className="text-gray6 h-7 w-7 shrink-0" />
+                <MapPin className="text-gray5 h-6 w-6 shrink-0" />
 
                 <div className="min-w-0">
-                  <h2 className="text-heading font-semibold text-black">{restaurant.name}</h2>
-                  <p className="text-body text-gray5 mt-1 truncate">{restaurant.address}</p>
+                  <h2 className="text-body sm:text-heading font-semibold text-black">
+                    {restaurant.name}
+                  </h2>
+                  <p className="text-bodySm text-gray5 mt-1 truncate">{restaurant.address}</p>
                 </div>
               </button>
             ))}

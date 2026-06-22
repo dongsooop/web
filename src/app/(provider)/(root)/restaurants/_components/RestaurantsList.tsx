@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronDown, Plus } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Plus } from 'lucide-react';
 
-import { INITIAL_VISIBLE_COUNT } from '@/features/restaurant/constants';
+import { Divider } from '@/components/ui/Divider';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { useRestaurantList } from '@/features/restaurant/hooks/useRestaurantList';
 
 import { RestaurantCard } from './RestaurantCard';
-import { RestaurantSkeleton } from './RestaurantSkeleton';
 import { RestaurantHeader } from './RestaurantHeader';
 
 export default function RestaurantsList() {
@@ -29,23 +29,45 @@ export default function RestaurantsList() {
 
   return (
     <div className="w-full">
-      <div className="max-w-content mx-auto flex w-full flex-col gap-4 px-4 pb-8 sm:gap-5">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-4 pb-8 sm:gap-5">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="hover:bg-gray1 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition"
+              aria-label="홈으로 돌아가기"
+            >
+              <ArrowLeft className="h-5 w-5 text-black" />
+            </Link>
+
+            <h1 className="text-heading sm:text-title min-w-0 font-bold text-black">
+              학교 근처 맛집 추천
+            </h1>
+          </div>
+
+          <p className="text-bodySm text-gray6 sm:text-body px-2">
+            동미대 학생들이 추천하는 맛집을 한 화면에서 살펴보세요
+          </p>
+        </div>
+
         <RestaurantHeader selectedCategory={selectedCategory} onCategoryAction={selectCategory} />
 
-        <section className="border-gray2 rounded-3xl border bg-white px-3 py-3 sm:px-4 sm:py-4">
-          <div className="flex flex-col gap-3">
-            {isInitialLoading
-              ? Array.from({ length: INITIAL_VISIBLE_COUNT }, (_, index) => (
-                  <RestaurantSkeleton key={index} />
-                ))
-              : visibleItems.map((restaurant) => (
+        <section className="border-gray2 rounded-3xl border bg-white px-4 py-8">
+          <div className="flex flex-col">
+            {isInitialLoading ? (
+              <Skeleton className="h-120 rounded-2xl sm:h-130" />
+            ) : (
+              visibleItems.map((restaurant, index) => (
+                <div key={restaurant.id}>
                   <RestaurantCard
-                    key={restaurant.id}
                     restaurant={restaurant}
                     isLiking={isLiking && likingId === restaurant.id}
                     onLikeAction={likeRestaurant}
                   />
-                ))}
+                  {index < visibleItems.length - 1 ? <Divider className="py-6" /> : null}
+                </div>
+              ))
+            )}
 
             {!isInitialLoading && !items.length ? (
               <div className="text-bodySm text-gray5 border-gray2 flex min-h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center">
@@ -56,7 +78,7 @@ export default function RestaurantsList() {
             ) : null}
           </div>
 
-          <div className="mt-4 flex justify-center">
+          <div className="mt-6 flex justify-center">
             {canShowMore ? (
               <button
                 type="button"

@@ -13,20 +13,12 @@ type RestaurantHeaderProps = {
 
 export function RestaurantHeader({ selectedCategory, onCategoryAction }: RestaurantHeaderProps) {
   return (
-    <section className="border-gray2 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-7">
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-2">
-            <p className="text-caption text-primary font-semibold uppercase">Dongsoop Picks</p>
-            <div className="space-y-1">
-              <h1 className="text-title font-bold text-black">학교 근처 맛집 추천</h1>
-              <p className="text-bodySm text-gray6 sm:text-body">
-                동미대 학생들이 추천하는 맛집을 한 화면에서 살펴보세요.
-              </p>
-            </div>
-          </div>
+    <section className="border-gray2 flex-1 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-7">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <p className="text-title text-primary font-semibold uppercase">Dongsoop Picks</p>
 
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:pt-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <Link
               href="/restaurants/write"
               className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition lg:inline-flex"
@@ -53,10 +45,10 @@ export function RestaurantHeader({ selectedCategory, onCategoryAction }: Restaur
                 key={category.value}
                 type="button"
                 onClick={() => onCategoryAction(category.value)}
-                className={`text-bodySm h-11 cursor-pointer rounded-full border px-4 font-semibold transition ${
+                className={`text-bodySm min-w-11 cursor-pointer rounded-full border px-3 py-2 font-semibold transition ${
                   selectedCategory === category.value
                     ? 'border-primary bg-primary text-white'
-                    : 'border-gray2 text-gray6 bg-white'
+                    : 'border-gray2 text-gray4 bg-white'
                 }`}
               >
                 {category.label}

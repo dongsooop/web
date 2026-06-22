@@ -30,11 +30,11 @@ function BowlChopsticksIcon() {
 export { restaurantCategories };
 
 export const restaurantCategoryIcon: Record<RestaurantCategoryKey, React.ReactNode> = {
-  KOREAN: <UtensilsCrossed className="h-7 w-7" />,
+  KOREAN: <UtensilsCrossed className="h-6 w-6" />,
   CHINESE: <BowlChopsticksIcon />,
-  JAPANESE: <Fish className="h-7 w-7" />,
-  WESTERN: <Pizza className="h-7 w-7" />,
-  BUNSIK: <Soup className="h-7 w-7" />,
-  FAST_FOOD: <Hamburger className="h-7 w-7" />,
-  CAFE_DESSERT: <Coffee className="h-7 w-7" />,
+  JAPANESE: <Fish className="h-6 w-6" />,
+  WESTERN: <Pizza className="h-6 w-6" />,
+  BUNSIK: <Soup className="h-6 w-6" />,
+  FAST_FOOD: <Hamburger className="h-6 w-6" />,
+  CAFE_DESSERT: <Coffee className="h-6 w-6" />,
 };
