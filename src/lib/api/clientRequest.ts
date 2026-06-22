@@ -92,7 +92,11 @@ export async function executeRequest(
       headers,
       credentials,
     });
-  } catch {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw error;
+    }
+
     throw new ApiError(HttpStatusCode.NETWORK_ERROR, 'Network Failure');
   }
 }

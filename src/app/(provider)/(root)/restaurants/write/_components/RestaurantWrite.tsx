@@ -10,14 +10,14 @@ type RestaurantWriteProps = {
   selectedPlace: RestaurantSearchItem | null;
 };
 
-export default function RestaurantWrite({
-  selectedPlace,
-}: RestaurantWriteProps) {
+export default function RestaurantWrite({ selectedPlace }: RestaurantWriteProps) {
   const {
     category,
     selectedTags,
     tagCount,
     isSubmitting,
+    isCheckingDuplicate,
+    isDuplicate,
     displayErrorMessage,
     selectCategory,
     toggleTag,
@@ -25,8 +25,8 @@ export default function RestaurantWrite({
   } = useRestaurantWrite(selectedPlace);
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
-      <div className="max-w-timetable mx-auto w-full">
+    <div className="mx-auto flex min-h-screen w-full flex-col py-4">
+      <div className="max-w-content mx-auto flex w-full flex-col sm:gap-5">
         <RestaurantWriteHeader />
         <RestaurantWriteForm
           selectedPlace={selectedPlace}
@@ -34,6 +34,8 @@ export default function RestaurantWrite({
           selectedTags={selectedTags}
           tagCount={tagCount}
           isSubmitting={isSubmitting}
+          isCheckingDuplicate={isCheckingDuplicate}
+          isDuplicate={isDuplicate}
           displayErrorMessage={displayErrorMessage}
           selectCategoryAction={selectCategory}
           toggleTagAction={toggleTag}

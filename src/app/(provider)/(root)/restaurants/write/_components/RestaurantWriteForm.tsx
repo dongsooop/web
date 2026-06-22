@@ -114,7 +114,7 @@ export function RestaurantWriteForm({
   const isSubmitDisabled = isSubmitting || isCheckingDuplicate || isDuplicate;
 
   return (
-    <div className="max-w-content mx-auto flex w-full flex-col gap-4 sm:px-6 lg:px-8">
+    <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <div className="border-gray2 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
         <div className="space-y-6 sm:space-y-7">
           <section>

@@ -2,6 +2,7 @@ import { clientRequestAuth } from '@/lib/api/clientRequestAuth';
 
 import type { RestaurantCategoryKey } from '../options';
 import type { RestaurantCreateRequest } from '../types/request';
+import type { RestaurantDuplicationResponse } from '../types/response';
 import type { RestaurantPage, RestaurantSearchItem } from '../types/ui-model';
 
 export async function fetchRestaurantPage(
@@ -33,14 +34,28 @@ export async function toggleRestaurantLike(id: number, isAdding: boolean) {
   });
 }
 
-export async function searchRestaurants(queryText: string) {
+export async function searchRestaurants(queryText: string, signal?: AbortSignal) {
   const query = new URLSearchParams({
     query: queryText,
   });
 
   return clientRequestAuth<RestaurantSearchItem[]>(`/bff/restaurants/search?${query.toString()}`, {
     method: 'GET',
+    signal,
   });
+}
+
+export async function checkRestaurantDuplication(externalMapId: string) {
+  const query = new URLSearchParams({
+    externalMapId,
+  });
+
+  return clientRequestAuth<RestaurantDuplicationResponse>(
+    `/bff/restaurants/check-duplication?${query.toString()}`,
+    {
+      method: 'GET',
+    },
+  );
 }
 
 export async function createRestaurant(payload: RestaurantCreateRequest) {

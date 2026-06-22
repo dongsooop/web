@@ -30,3 +30,7 @@ export type RestaurantSearchResponse = {
 };
 
 export type RestaurantSearchListResponse = RestaurantSearchResponse[];
+
+export type RestaurantDuplicationResponse = {
+  isDuplicate: boolean;
+};

@@ -65,6 +65,16 @@ function getRequiredRestaurantSearchEndpoint() {
   return endpoint;
 }
 
+function getRequiredRestaurantDuplicationEndpoint() {
+  const endpoint = process.env.CHECK_RESTAURANTS_DUPLICATION?.trim();
+
+  if (!endpoint) {
+    throw new Error('CHECK_RESTAURANTS_DUPLICATION_MISSING');
+  }
+
+  return endpoint;
+}
+
 function getRequiredKakaoApiKey() {
   const apiKey = process.env.KAKAO_API_KEY?.trim();
 
@@ -109,6 +119,15 @@ function buildRestaurantSearchUrl(queryText: string) {
   });
 
   return `${getRequiredRestaurantSearchEndpoint()}?${query.toString()}`;
+}
+
+function buildRestaurantDuplicationUrl(externalMapId: string) {
+  const query = new URLSearchParams({
+    externalMapId,
+  });
+  const endpoint = getRequiredRestaurantDuplicationEndpoint();
+
+  return endpoint.includes('?') ? `${endpoint}${query.toString()}` : `${endpoint}?${query.toString()}`;
 }
 
 export function fetchGuestRestaurantListWithSpring(
@@ -181,6 +200,19 @@ export function createRestaurantWithSpring(
   return serverFetchAuth(getRequiredCreateRestaurantEndpoint(), {
     method: 'POST',
     body: JSON.stringify(options.payload),
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+  });
+}
+
+export function checkRestaurantDuplicationWithSpring(
+  options: RestaurantAuthRequestOptions & {
+    externalMapId: string;
+  },
+) {
+  return serverFetchAuth(buildRestaurantDuplicationUrl(options.externalMapId), {
+    method: 'GET',
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,

@@ -10,17 +10,19 @@ import type { RestaurantCreateRequest } from '../types/request';
 import type { RestaurantSearchItem } from '../types/ui-model';
 import type { RestaurantTagKey } from '../options';
 import { useCreateRestaurant } from './useCreateRestaurant';
+import { useRestaurantDuplication } from './useRestaurantDuplication';
 
 export function useRestaurantWrite(selectedPlace: RestaurantSearchItem | null) {
   const router = useRouter();
   const showToast = useToastStore((state) => state.showToast);
   const createRestaurant = useCreateRestaurant();
+  const duplication = useRestaurantDuplication(selectedPlace?.externalMapId);
   const [category, setCategory] = useState<RestaurantCreateRequest['category'] | null>(null);
   const [selectedTags, setSelectedTags] = useState<RestaurantTagKey[]>([]);
 
-  const displayErrorMessage = createRestaurant.error
-    ? getErrorMessage('restaurant', createRestaurant.error, 'create')
-    : null;
+  const displayErrorMessage =
+    duplication.displayErrorMessage ??
+    (createRestaurant.error ? getErrorMessage('restaurant', createRestaurant.error, 'create') : null);
 
   function toggleTag(tag: RestaurantTagKey) {
     setSelectedTags((prev) => {
@@ -42,21 +44,36 @@ export function useRestaurantWrite(selectedPlace: RestaurantSearchItem | null) {
       return;
     }
 
+    if (duplication.isFetching) {
+      showToast('가게 중복 여부를 확인하고 있어요. 잠시만 기다려주세요.', 'error');
+      return;
+    }
+
+    if (duplication.isDuplicate) {
+      showToast('이미 등록된 맛집이에요.', 'error');
+      return;
+    }
+
     if (!category) {
       showToast('카테고리를 선택해주세요.', 'error');
       return;
     }
 
-    await createRestaurant.mutateAsync({
-      externalMapId: selectedPlace.externalMapId,
-      name: selectedPlace.name,
-      placeUrl: selectedPlace.placeUrl,
-      distance: selectedPlace.distance,
-      category,
-      tags: selectedTags,
-    });
+    try {
+      await createRestaurant.mutateAsync({
+        externalMapId: selectedPlace.externalMapId,
+        name: selectedPlace.name,
+        placeUrl: selectedPlace.placeUrl,
+        distance: selectedPlace.distance,
+        category,
+        tags: selectedTags,
+      });
 
-    router.push('/restaurants');
+      showToast('맛집 추천이 등록되었어요!', 'success', 'shadow-none');
+      router.push('/restaurants');
+    } catch (error: unknown) {
+      showToast(getErrorMessage('restaurant', error, 'create'), 'error');
+    }
   }
 
   return {
@@ -64,6 +81,8 @@ export function useRestaurantWrite(selectedPlace: RestaurantSearchItem | null) {
     selectedTags,
     tagCount: selectedTags.length,
     isSubmitting: createRestaurant.isPending,
+    isCheckingDuplicate: duplication.isFetching,
+    isDuplicate: duplication.isDuplicate,
     displayErrorMessage,
     selectCategory: setCategory,
     toggleTag,

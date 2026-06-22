@@ -70,12 +70,20 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     );
   },
   restaurant: (err, context) => {
+    if (err instanceof ApiError && err.status === HttpStatusCode.CONFLICT) {
+      return '이미 등록된 맛집이에요.';
+    }
+
     if (context === 'search') {
       return common(err) ?? '가게를 검색하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     if (context === 'create') {
       return common(err) ?? '맛집을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'duplicate') {
+      return common(err) ?? '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
     if (context === 'like') {

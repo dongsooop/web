@@ -5,7 +5,10 @@ import { ArrowLeft, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { checkRestaurantDuplication } from '@/features/restaurant/client/restaurant.api';
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
+import { getErrorMessage } from '@/lib/errors/messages';
+import { useToastStore } from '@/store/useToastStore';
 import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
 function buildWriteUrl(restaurant: RestaurantSearchItem) {
@@ -22,9 +25,11 @@ function buildWriteUrl(restaurant: RestaurantSearchItem) {
 
 export default function RestaurantSearch() {
   const router = useRouter();
+  const showToast = useToastStore((state) => state.showToast);
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [submittedKeyword, setSubmittedKeyword] = useState('');
+  const [checkingId, setCheckingId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -43,6 +48,29 @@ export default function RestaurantSearch() {
 
   function submitSearch() {
     setSubmittedKeyword(keyword.trim());
+  }
+
+  async function selectRestaurant(restaurant: RestaurantSearchItem) {
+    if (checkingId) {
+      return;
+    }
+
+    setCheckingId(restaurant.externalMapId);
+
+    try {
+      const result = await checkRestaurantDuplication(restaurant.externalMapId);
+
+      if (result.isDuplicate) {
+        showToast('이미 등록된 맛집이에요.', 'error');
+        return;
+      }
+
+      router.push(buildWriteUrl(restaurant));
+    } catch (error: unknown) {
+      showToast(getErrorMessage('restaurant', error, 'duplicate'), 'error');
+    } finally {
+      setCheckingId(null);
+    }
   }
 
   return (
@@ -90,8 +118,11 @@ export default function RestaurantSearch() {
               <button
                 key={restaurant.externalMapId}
                 type="button"
-                onClick={() => router.push(buildWriteUrl(restaurant))}
-                className="border-gray2 flex h-20 cursor-pointer items-center gap-4 border-b text-left"
+                onClick={() => {
+                  void selectRestaurant(restaurant);
+                }}
+                disabled={checkingId === restaurant.externalMapId}
+                className="border-gray2 flex h-20 cursor-pointer items-center gap-4 border-b text-left disabled:cursor-default disabled:opacity-60"
               >
                 <MapPin className="text-gray5 h-6 w-6 shrink-0" />
 
