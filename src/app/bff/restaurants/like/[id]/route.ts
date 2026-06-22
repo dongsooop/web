@@ -4,17 +4,8 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
 import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
 import { toggleRestaurantLikeWithSpring } from '@/features/restaurant/server/restaurant.api';
+import { parseId } from '@/features/restaurant/server/restaurant.validator';
 import { ApiError } from '@/lib/api/apiError';
-
-function parseRestaurantId(value: string) {
-  const id = Number(value);
-
-  if (!Number.isInteger(id) || id <= 0) {
-    return null;
-  }
-
-  return id;
-}
 
 function parseIsAdding(value: string | null) {
   if (value === 'true') {
@@ -28,10 +19,7 @@ function parseIsAdding(value: string | null) {
   return null;
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { accessToken, refreshToken, appCheckToken } = extractAuthContext(request);
 
   if (!appCheckToken) {
@@ -46,7 +34,7 @@ export async function POST(
   }
 
   const { id: rawId } = await params;
-  const id = parseRestaurantId(rawId);
+  const id = parseId(rawId);
   const isAdding = parseIsAdding(request.nextUrl.searchParams.get('isAdding'));
 
   if (!id || isAdding === null) {
