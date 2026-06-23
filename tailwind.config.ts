@@ -164,10 +164,6 @@ const config: Config = {
         'timetable-shell': '2.25rem minmax(0, 1fr)',
       },
 
-      borderRadius: {
-        timetable: '1.75rem',
-      },
-
       fontSize: {
         title: ['22px', { lineHeight: '30px' }],
         heading: ['18px', { lineHeight: '26px' }],

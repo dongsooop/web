@@ -17,7 +17,7 @@ export default function SocialPageLayout({ children }: SocialPageLayoutProps) {
       />
 
       <div className="mx-auto w-full py-3">
-        <div className="w-full rounded-[8px] bg-white p-4">{children}</div>
+        <div className="w-full rounded-xl bg-white p-4">{children}</div>
       </div>
     </div>
   );

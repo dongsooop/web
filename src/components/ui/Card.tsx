@@ -6,7 +6,7 @@ type CardProps = {
 };
 
 export default function Card({ title, right, children, className }: CardProps) {
-  const baseStyle = 'rounded-2xl block bg-white p-4 shadow-sm flex h-full flex-col';
+  const baseStyle = 'rounded-xl block bg-white p-4 shadow-sm flex h-full flex-col';
   const mergedClassName = className ? `${baseStyle} ${className}` : baseStyle;
 
   return (

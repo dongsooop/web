@@ -10,7 +10,7 @@ export default function LoggedOutCard() {
 
   return (
     <div className="space-y-4">
-      <div className="w-full rounded-lg bg-white px-6 py-6">
+      <div className="w-full rounded-xl bg-white px-6 py-6">
         <p className="text-body font-regular text-black">로그인으로 더 많은 동숲을 즐겨봐요</p>
 
         <div className="mt-4">

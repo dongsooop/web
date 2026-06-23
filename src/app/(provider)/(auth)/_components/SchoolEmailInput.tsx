@@ -25,7 +25,7 @@ export default function SchoolEmailInput({
 }: SchoolEmailInputProps) {
   return (
     <div
-      className={`flex h-11 w-full items-center rounded-[8px] border px-4 ${hasError ? 'border-red-500' : 'border-gray2'}`}
+      className={`flex h-11 w-full items-center rounded-lg border px-4 ${hasError ? 'border-red-500' : 'border-gray2'}`}
     >
       <input
         id={id}

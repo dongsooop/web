@@ -54,7 +54,7 @@ export default function SocialLoginCard({
         type="button"
         onClick={onClick}
         disabled={isLoading}
-        className={`text-small min-w-11 rounded-3xl px-4 py-2 font-semibold ${
+        className={`text-small min-w-11 rounded-xl px-4 py-2 font-semibold ${
           isLoading ? 'cursor-wait opacity-70' : 'cursor-pointer'
         } ${isConnected ? 'border-warning-100 text-warning-100 border' : 'bg-primary text-white'}`}
       >

@@ -24,7 +24,7 @@ export default function NewNotices({ notices }: NewNoticesProps) {
         </Link>
       }
     >
-      <div className="border-gray2 rounded-2xl bg-white px-2">
+      <div className="border-gray2 bg-white px-2">
         {notices.map((it, idx) => (
           <div key={it.link} className={idx === 0 ? '' : 'border-gray2 border-t'}>
             <ListItem

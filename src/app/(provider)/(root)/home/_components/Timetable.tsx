@@ -29,7 +29,7 @@ export default function Timetable({ timetable }: TimetableProps) {
   );
 
   return (
-    <section className="border-gray2 flex h-full flex-col rounded-2xl border bg-white p-4">
+    <section className="border-gray2 flex h-full flex-col rounded-xl border bg-white p-4">
       <div className="flex items-start justify-between">
         <div>
           <div className="text-body font-semibold text-black">강의시간표</div>

@@ -15,7 +15,6 @@ export default function RestaurantsList() {
   const {
     selectedCategory,
     selectCategory,
-    items,
     visibleItems,
     canShowMore,
     showMore,
@@ -39,11 +38,11 @@ export default function RestaurantsList() {
 
       <RestaurantHeader selectedCategory={selectedCategory} onCategoryAction={selectCategory} />
 
-      <section className="border-gray2 rounded-3xl border bg-white px-4 py-2">
-        <div className="flex flex-col">
+      <section className="border-gray2 flex min-h-40 flex-col rounded-xl border bg-white px-4 py-2">
+        <div className="flex flex-1 flex-col">
           {isInitialLoading ? (
-            <Skeleton className="h-[44rem] rounded-2xl sm:h-[46rem]" />
-          ) : (
+            <Skeleton className="h-[44rem] rounded-xl sm:h-[46rem]" />
+          ) : visibleItems.length > 0 ? (
             visibleItems.map((restaurant, index) => (
               <div key={restaurant.id}>
                 <RestaurantCard
@@ -54,17 +53,15 @@ export default function RestaurantsList() {
                 {index < visibleItems.length - 1 ? <Divider spacing={false} /> : null}
               </div>
             ))
-          )}
-
-          {!isInitialLoading && !items.length ? (
-            <div className="text-bodySm text-gray5 flex min-h-40 items-center justify-center rounded-2xl px-4 text-center">
-              <span className="inline-flex items-center leading-none">
+          ) : (
+            <div className="flex flex-1 items-center justify-center px-4 text-center">
+              <span className="text-bodySm text-gray5 inline-flex items-center leading-none">
                 {isError && displayErrorMessage
                   ? displayErrorMessage
                   : '조건에 맞는 맛집이 없어요.'}
               </span>
             </div>
-          ) : null}
+          )}
         </div>
 
         <div className="my-6 flex justify-center">

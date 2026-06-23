@@ -20,7 +20,7 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
   const bodyText = menus[index] || '식단 정보가 없습니다.';
 
   return (
-    <div className="flex min-h-11 flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:h-full">
+    <div className="flex min-h-11 flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:h-full">
       <div className="flex min-h-0 flex-col gap-3">
         <div className="flex items-center justify-between">
           <button

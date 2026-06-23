@@ -350,7 +350,7 @@ export default function ScheduleBoard() {
           />
         </div>
 
-        <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
+        <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border">
           <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
           <div className="md:grid-cols-schedule grid gap-0">

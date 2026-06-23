@@ -33,7 +33,7 @@ function TimetableSkeleton() {
               <SkeletonText className="w-12" />
               <SkeletonText className="w-12" />
             </div>
-            <Skeleton className="h-[50px] rounded-lg" />
+            <Skeleton className="h-[50px] rounded-xl" />
           </div>
         ))}
       </div>
@@ -82,7 +82,7 @@ function CalendarSkeleton() {
 
 function StudyRoomSkeleton() {
   return (
-    <HomeSectionCard className="flex items-center justify-between gap-4 rounded-lg p-4 shadow-sm">
+    <HomeSectionCard className="flex items-center justify-between gap-4 rounded-xl p-4 shadow-sm">
       <div className="flex-1 items-center gap-6">
         <div className="w-full space-y-2">
           <SkeletonText className="h-6 w-4/5" />

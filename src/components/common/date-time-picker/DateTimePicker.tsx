@@ -84,7 +84,7 @@ export default function DateTimePicker({
           </div>
 
           <div className="relative overflow-hidden" style={{ height: WHEEL_VIEW_H }}>
-            <div className="bg-gray7 pointer-events-none absolute inset-x-3 top-1/2 z-0 h-12 -translate-y-1/2 rounded-[18px]" />
+            <div className="bg-gray7 pointer-events-none absolute inset-x-3 top-1/2 z-0 h-12 -translate-y-1/2 rounded-2xl" />
 
             <div className="grid h-full grid-cols-[minmax(0,3.2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-0">
               <DateTimeWheel

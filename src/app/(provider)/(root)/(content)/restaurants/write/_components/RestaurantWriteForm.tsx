@@ -115,7 +115,7 @@ export function RestaurantWriteForm({
 
   return (
     <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-      <div className="border-gray2 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
+      <div className="border-gray2 rounded-xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
         <div className="space-y-6 sm:space-y-7">
           <section>
             <FieldHead required hint="학교 주변(1km) 가게만 등록 가능해요.">

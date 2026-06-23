@@ -13,7 +13,7 @@ type RestaurantHeaderProps = {
 
 export function RestaurantHeader({ selectedCategory, onCategoryAction }: RestaurantHeaderProps) {
   return (
-    <section className="border-gray2 flex-1 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-7">
+    <section className="border-gray2 flex-1 rounded-xl border bg-white px-4 py-5 sm:px-6 sm:py-7">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-title text-primary font-semibold uppercase">Dongsoop Picks</p>

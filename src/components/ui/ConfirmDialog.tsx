@@ -89,7 +89,7 @@ export default function ConfirmDialog({
       role="dialog"
     >
       <div
-        className="animate-in fade-in zoom-in-95 relative w-full max-w-[340px] overflow-hidden rounded-xl bg-white px-6 py-7 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
+        className="animate-in fade-in zoom-in-95 relative w-full max-w-xs overflow-hidden rounded-xl bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center">
@@ -101,9 +101,7 @@ export default function ConfirmDialog({
 
           <h2 className="text-heading font-bold text-black">{title}</h2>
 
-          <p className="text-body text-gray5 mt-4 leading-relaxed whitespace-pre-line">
-            {content}
-          </p>
+          <p className="text-body text-gray5 mt-4 leading-relaxed whitespace-pre-line">{content}</p>
         </div>
 
         <div className={`mt-8 flex gap-3 ${isSingleAction ? 'flex-col' : 'flex-row'}`}>

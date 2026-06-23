@@ -251,7 +251,7 @@ export default function SignUpForm() {
           <button
             type="button"
             onClick={() => setIsDeptModalOpen(true)}
-            className="border-gray2 active:border-primary flex h-[48px] w-full items-center justify-between rounded-[8px] border bg-white px-4 transition-all outline-none"
+            className="border-gray2 active:border-primary flex h-12 w-full items-center justify-between rounded-xl border bg-white px-4 transition-all outline-none"
           >
             <span className={`text-[16px] ${inputs.departmentType ? 'text-black' : 'text-gray3'}`}>
               {DEPARTMENTS.find((d) => d.code === inputs.departmentType)?.displayName ||

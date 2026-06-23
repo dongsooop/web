@@ -24,19 +24,19 @@ const EXPANDED_LIST_HEIGHT = 'max-h-notice-mobile sm:max-h-notice-desktop';
 
 function NoticeCard({ notice }: { notice: NoticeUiItem }) {
   return (
-    <article className="group bg-white px-4">
+    <article className="group flex flex-col gap-2 bg-white sm:px-2">
       <a
         href={notice.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-11 cursor-pointer flex-col py-2 transition"
+        className="flex min-h-11 cursor-pointer flex-col gap-4 py-2 transition"
         aria-label={`${notice.tags.map((tag) => tag.label).join(' ')} ${notice.title}`}
       >
         <p className="text-body font-semibold break-words text-black underline-offset-2 group-hover:underline">
           {notice.title}
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {notice.tags.map((tag, idx) => (
             <CommonTag key={`${tag.label}-${idx}`} label={tag.label} tone={tag.tone} />
           ))}
@@ -95,46 +95,46 @@ export default function NoticeBoard() {
         backLabel="홈으로 돌아가기"
       />
 
-      <section className="border-gray2 rounded-lg border bg-white px-4">
-        <div className="flex flex-wrap gap-4 px-2 py-4">
-          {TABS.map((it) => {
-            const active = it.id === currentTab;
+      <section className="border-gray2 rounded-xl border bg-white">
+        <div className="border-gray2 border-b">
+          <div className="flex">
+            {TABS.map((it) => {
+              const active = it.id === currentTab;
 
-            return (
-              <button
-                key={it.id}
-                type="button"
-                onClick={() => {
-                  if (it.id === 'DEPARTMENT' && !isLoggedIn) {
-                    openLoginDialog();
-                    return;
-                  }
+              return (
+                <button
+                  key={it.id}
+                  type="button"
+                  onClick={() => {
+                    if (it.id === 'DEPARTMENT' && !isLoggedIn) {
+                      openLoginDialog();
+                      return;
+                    }
 
-                  setTab(it.id);
-                  setIsExpanded(false);
-                }}
-                className={`text-bodySm relative inline-flex h-11 min-w-5 cursor-pointer items-center justify-center px-2 pb-2 font-semibold transition ${
-                  active ? 'text-primary' : 'text-gray6 hover:text-black'
-                }`}
-              >
-                <span
-                  className={`absolute right-0 bottom-0 left-0 h-0.5 rounded-full transition ${
-                    active ? 'bg-primary' : 'bg-transparent'
-                  }`}
-                />
-                {it.label}
-              </button>
-            );
-          })}
+                    setTab(it.id);
+                    setIsExpanded(false);
+                  }}
+                  className={[
+                    'text-bodySm flex h-12 min-h-14 w-16 flex-none cursor-pointer items-center justify-center border-b-2 font-semibold transition sm:w-18',
+                    active
+                      ? 'border-primary text-primary'
+                      : 'text-gray5 border-transparent hover:text-black',
+                  ].join(' ')}
+                >
+                  <span className="block px-4">{it.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <section
-          className={`pr-1 ${isExpanded ? `${EXPANDED_LIST_HEIGHT} overflow-y-auto` : 'overflow-visible'}`}
+          className={`px-4 ${isExpanded ? `${EXPANDED_LIST_HEIGHT} overflow-y-auto` : 'overflow-visible'}`}
         >
           {isInitialLoading ? (
-            <Skeleton className="my-4 h-[44rem] rounded-2xl sm:h-[46rem]" />
+            <Skeleton className="my-4 h-[44rem] rounded-xl sm:h-[46rem]" />
           ) : (
-            <div className="flex flex-col">
+            <div className="flex flex-col py-4">
               {visibleItems.length > 0 ? (
                 visibleItems.map((notice, index) => (
                   <div key={`${notice.type}-${notice.id}`}>
@@ -163,7 +163,7 @@ export default function NoticeBoard() {
                 }
               }}
               disabled={isFetchingNextPage}
-              className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
+              className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
             >
               {isFetchingNextPage ? '불러오는 중...' : '더보기'}
               <ChevronDown className="h-4 w-4" />

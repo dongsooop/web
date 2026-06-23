@@ -160,7 +160,7 @@ export default function TimetablePageContent() {
         />
 
         <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white lg:min-h-[44rem]">
+          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule grid gap-0 overflow-hidden rounded-xl border bg-white lg:min-h-[44rem]">
             <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">

@@ -53,8 +53,7 @@ function timeText(schedule: Schedule, tab: TabId) {
   return `${schedule.startAt} - ${schedule.endAt}`;
 }
 
-export default function
-  ScheduleDetailContent({
+export default function ScheduleDetailContent({
   contentClassName = '',
   displayErrorMessage,
   isError,
@@ -125,7 +124,7 @@ export default function
                 ))}
               </div>
             ) : (
-              <div className="bg-gray7 flex min-h-45 flex-col items-center justify-center rounded-2xl px-6 text-center sm:min-h-60">
+              <div className="bg-gray7 flex min-h-45 flex-col items-center justify-center rounded-xl px-6 text-center sm:min-h-60">
                 <div className="shadow-schedule-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white sm:h-16 sm:w-16">
                   <CalendarDays className="text-gray5 h-7 w-7 sm:h-8 sm:w-8" />
                 </div>

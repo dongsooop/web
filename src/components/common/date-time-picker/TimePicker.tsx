@@ -78,7 +78,7 @@ export default function TimePicker({
           </div>
 
           <div className="relative overflow-hidden" style={{ height: WHEEL_VIEW_H }}>
-            <div className="bg-gray7 pointer-events-none absolute inset-x-3 top-1/2 z-0 h-12 -translate-y-1/2 rounded-[18px]" />
+            <div className="bg-gray7 pointer-events-none absolute inset-x-3 top-1/2 z-0 h-12 -translate-y-1/2 rounded-2xl" />
 
             <div className="grid h-full grid-cols-1 items-center">
               <DateTimeWheel

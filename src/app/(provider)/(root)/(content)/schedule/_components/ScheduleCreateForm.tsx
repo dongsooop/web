@@ -61,7 +61,7 @@ function DateTimeField({
       onClick={onClickAction}
       disabled={disabled}
       className={[
-        'border-gray2 flex min-h-14 w-full items-center justify-between rounded-xl border bg-white px-4 text-left',
+        'border-gray2 flex min-h-11 w-full items-center justify-between rounded-xl border bg-white px-4 text-left',
         disabled ? 'cursor-default opacity-50' : 'cursor-pointer',
       ].join(' ')}
     >

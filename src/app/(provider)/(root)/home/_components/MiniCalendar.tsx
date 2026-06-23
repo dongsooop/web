@@ -66,7 +66,7 @@ export default function MiniCalendar() {
   };
 
   return (
-    <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
+    <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-xl border bg-white p-4">
       <div className="flex items-center justify-between">
         <div className="text-body font-semibold text-black">일정</div>
 

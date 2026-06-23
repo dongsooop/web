@@ -43,7 +43,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseClass =
-    'inline-flex items-center justify-center rounded-[8px] px-4 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex items-center justify-center rounded-lg px-4 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
 
   const widthClass = fullWidth ? 'w-full' : '';
   const variantClass = VARIANT_CLASS_MAP[variant];
@@ -60,7 +60,7 @@ export default function Button({
       <span className="flex items-center gap-2">
         {isLoading && (
           <span
-            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            className="h-4 w-4 animate-spin rounded-lg border-2 border-current border-t-transparent"
             aria-hidden="true"
           />
         )}

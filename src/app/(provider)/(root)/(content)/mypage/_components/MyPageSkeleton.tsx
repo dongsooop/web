@@ -24,7 +24,7 @@ function SkeletonRow({ descriptionWidth }: { descriptionWidth: string }) {
 function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] }) {
   return (
     <section className="space-y-3">
-      <div className="rounded-lg bg-white p-4">
+      <div className="rounded-xl bg-white p-4">
         <SkeletonText className="mb-4 h-5 w-20 px-1" />
         {descriptionWidths.map((descriptionWidth, index) => (
           <Fragment key={index}>
@@ -40,7 +40,7 @@ function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] })
 export default function MyPageSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-lg bg-white p-4 py-5">
+      <div className="relative overflow-hidden rounded-xl bg-white p-4 py-5">
         <div className="flex items-center gap-4">
           <div className="relative flex h-14 w-14 items-center justify-center">
             <SkeletonCircle className="h-14 w-14" />

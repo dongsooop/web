@@ -5,7 +5,7 @@ export default function RestaurantBanner() {
   return (
     <Link
       href="/restaurants"
-      className="relative block min-h-16 w-full overflow-hidden rounded-2xl bg-[#0047A7] lg:h-full"
+      className="relative block min-h-20 w-full overflow-hidden rounded-xl bg-[#0047A7] lg:h-full"
     >
       <Image
         src="/img/restaurant_banner.png"

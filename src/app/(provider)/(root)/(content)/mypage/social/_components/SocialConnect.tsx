@@ -27,7 +27,7 @@ function SocialConnectSkeleton() {
   return (
     <div className="space-y-3">
       {Array.from({ length: 2 }).map((_, index) => (
-        <Skeleton key={index} className="h-18 w-full rounded-lg" />
+        <Skeleton key={index} className="h-18 w-full rounded-xl" />
       ))}
     </div>
   );
