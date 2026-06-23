@@ -80,14 +80,14 @@ export default function NoticeBoard() {
 
   if (isError) {
     return (
-      <div className="max-w-layout mx-auto flex min-h-[60vh] w-full items-center justify-center px-4 text-center">
+      <div className="max-w-content mx-auto flex min-h-[60vh] w-full items-center justify-center px-4 text-center">
         <p className="text-body text-gray5">{displayErrorMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
+    <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <PageHeader
         title="공지"
         description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
@@ -95,7 +95,7 @@ export default function NoticeBoard() {
         backLabel="홈으로 돌아가기"
       />
 
-      <section className="border-gray2 mt-4 rounded-3xl border bg-white px-4">
+      <section className="border-gray2 rounded-lg border bg-white px-4">
         <div className="flex flex-wrap gap-4 px-2 py-4">
           {TABS.map((it) => {
             const active = it.id === currentTab;

@@ -10,7 +10,10 @@ import {
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
 import { useTimetableQuery } from '@/features/timetable/hooks/useTimetableQuery';
-import type { TimetableCreateRequest, TimetableUpdateRequest } from '@/features/timetable/types/request';
+import type {
+  TimetableCreateRequest,
+  TimetableUpdateRequest,
+} from '@/features/timetable/types/request';
 import type { TimetableItem } from '@/features/timetable/ui';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -86,7 +89,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
 
   return (
     <div className="mx-auto w-full py-4 sm:px-4">
-      <div className="max-w-layout mx-auto w-full">
+      <div className="max-w-calendar mx-auto w-full">
         {!isQueryReady || isLoading ? (
           <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
         ) : isError ? (

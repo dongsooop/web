@@ -21,7 +21,7 @@ export default function PageHeader({
   const router = useRouter();
 
   return (
-    <section className="max-w-layout flex w-full flex-col gap-1">
+    <section className="flex w-full flex-col gap-1">
       <div className="flex items-center gap-2">
         {backHref ? (
           <button

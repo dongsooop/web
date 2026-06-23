@@ -151,7 +151,7 @@ export default function TimetablePageContent() {
 
   return (
     <div className="w-full">
-      <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-4">
         <PageHeader
           title="시간표 관리"
           description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
@@ -159,7 +159,7 @@ export default function TimetablePageContent() {
           backLabel="마이페이지로 돌아가기"
         />
 
-        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4">
+        <div className="max-w-content mx-auto flex w-full flex-col gap-4">
           <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white lg:min-h-[44rem]">
             <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
               <div className="mb-5 flex items-center justify-between gap-4">

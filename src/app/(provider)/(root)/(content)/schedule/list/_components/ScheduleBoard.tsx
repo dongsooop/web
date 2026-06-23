@@ -318,7 +318,7 @@ export default function ScheduleBoard() {
 
   if (showSkeleton) {
     return (
-      <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
+      <div className="max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4">
         <div className="px-1">
           <PageHeader
             title="일정"
@@ -337,7 +337,7 @@ export default function ScheduleBoard() {
     <ScheduleCreateProvider value={createValue}>
       <div
         className={[
-          'max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4',
+          'max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4',
           createOpen ? '' : 'sm:pb-0',
         ].join(' ')}
       >
