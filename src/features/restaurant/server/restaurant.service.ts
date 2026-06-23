@@ -1,4 +1,5 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
+import { ApiError } from '@/lib/api/apiError';
 
 import { mapList } from '../mapper';
 import type { RestaurantCategoryKey } from '../options';
@@ -40,6 +41,26 @@ function buildPage(items: RestaurantListResponse, hasMore: boolean): RestaurantP
     items: mapList(items),
     hasMore,
   };
+}
+
+async function parseList(response: Response) {
+  if (!response.ok) {
+    throw new ApiError(response.status);
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+
+  const body = (await response.json()) as unknown;
+
+  if (!Array.isArray(body)) {
+    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+
+  return body as RestaurantListResponse;
 }
 
 async function readHasMore(response: Response) {
@@ -104,7 +125,7 @@ export async function fetchRestaurantPage(options: ListOptions): Promise<ListRes
     });
 
     if (authResult.response.status !== HttpStatusCode.UNAUTHORIZED) {
-      const items = (await authResult.response.json()) as RestaurantListResponse;
+      const items = await parseList(authResult.response);
       const next =
         items.length === options.size
           ? await fetchAuthHasMore(options)
@@ -124,7 +145,7 @@ export async function fetchRestaurantPage(options: ListOptions): Promise<ListRes
       size: options.size,
       category: options.category,
     });
-    const items = (await guestResponse.json()) as RestaurantListResponse;
+    const items = await parseList(guestResponse);
     const hasMore = items.length === options.size ? await fetchGuestHasMore(options) : false;
 
     return {
@@ -140,7 +161,7 @@ export async function fetchRestaurantPage(options: ListOptions): Promise<ListRes
     size: options.size,
     category: options.category,
   });
-  const items = (await guestResponse.json()) as RestaurantListResponse;
+  const items = await parseList(guestResponse);
   const hasMore = items.length === options.size ? await fetchGuestHasMore(options) : false;
 
   return {

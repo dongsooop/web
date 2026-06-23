@@ -85,7 +85,8 @@ export function RestaurantCard({ restaurant, isLiking, onLikeAction }: Restauran
             onClick={() => onLikeAction(restaurant)}
             disabled={isLiking}
             className="text-primary hover:bg-primary/5 relative z-20 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition"
-            aria-label={`${restaurant.name} 찜하기`}
+            aria-pressed={restaurant.isLikedByMe}
+            aria-label={`${restaurant.name} ${restaurant.isLikedByMe ? '좋아요 취소' : '좋아요 추가'}`}
           >
             <Heart
               className={`h-5 w-5 ${restaurant.isLikedByMe ? 'text-primary fill-current' : 'text-primary'} ${isLiking ? 'opacity-60' : ''}`}

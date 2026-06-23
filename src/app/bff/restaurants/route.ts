@@ -16,6 +16,8 @@ import {
 import type { RestaurantCreateRequest } from '@/features/restaurant/types/request';
 import { ApiError } from '@/lib/api/apiError';
 
+const requestFailedMessage = 'Request failed';
+
 export async function GET(request: NextRequest) {
   const { accessToken, refreshToken, appCheckToken } = extractAuthContext(request);
 
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: error instanceof Error ? error.message : 'Network Connection Failed',
+        message: requestFailedMessage,
         status,
       },
       { status },
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
     rawBody = await request.json();
   } catch {
     return NextResponse.json(
-      { message: '잘못된 요청 형식입니다.' },
+      { code: 'INVALID_JSON', message: requestFailedMessage },
       { status: HttpStatusCode.BAD_REQUEST },
     );
   }
@@ -92,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     if (!payload) {
       return NextResponse.json(
-        { message: '맛집 정보를 올바르게 입력해 주세요.' },
+        { code: 'INVALID_INPUT', message: requestFailedMessage },
         { status: HttpStatusCode.BAD_REQUEST },
       );
     }
@@ -132,11 +134,11 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error: unknown) {
     if (error instanceof ApiError) {
-      return NextResponse.json({ message: error.message }, { status: error.status });
+      return NextResponse.json({ message: requestFailedMessage }, { status: error.status });
     }
 
     return NextResponse.json(
-      { message: '맛집 등록 중 오류가 발생했어요.' },
+      { message: requestFailedMessage },
       { status: HttpStatusCode.INTERNAL_SERVER_ERROR },
     );
   }
