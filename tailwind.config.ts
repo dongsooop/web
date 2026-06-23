@@ -126,7 +126,7 @@ const config: Config = {
       maxWidth: {
         content: '61.25rem',
         form: '48.75rem',
-        layout: '150rem',
+        layout: '90rem',
         timetable: '65rem',
         'timetable-content': '58rem',
         'timetable-grid': '52rem',

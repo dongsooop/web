@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { ArrowLeft, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import PageHeader from '@/components/ui/PageHeader';
 import { checkDuplication } from '@/features/restaurant/client/restaurant.api';
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -84,17 +84,12 @@ export default function RestaurantSearch() {
     <div className="mx-auto flex min-h-screen w-full flex-col py-4">
       <div className="mx-auto w-full">
         <div className="mx-auto flex w-full flex-col gap-4 pb-5 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/restaurants/write"
-              className="hover:bg-gray1 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition"
-              aria-label="맛집 추천 화면으로 돌아가기"
-            >
-              <ArrowLeft className="h-5 w-5 text-black" />
-            </Link>
-
-            <h1 className="text-heading sm:text-title font-bold text-black">학교 근처 맛집 검색</h1>
-          </div>
+          <PageHeader
+            title="학교 근처 맛집 검색"
+            description="추천할 가게를 검색해주세요"
+            backHref="/restaurants/write"
+            backLabel="맛집 추천 화면으로 돌아가기"
+          />
 
           <form
             onSubmit={(e) => {

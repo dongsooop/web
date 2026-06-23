@@ -15,6 +15,7 @@ import type {
   TimetableCreateRequest,
   TimetableUpdateRequest,
 } from '@/features/timetable/types/request';
+import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToastStore } from '@/store/useToastStore';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -153,10 +154,12 @@ export default function TimetablePageContent() {
     <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
       <div className="max-w-timetable mx-auto w-full">
         <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-2 px-4 pt-1 pb-5 sm:px-6 lg:px-8">
-          <h1 className="text-heading sm:text-title font-bold text-black">시간표 관리</h1>
-          <p className="text-bodySm text-gray5 sm:text-body">
-            수강 중인 과목과 시간표를 확인하고 관리할 수 있어요.
-          </p>
+          <PageHeader
+            title="시간표 관리"
+            description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
+            backHref="/mypage"
+            backLabel="마이페이지로 돌아가기"
+          />
         </div>
 
         <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4 px-4 sm:px-6 lg:px-8">

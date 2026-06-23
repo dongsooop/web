@@ -114,7 +114,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           <div className="bg-gray2 m-3 h-px" />
 
           <ManagementLinkCard
-            href="/password-reset"
+            href="/password-reset?from=mypage"
             icon={KeyRound}
             title="비밀번호 변경"
             description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."

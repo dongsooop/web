@@ -320,7 +320,12 @@ export default function ScheduleBoard() {
     return (
       <div className="max-w-layout mx-auto flex w-full flex-col gap-4 sm:px-4">
         <div className="px-1">
-          <PageHeader title="일정" description={descriptionText()} />
+          <PageHeader
+            title="일정"
+            description={descriptionText()}
+            backHref="/mypage"
+            backLabel="마이페이지로 돌아가기"
+          />
         </div>
 
         <ScheduleSkeleton />
@@ -337,7 +342,12 @@ export default function ScheduleBoard() {
         ].join(' ')}
       >
         <div className="px-1">
-          <PageHeader title="일정" description={descriptionText()} />
+          <PageHeader
+            title="일정"
+            description={descriptionText()}
+            backHref="/"
+            backLabel="홈으로 돌아가기"
+          />
         </div>
 
         <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-2xl bg-white sm:border">
@@ -362,7 +372,8 @@ export default function ScheduleBoard() {
               {banner ? (
                 <ToastView
                   toast={{
-                    className: banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
+                    className:
+                      banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
                     id: banner.id,
                     message: banner.message,
                     tone: 'success',

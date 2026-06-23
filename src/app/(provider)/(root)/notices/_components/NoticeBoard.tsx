@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import CommonTag from '@/components/ui/CommonTag';
+import PageHeader from '@/components/ui/PageHeader';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 import { useNoticeQuery } from '@/features/notice/hooks/useNoticeQuery';
@@ -83,21 +84,18 @@ export default function NoticeBoard() {
 
   return (
     <div className="w-full">
-      <div className="max-w-content mx-auto w-full px-3 pt-3 pb-6 sm:px-4">
-        <div className="rounded-timetable flex flex-col bg-white px-5 py-6 sm:px-7 sm:py-7">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-4 px-3 pt-3 pb-6 sm:px-4">
+        <div className="px-2">
+          <PageHeader
+            title="공지"
+            description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
+            backHref="/"
+            backLabel="홈으로 돌아가기"
+          />
+        </div>
+
+        <div className="rounded-timetable flex flex-col bg-white px-4 py-4">
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
-              <h1 className="text-heading sm:text-title font-bold text-black">공지</h1>
-
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
-                <p className="text-gray6 text-sm sm:text-base">
-                  최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요.
-                </p>
-
-                <div className="hidden flex-none sm:block sm:w-90" aria-hidden="true" />
-              </div>
-            </div>
-
             <div className="flex flex-wrap gap-4 pb-3">
               {TABS.map((it) => {
                 const active = it.id === currentTab;

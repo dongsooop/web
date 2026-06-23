@@ -136,7 +136,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   };
 
   const handlePasswordReset = () => {
-    router.push('/password-reset');
+    router.push('/password-reset?from=sign-in');
   };
 
   const socialLogin = (platform: 'kakao' | 'google') => {

@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import PageHeader from '@/components/ui/PageHeader';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
 import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
@@ -11,6 +12,7 @@ import { getErrorMessage } from '@/lib/errors/messages';
 
 export default function PasswordResetForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const {
     inputs,
     status,
@@ -59,18 +61,23 @@ export default function PasswordResetForm() {
   const errorMessage = status.error
     ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
     : '';
+  const backHref = searchParams.get('from') === 'mypage' ? '/mypage' : '/sign-in';
+  const backLabel =
+    searchParams.get('from') === 'mypage' ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
 
   return (
     <div className="flex w-full max-w-[480px] flex-col gap-12">
       <section className="flex flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <h1 className="text-title font-bold text-black">비밀번호 재설정</h1>
-          <p className="text-body text-gray-500">
-            {step === 'email'
+        <PageHeader
+          title="비밀번호 재설정"
+          description={
+            step === 'email'
               ? '학교 이메일과 인증 코드를 입력해 주세요.'
-              : '새로운 비밀번호를 입력해 주세요.'}
-          </p>
-        </header>
+              : '새로운 비밀번호를 입력해 주세요.'
+          }
+          backHref={backHref}
+          backLabel={backLabel}
+        />
 
         {step === 'email' ? (
           <div className="flex flex-col gap-4">
