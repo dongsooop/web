@@ -134,7 +134,12 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error: unknown) {
     if (error instanceof ApiError) {
-      return NextResponse.json({ message: requestFailedMessage }, { status: error.status });
+      const status =
+        error.status !== HttpStatusCode.NETWORK_ERROR
+          ? error.status
+          : HttpStatusCode.INTERNAL_SERVER_ERROR;
+
+      return NextResponse.json({ message: requestFailedMessage }, { status });
     }
 
     return NextResponse.json(
