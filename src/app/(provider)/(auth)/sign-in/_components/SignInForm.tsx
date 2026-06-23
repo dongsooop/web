@@ -63,7 +63,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
       content: message,
       confirm: '확인',
       isSingleAction: true,
-      variant: 'danger',
+      color: 'danger',
       onConfirm: () => {},
     });
   };
@@ -212,11 +212,11 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
         </p>
       )}
 
-      <Button fullWidth variant="primary" onClick={handleLogin} isLoading={isSigningIn}>
+      <Button fullWidth color="primary" onClick={handleLogin} isLoading={isSigningIn}>
         로그인
       </Button>
 
-      <Button fullWidth variant="outline" onClick={handleSignUp}>
+      <Button fullWidth color="outline" onClick={handleSignUp}>
         회원가입
       </Button>
 

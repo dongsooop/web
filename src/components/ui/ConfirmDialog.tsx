@@ -12,7 +12,7 @@ interface DialogBaseProps {
   cancel?: string;
   confirm?: string;
   onConfirm: () => void;
-  variant?: 'primary' | 'danger';
+  color?: 'primary' | 'danger';
 }
 
 interface SingleActionDialogProps extends DialogBaseProps {
@@ -36,7 +36,7 @@ export default function ConfirmDialog({
   onConfirm,
   onClose,
   isSingleAction = false,
-  variant = 'primary',
+  color = 'primary',
 }: DialogProps) {
   useEffect(() => {
     if (!open) return;
@@ -65,12 +65,12 @@ export default function ConfirmDialog({
   };
 
   const confirmClass =
-    variant === 'danger'
+    color === 'danger'
       ? 'bg-warning text-white hover:opacity-95'
       : 'bg-primary text-white hover:opacity-95';
 
   const iconConfig =
-    variant === 'danger'
+    color === 'danger'
       ? {
           icon: AlertCircle,
           wrapperClassName: 'bg-warning/10 text-warning-100',

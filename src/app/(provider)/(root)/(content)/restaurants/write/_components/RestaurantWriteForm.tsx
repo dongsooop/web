@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
 import { categoryOptions } from '@/features/restaurant/category';
 import {
   restaurantTags,
@@ -199,41 +200,26 @@ export function RestaurantWriteForm({
           취소
         </Link>
 
-        <button
-          type="button"
+        <Button
           onClick={onSubmitAction}
           disabled={isSubmitDisabled}
-          className="text-bodySm bg-primary inline-flex min-h-11 min-w-36 cursor-pointer items-center justify-center rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
+          isLoading={isSubmitting}
+          className="text-bodySm min-w-36"
         >
-          <span className="inline-flex items-center gap-2">
-            <span>추천하기</span>
-            {isSubmitting ? (
-              <span
-                className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-                aria-hidden="true"
-              />
-            ) : null}
-          </span>
-        </button>
+          추천하기
+        </Button>
       </div>
 
       <div className="sm:hidden">
-        <button
-          type="button"
+        <Button
           onClick={onSubmitAction}
           disabled={isSubmitDisabled}
-          className="text-bodySm bg-primary inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
+          fullWidth
+          isLoading={isSubmitting}
+          className="text-bodySm"
         >
-          <span className="inline-flex items-center gap-2">
-            <span>추천하기</span>
-            {isSubmitting ? (
-              <span
-                className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-                aria-hidden="true"
-              />
-            ) : null}
-          </span>
-        </button>
+          추천하기
+        </Button>
       </div>
     </div>
   );

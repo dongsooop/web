@@ -110,7 +110,7 @@ export default function SignUpForm() {
               />
             </div>
             <Button
-              variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
+              color={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
               className="h-11 shrink-0 px-4"
               onClick={handleCheckEmail}
               disabled={!inputs.email.trim() || status.isEmailChecked || isLoading}
@@ -132,7 +132,7 @@ export default function SignUpForm() {
               </div>
 
               <Button
-                variant={
+                color={
                   !status.isCodeVerified &&
                   status.isEmailChecked &&
                   (!status.isCodeSent || status.remainingSeconds <= 0 || status.failCount >= 3)
@@ -160,7 +160,7 @@ export default function SignUpForm() {
               </Button>
 
               <Button
-                variant={
+                color={
                   status.isCodeSent && status.emailCode.length > 0 && !status.isCodeVerified
                     ? 'primary'
                     : 'gray'
@@ -236,7 +236,7 @@ export default function SignUpForm() {
               />
             </div>
             <Button
-              variant={isNicknameValid && !status.isNicknameChecked ? 'primary' : 'gray'}
+              color={isNicknameValid && !status.isNicknameChecked ? 'primary' : 'gray'}
               className="h-11 shrink-0 px-4"
               onClick={handleCheckNickname}
               disabled={!isNicknameValid || status.isNicknameChecked || isLoading}
@@ -279,7 +279,7 @@ export default function SignUpForm() {
 
           <Button
             fullWidth
-            variant={isFormValid ? 'primary' : 'gray'}
+            color={isFormValid ? 'primary' : 'gray'}
             className="h-[52px]"
             disabled={!isFormValid}
             isLoading={isLoading}

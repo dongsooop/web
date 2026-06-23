@@ -16,7 +16,7 @@ export default function LoggedOutCard() {
         <div className="mt-4">
           <Button
             fullWidth
-            height="cta"
+            height="large"
             fontWeight="regular"
             onClick={() => router.push('/sign-in')}
           >

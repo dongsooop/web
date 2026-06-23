@@ -303,7 +303,7 @@ export default function ScheduleBoard() {
       content: '선택한 일정을 삭제하시겠어요?\n삭제된 일정은 복구할 수 없어요.',
       cancel: '취소',
       confirm: '삭제',
-      variant: 'danger',
+      color: 'danger',
       onConfirm: deleteEdit,
     });
   }, [deleteEdit, editSchedule, showDialog]);

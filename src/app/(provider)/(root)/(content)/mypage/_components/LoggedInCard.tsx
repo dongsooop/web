@@ -52,7 +52,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       content: '탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?',
       cancel: '취소',
       confirm: '확인',
-      variant: 'danger',
+      color: 'danger',
       onConfirm: handleDelete,
     });
   };
@@ -60,8 +60,8 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   return (
     <>
       <div className="space-y-4">
-        <div className="relative overflow-hidden rounded-xl bg-white p-4 py-5">
-          <div className="flex min-w-0 items-center gap-4">
+        <div className="relative min-h-20 overflow-hidden rounded-xl bg-white p-4">
+          <div className="flex h-full items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-full">
               <Image
                 src="/img/profile.png"
@@ -82,7 +82,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
         </div>
 
         <div className="w-full rounded-xl bg-white p-4">
-          <div className="text-caption mb-3 font-bold text-black">학사 관리</div>
+          <div className="text-body mb-3 font-bold text-black">학사 관리</div>
 
           <ManagementLinkCard
             href="/timetable"
@@ -102,7 +102,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
         </div>
 
         <div className="w-full rounded-xl bg-white p-4">
-          <div className="text-caption mb-3 font-bold text-black">계정 관리</div>
+          <div className="text-body mb-3 font-bold text-black">계정 관리</div>
 
           <ManagementLinkCard
             href="/mypage/social"

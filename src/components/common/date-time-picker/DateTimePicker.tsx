@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
 import { lockBody, unlockBody } from '@/lib/body-lock';
 import { toDateKey } from '@/utils/date';
@@ -115,21 +116,20 @@ export default function DateTimePicker({
           <Divider />
 
           <div className="grid grid-cols-2 gap-3 py-2">
-            <button
-              type="button"
+            <Button
               onClick={onCloseAction}
-              className="text-bodySm border-gray2 text-gray6 min-h-11 cursor-pointer rounded-xl border bg-white px-4 font-semibold"
+              color="text"
+              className="text-bodySm border-gray2 text-gray6 min-h-11 border bg-white"
             >
               취소
-            </button>
+            </Button>
 
-            <button
-              type="button"
+            <Button
               onClick={() => onConfirmAction(draft)}
-              className="text-bodySm bg-primary min-h-11 cursor-pointer rounded-xl px-4 font-semibold text-white"
+              className="text-bodySm min-h-11"
             >
               확인
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -322,7 +322,7 @@ export default function TimetableCreatePanel({
             </section>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
+              <Button color="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
                 취소
               </Button>
               <Button isLoading={isSaving} onClick={save}>

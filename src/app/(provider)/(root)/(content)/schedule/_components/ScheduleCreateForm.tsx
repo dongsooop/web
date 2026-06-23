@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown, MapPin, Trash2 } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
 import { useScheduleForm } from '@/features/schedule/hooks/useScheduleForm';
 import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTimePicker';
@@ -266,31 +267,23 @@ export default function ScheduleCreateForm({
         </div>
 
         <div className="my-3 grid shrink-0 grid-cols-2 gap-3 bg-white p-4">
-          <button
-            type="button"
+          <Button
             onClick={closeCreate}
             disabled={isPending}
-            className="border-gray2 text-bodySm text-gray6 min-h-11 cursor-pointer rounded-xl border bg-white px-4 font-semibold disabled:cursor-default disabled:opacity-60"
+            color="text"
+            className="border-gray2 text-bodySm text-gray6 min-h-11 rounded-xl border bg-white"
           >
             취소
-          </button>
+          </Button>
 
-          <button
-            type="button"
+          <Button
             onClick={save}
-            disabled={isPending}
-            className="text-bodySm bg-primary min-h-11 cursor-pointer rounded-xl px-4 font-semibold text-white disabled:cursor-default disabled:opacity-60"
+            disabled={showDeleting}
+            isLoading={showSaving}
+            className="text-bodySm min-h-11 rounded-xl"
           >
-            <span className="inline-flex items-center gap-2">
-              <span>{schedule ? '수정' : '저장'}</span>
-              {showSaving ? (
-                <span
-                  className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-                  aria-hidden="true"
-                />
-              ) : null}
-            </span>
-          </button>
+            {schedule ? '수정' : '저장'}
+          </Button>
         </div>
       </div>
 
