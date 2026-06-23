@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import PageHeader from '@/components/ui/PageHeader';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
@@ -10,9 +10,12 @@ import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
 import { analyzePassword, validatePassword } from '@/features/auth/validators/authValidators';
 import { getErrorMessage } from '@/lib/errors/messages';
 
-export default function PasswordResetForm() {
+type PasswordResetFormProps = {
+  from?: string;
+};
+
+export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const {
     inputs,
     status,
@@ -61,9 +64,9 @@ export default function PasswordResetForm() {
   const errorMessage = status.error
     ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
     : '';
-  const backHref = searchParams.get('from') === 'mypage' ? '/mypage' : '/sign-in';
-  const backLabel =
-    searchParams.get('from') === 'mypage' ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
+  const isFromMyPage = from === 'mypage';
+  const backHref = isFromMyPage ? '/mypage' : '/sign-in';
+  const backLabel = isFromMyPage ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
 
   return (
     <div className="flex w-full max-w-[480px] flex-col gap-12">
@@ -92,7 +95,7 @@ export default function PasswordResetForm() {
               </div>
 
               <Button
-                variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
+                color={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
                 onClick={handleCheckEmail}
                 disabled={!inputs.email.trim() || status.isEmailChecked}
               >
@@ -112,7 +115,7 @@ export default function PasswordResetForm() {
                 </div>
 
                 <Button
-                  variant={
+                  color={
                     status.isEmailChecked &&
                     !status.isCodeVerified &&
                     (status.error === 'CODE_LIMIT_EXCEEDED' ||
@@ -143,7 +146,7 @@ export default function PasswordResetForm() {
                 </Button>
 
                 <Button
-                  variant={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
+                  color={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
                   onClick={handleVerifyCode}
                   disabled={!status.isCodeSent || status.isCodeVerified || !inputs.code}
                 >
@@ -199,8 +202,8 @@ export default function PasswordResetForm() {
         {step === 'email' ? (
           <Button
             fullWidth
-            variant="primary"
-            height="cta"
+            color="primary"
+            height="large"
             onClick={() => actions.setStep('password')}
             disabled={!status.isCodeVerified}
           >
@@ -208,13 +211,13 @@ export default function PasswordResetForm() {
           </Button>
         ) : (
           <div className="flex gap-2">
-            <Button variant="gray" className="flex-1" onClick={() => actions.setStep('email')}>
+            <Button color="gray" className="flex-1" onClick={() => actions.setStep('email')}>
               이전
             </Button>
             <Button
               className="flex-[2]"
-              height="cta"
-              variant={
+              height="large"
+              color={
                 validatePassword(inputs.pass) && inputs.pass === inputs.passCheck
                   ? 'primary'
                   : 'gray'
