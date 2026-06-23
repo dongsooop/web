@@ -11,14 +11,12 @@ export default function SocialConnectionsPage() {
   const googleClientId = process.env.GOOGLE_WEB_CLIENT_ID?.trim() ?? '';
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center py-6 lg:min-h-[calc(100dvh-3rem)]">
-      <SocialPageLayout>
-        <GoogleProvider clientId={googleClientId}>
-          <Suspense fallback={null}>
-            <SocialConnect kakaoJsKey={kakaoJsKey} />
-          </Suspense>
-        </GoogleProvider>
-      </SocialPageLayout>
-    </div>
+    <SocialPageLayout>
+      <GoogleProvider clientId={googleClientId}>
+        <Suspense fallback={null}>
+          <SocialConnect kakaoJsKey={kakaoJsKey} />
+        </Suspense>
+      </GoogleProvider>
+    </SocialPageLayout>
   );
 }

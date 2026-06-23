@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
 import { useDeleteTimetable } from '@/features/timetable/hooks/useDeleteTimetable';
 import { useUpdateTimetable } from '@/features/timetable/hooks/useUpdateTimetable';
@@ -147,22 +146,20 @@ export default function TimetablePageContent() {
   );
 
   if (isRedirecting) {
-    return <div className="mx-auto min-h-[calc(100dvh-2rem)] w-full lg:min-h-[calc(100dvh-3rem)]" />;
+    return <div className="w-full" />;
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-2rem)] w-full flex-col py-4 lg:min-h-[calc(100dvh-3rem)]">
-      <div className="max-w-timetable mx-auto w-full">
-        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-2 px-4 pt-1 pb-5 sm:px-6 lg:px-8">
-          <PageHeader
-            title="시간표 관리"
-            description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
-            backHref="/mypage"
-            backLabel="마이페이지로 돌아가기"
-          />
-        </div>
+    <div className="w-full">
+      <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4">
+        <PageHeader
+          title="시간표 관리"
+          description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
+          backHref="/mypage"
+          backLabel="마이페이지로 돌아가기"
+        />
 
-        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-timetable-content mx-auto flex w-full flex-col gap-4">
           <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule rounded-timetable grid gap-0 overflow-hidden border bg-white lg:min-h-[44rem]">
             <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
               <div className="mb-5 flex items-center justify-between gap-4">
@@ -191,7 +188,7 @@ export default function TimetablePageContent() {
                 {!isQueryReady || (isLoading && lectures.length === 0) ? (
                   <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
                 ) : isError ? (
-                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center whitespace-pre-line text-center">
+                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center whitespace-pre-line">
                     {displayErrorMessage}
                   </div>
                 ) : (
@@ -252,32 +249,31 @@ export default function TimetablePageContent() {
               )}
             </div>
           </div>
-
         </div>
-      </div>
 
-      {mobileLecture ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 cursor-pointer bg-black/40"
-            aria-label="강의 정보 닫기"
-            onClick={() => setMobileDetailId(null)}
-          />
-
-          <div className="absolute inset-x-0 bottom-0 z-10">
-            <TimetableDetailPanel
-              isDeleting={remove.isPending}
-              isEditing={isEditingDetail}
-              lecture={mobileLecture}
-              mode="sheet"
-              onCloseAction={() => setMobileDetailId(null)}
-              onDeleteAction={() => deleteLecture(mobileLecture.id)}
-              onEditAction={() => moveToEditPage(mobileLecture.id)}
+        {mobileLecture ? (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <button
+              type="button"
+              className="absolute inset-0 cursor-pointer bg-black/40"
+              aria-label="강의 정보 닫기"
+              onClick={() => setMobileDetailId(null)}
             />
+
+            <div className="absolute inset-x-0 bottom-0 z-10">
+              <TimetableDetailPanel
+                isDeleting={remove.isPending}
+                isEditing={isEditingDetail}
+                lecture={mobileLecture}
+                mode="sheet"
+                onCloseAction={() => setMobileDetailId(null)}
+                onDeleteAction={() => deleteLecture(mobileLecture.id)}
+                onEditAction={() => moveToEditPage(mobileLecture.id)}
+              />
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

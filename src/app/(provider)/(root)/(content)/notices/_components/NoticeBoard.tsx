@@ -87,7 +87,7 @@ export default function NoticeBoard() {
   }
 
   return (
-    <div className="max-w-content mx-auto w-full px-4 pt-3 pb-6">
+    <div className="w-full">
       <PageHeader
         title="공지"
         description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
