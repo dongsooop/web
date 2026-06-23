@@ -10,6 +10,26 @@ function trimText(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function parsePlaceUrl(value: unknown) {
+  const urlText = trimText(value);
+
+  if (!urlText) {
+    return null;
+  }
+
+  try {
+    const url = new URL(urlText);
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 function parseDistance(value: unknown) {
   if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
     return value;
@@ -101,7 +121,7 @@ export function parseCategory(value: string | null): RestaurantCategoryKey | und
 export function parseCreate(body: Partial<RestaurantCreateRequest>) {
   const externalMapId = trimText(body.externalMapId);
   const name = trimText(body.name);
-  const placeUrl = trimText(body.placeUrl);
+  const placeUrl = parsePlaceUrl(body.placeUrl);
   const distance = parseDistance(body.distance);
   const category = parseCreateCategory(body.category);
   const tags = parseTags(body.tags);
