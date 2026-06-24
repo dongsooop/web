@@ -81,7 +81,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return response;
   } catch (error) {
     if (error instanceof ApiError) {
-      return NextResponse.json({ message: error.message }, { status: error.status });
+      const status =
+        error.status !== HttpStatusCode.NETWORK_ERROR
+          ? error.status
+          : HttpStatusCode.INTERNAL_SERVER_ERROR;
+
+      return NextResponse.json({ message: error.message }, { status });
     }
 
     return NextResponse.json(
