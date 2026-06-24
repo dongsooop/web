@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+const contactHref = `mailto:rdyjun00@gmail.com?subject=${encodeURIComponent('동숲 문의')}`;
+
 const FOOTER_LINKS = [
   {
     href: 'https://zircon-football-529.notion.site/Dongsoop-2333ee6f2561800cb85fdc87fbe9b4c2',
@@ -21,7 +23,7 @@ const FOOTER_LINKS = [
     label: '오픈소스 라이선스',
     external: true,
   },
-  { href: '/contact', label: '문의하기', external: false },
+  { href: contactHref, label: '문의하기', external: false },
 ] as const;
 
 export default function Footer() {

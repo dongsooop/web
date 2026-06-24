@@ -1,0 +1,185 @@
+import { HttpStatusCode } from '@/constants/httpStatusCode';
+import { ApiError } from '@/lib/api/apiError';
+
+import { mapList } from '../mapper';
+import type { RestaurantCategoryKey } from '../options';
+import type { RestaurantCreateRequest } from '../types/request';
+import type { RestaurantListResponse } from '../types/response';
+import type { RestaurantPage } from '../types/ui-model';
+import {
+  createRestaurantWithSpring,
+  fetchGuestRestaurantListWithSpring,
+  fetchRestaurantListWithSpring,
+} from './restaurant.api';
+
+type AuthResult = Awaited<ReturnType<typeof fetchRestaurantListWithSpring>>;
+
+type ListOptions = {
+  accessToken?: string;
+  refreshToken?: string;
+  appCheckToken?: string;
+  page: number;
+  size: number;
+  category?: RestaurantCategoryKey;
+};
+
+type CreateOptions = {
+  accessToken?: string;
+  refreshToken?: string;
+  appCheckToken?: string;
+  payload: RestaurantCreateRequest;
+};
+
+type ListResult = {
+  status: number;
+  body: RestaurantPage;
+  authResult?: AuthResult;
+};
+
+function buildPage(items: RestaurantListResponse, hasMore: boolean): RestaurantPage {
+  return {
+    items: mapList(items),
+    hasMore,
+  };
+}
+
+async function parseList(response: Response) {
+  if (!response.ok) {
+    throw new ApiError(response.status);
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+
+  const body = (await response.json()) as unknown;
+
+  if (!Array.isArray(body)) {
+    throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+
+  return body as RestaurantListResponse;
+}
+
+async function readHasMore(response: Response) {
+  if (!response.ok) {
+    return false;
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    return false;
+  }
+
+  try {
+    const items = (await response.json()) as RestaurantListResponse;
+    return Array.isArray(items) && items.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function fetchGuestHasMore(options: ListOptions) {
+  const response = await fetchGuestRestaurantListWithSpring({
+    appCheckToken: options.appCheckToken,
+    page: options.page + 1,
+    size: options.size,
+    category: options.category,
+  });
+
+  return readHasMore(response);
+}
+
+async function fetchAuthHasMore(options: ListOptions) {
+  const result = await fetchRestaurantListWithSpring({
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+    page: options.page + 1,
+    size: options.size,
+    category: options.category,
+  });
+
+  if (result.response.status === HttpStatusCode.UNAUTHORIZED) {
+    return {
+      hasMore: false,
+      authResult: result,
+      isUnauthorized: true,
+    };
+  }
+
+  return {
+    hasMore: await readHasMore(result.response),
+    authResult: result,
+    isUnauthorized: false,
+  };
+}
+
+export async function fetchRestaurantPage(options: ListOptions): Promise<ListResult> {
+  if (options.accessToken) {
+    const authResult = await fetchRestaurantListWithSpring({
+      accessToken: options.accessToken,
+      refreshToken: options.refreshToken,
+      appCheckToken: options.appCheckToken,
+      page: options.page,
+      size: options.size,
+      category: options.category,
+    });
+
+    if (authResult.response.status !== HttpStatusCode.UNAUTHORIZED) {
+      const items = await parseList(authResult.response);
+      const next =
+        items.length === options.size
+          ? await fetchAuthHasMore(options)
+          : { hasMore: false, authResult, isUnauthorized: false };
+      const hasMore = next.isUnauthorized ? await fetchGuestHasMore(options) : next.hasMore;
+
+      return {
+        status: authResult.response.status,
+        body: buildPage(items, hasMore),
+        authResult: next.authResult,
+      };
+    }
+
+    const guestResponse = await fetchGuestRestaurantListWithSpring({
+      appCheckToken: options.appCheckToken,
+      page: options.page,
+      size: options.size,
+      category: options.category,
+    });
+    const items = await parseList(guestResponse);
+    const hasMore = items.length === options.size ? await fetchGuestHasMore(options) : false;
+
+    return {
+      status: guestResponse.status,
+      body: buildPage(items, hasMore),
+      authResult,
+    };
+  }
+
+  const guestResponse = await fetchGuestRestaurantListWithSpring({
+    appCheckToken: options.appCheckToken,
+    page: options.page,
+    size: options.size,
+    category: options.category,
+  });
+  const items = await parseList(guestResponse);
+  const hasMore = items.length === options.size ? await fetchGuestHasMore(options) : false;
+
+  return {
+    status: guestResponse.status,
+    body: buildPage(items, hasMore),
+  };
+}
+
+export async function createRestaurant(options: CreateOptions) {
+  return createRestaurantWithSpring({
+    accessToken: options.accessToken,
+    refreshToken: options.refreshToken,
+    appCheckToken: options.appCheckToken,
+    payload: options.payload,
+  });
+}

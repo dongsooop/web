@@ -83,7 +83,7 @@ export default function NoticeBoard() {
 
   return (
     <div className="w-full">
-      <div className="max-w-notice mx-auto w-full px-3 pt-3 pb-6 sm:px-4">
+      <div className="max-w-content mx-auto w-full px-3 pt-3 pb-6 sm:px-4">
         <div className="rounded-timetable flex flex-col bg-white px-5 py-6 sm:px-7 sm:py-7">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">

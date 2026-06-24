@@ -4,6 +4,7 @@ import { ApiError } from '../api/apiError';
 type Scope =
   | 'home'
   | 'cafeteria'
+  | 'restaurant'
   | 'auth'
   | 'signup'
   | 'schedule'
@@ -66,6 +67,35 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     return (
       common(err) ??
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    );
+  },
+  restaurant: (err, context) => {
+    if (err instanceof ApiError && err.status === HttpStatusCode.CONFLICT) {
+      return '이미 등록된 맛집이에요.';
+    }
+
+    if (context === 'search') {
+      return common(err) ?? '가게를 검색하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'create') {
+      if (err instanceof ApiError && err.status === HttpStatusCode.BAD_REQUEST) {
+        return '맛집 정보를 다시 확인해 주세요.';
+      }
+
+      return common(err) ?? '맛집을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'duplicate') {
+      return common(err) ?? '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    if (context === 'like') {
+      return common(err) ?? '좋아요를 처리하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    return (
+      common(err) ?? '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
   schedule: (err, context) => {
