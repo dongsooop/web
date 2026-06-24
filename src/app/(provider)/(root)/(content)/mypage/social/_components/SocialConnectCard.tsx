@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import type { LoginPlatform } from '@/features/auth/types/ui-model';
 
-type SocialLoginCardProps = {
+type SocialConnectCardProps = {
   platform: LoginPlatform;
   isConnected: boolean;
   date: string | null;
@@ -23,13 +23,13 @@ const platformMeta: Record<LoginPlatform, { label: string; imageSrc: string; ima
   },
 };
 
-export default function SocialLoginCard({
+export default function SocialConnectCard({
   platform,
   isConnected,
   date,
   onClick,
   isLoading = false,
-}: SocialLoginCardProps) {
+}: SocialConnectCardProps) {
   const meta = platformMeta[platform];
   const statusText = date ? `${date}. 연동됨` : '미연동';
   const text = isConnected ? '연동 해제' : '연동하기';

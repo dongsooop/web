@@ -13,7 +13,7 @@ import { useSocialError } from '@/features/auth/hooks/useSocialError';
 import { buildSocialConnectItems } from '@/features/auth/social';
 import type { LoginPlatform, SocialConnectItem } from '@/features/auth/types/ui-model';
 import { getErrorMessage } from '@/lib/errors/messages';
-import SocialLoginCard from './SocialLoginCard';
+import SocialConnectCard from './SocialConnectCard';
 
 const defaultItems: SocialConnectItem[] = buildSocialConnectItems([]);
 const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
@@ -25,7 +25,7 @@ type ActionMessage = {
 
 function SocialConnectSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" aria-hidden="true">
       {Array.from({ length: 2 }).map((_, index) => (
         <Skeleton key={index} className="h-18 w-full rounded-xl" />
       ))}
@@ -37,7 +37,7 @@ function getListErrorMessage(error: unknown) {
   return getErrorMessage('social', error, 'state');
 }
 
-export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
+export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }) {
   const { isReady, isRedirecting } = useAuthGuard('/mypage');
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
   const [isLoading, setIsLoading] = useState(true);
@@ -236,46 +236,49 @@ export default function SocialConnect({ kakaoJsKey }: { kakaoJsKey: string }) {
   return (
     <>
       <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
+
       <div className="min-h-[188px]">
         {isLoading ? (
           <SocialConnectSkeleton />
         ) : listErrorMessage ? (
           <div className="flex h-[236px] items-center justify-center px-4 text-center">
             <div className="flex flex-col items-center">
-              <CircleAlert className="text-warning mb-4 h-12 w-12 shrink-0" />
+              <CircleAlert className="text-warning mb-4 h-12 w-12 shrink-0" aria-hidden="true" />
               <p className="text-normal text-gray6 whitespace-pre-line">{listErrorMessage}</p>
             </div>
           </div>
         ) : (
-          <div>
+          <ul>
             {items.map((item) => (
-              <div key={item.platform}>
-                <SocialLoginCard
+              <li key={item.platform}>
+                <SocialConnectCard
                   platform={item.platform}
                   isConnected={item.isConnected}
                   date={item.date}
                   onClick={() => clickItem(item)}
                   isLoading={item.platform === loadingPlatform}
                 />
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
 
       {!listErrorMessage && (
-        <div className="my-2 min-h-[48px]">
+        <div className="my-2 min-h-12">
           {actionMessage ? (
             <div
+              role={actionMessage.tone === 'error' ? 'alert' : 'status'}
               className={`animate-in fade-in slide-in-from-bottom-2 flex w-full items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-black shadow-[0_12px_32px_rgba(15,23,42,0.12)] duration-200 ${
                 actionMessage.tone === 'success' ? 'border-primary/15' : 'border-warning/20'
               }`}
             >
               {actionMessage.tone === 'success' ? (
-                <CheckCircle2 className="text-primary h-5 w-5 shrink-0" />
+                <CheckCircle2 className="text-primary h-5 w-5 shrink-0" aria-hidden="true" />
               ) : (
-                <CircleAlert className="text-warning h-5 w-5 shrink-0" />
+                <CircleAlert className="text-warning h-5 w-5 shrink-0" aria-hidden="true" />
               )}
+
               <p className="text-normal min-w-0 flex-1 font-medium whitespace-pre-line">
                 {actionMessage.message}
               </p>

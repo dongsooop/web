@@ -9,7 +9,7 @@ import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
 import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
 import { getErrorMessage } from '@/lib/errors/messages';
-import SocialPageLayout from '../../_components/SocialPageLayout';
+import SocialConnectLayout from '../../_components/SocialConnectLayout';
 
 const googleStateKey = 'google_oauth_state';
 
@@ -49,9 +49,9 @@ function GoogleCallbackContent() {
   });
 
   return (
-    <SocialPageLayout>
+    <SocialConnectLayout>
       <LoadingScreen message={message} wide boxed />
-    </SocialPageLayout>
+    </SocialConnectLayout>
   );
 }
 
@@ -59,9 +59,9 @@ export default function GoogleCallbackPage() {
   return (
     <Suspense
       fallback={
-        <SocialPageLayout>
+        <SocialConnectLayout>
           <LoadingScreen message="보안 확인 중이에요." wide boxed />
-        </SocialPageLayout>
+        </SocialConnectLayout>
       }
     >
       <GoogleCallbackContent />

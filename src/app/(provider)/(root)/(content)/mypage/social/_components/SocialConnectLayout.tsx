@@ -3,11 +3,11 @@ import type { ReactNode } from 'react';
 import Card from '@/components/ui/Card';
 import PageHeader from '@/components/ui/PageHeader';
 
-type SocialPageLayoutProps = {
+type SocialConnectLayoutProps = {
   children: ReactNode;
 };
 
-export default function SocialPageLayout({ children }: SocialPageLayoutProps) {
+export default function SocialConnectLayout({ children }: SocialConnectLayoutProps) {
   return (
     <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <PageHeader

@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 
 import GoogleProvider from '@/providers/GoogleProvider';
-import SocialPageLayout from './_components/SocialPageLayout';
-import SocialConnect from './_components/SocialConnect';
+import SocialConnectLayout from './_components/SocialConnectLayout';
+import SocialConnectList from './_components/SocialConnectList';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +11,12 @@ export default function SocialConnectionsPage() {
   const googleClientId = process.env.GOOGLE_WEB_CLIENT_ID?.trim() ?? '';
 
   return (
-    <SocialPageLayout>
+    <SocialConnectLayout>
       <GoogleProvider clientId={googleClientId}>
         <Suspense fallback={null}>
-          <SocialConnect kakaoJsKey={kakaoJsKey} />
+          <SocialConnectList kakaoJsKey={kakaoJsKey} />
         </Suspense>
       </GoogleProvider>
-    </SocialPageLayout>
+    </SocialConnectLayout>
   );
 }

@@ -13,7 +13,7 @@ import {
   isSocialStateValid,
 } from '@/features/auth/lib/socialState';
 import { getErrorMessage } from '@/lib/errors/messages';
-import SocialPageLayout from '../../_components/SocialPageLayout';
+import SocialConnectLayout from '../../_components/SocialConnectLayout';
 
 const kakaoStateKey = 'kakao_oauth_state';
 
@@ -46,9 +46,9 @@ function KakaoCallbackContent() {
   });
 
   return (
-    <SocialPageLayout>
+    <SocialConnectLayout>
       <LoadingScreen message={message} wide boxed />
-    </SocialPageLayout>
+    </SocialConnectLayout>
   );
 }
 
@@ -56,9 +56,9 @@ export default function KakaoCallbackPage() {
   return (
     <Suspense
       fallback={
-        <SocialPageLayout>
+        <SocialConnectLayout>
           <LoadingScreen message="보안 확인 중이에요." wide boxed />
-        </SocialPageLayout>
+        </SocialConnectLayout>
       }
     >
       <KakaoCallbackContent />
