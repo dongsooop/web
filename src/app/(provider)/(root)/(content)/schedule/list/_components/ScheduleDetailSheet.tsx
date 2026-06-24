@@ -26,19 +26,24 @@ export default function ScheduleDetailSheet({
   tab,
 }: ScheduleDetailSheetProps) {
   return (
-    <aside className="border-gray2 flex max-h-[78vh] flex-col overflow-hidden rounded-t-xl border-t bg-white">
-      <div className="flex h-11 shrink-0 items-center justify-between bg-white px-4">
-        <div className="text-heading font-semibold text-black">{selectedDay}</div>
+    <aside
+      className="border-gray2 flex max-h-[78vh] flex-col overflow-hidden rounded-t-xl border-t bg-white"
+      aria-label="상세 일정 패널"
+    >
+      <header className="flex h-11 shrink-0 items-center justify-between bg-white px-4">
+        <h2 className="text-heading font-semibold text-black">{selectedDay}</h2>
         <button
           type="button"
           aria-label="상세 일정 닫기"
           onClick={onCloseAction}
           className="text-gray5 flex h-11 w-11 items-center justify-center"
         >
-          <X className="h-5 w-5" />
+          <X className="h-5 w-5" aria-hidden="true" />
         </button>
-      </div>
-      <div className={['flex min-h-0 flex-1 flex-col', tab === 'OFFICIAL' ? 'pb-6' : 'pb-1'].join(' ')}>
+      </header>
+      <div
+        className={['flex min-h-0 flex-1 flex-col', tab === 'OFFICIAL' ? 'pb-6' : 'pb-1'].join(' ')}
+      >
         <ScheduleDetailContent
           contentClassName="px-4"
           displayErrorMessage={displayErrorMessage}

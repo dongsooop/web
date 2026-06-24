@@ -132,6 +132,18 @@ function buildLaneOffsetMap(
   return map;
 }
 
+function getDateLabel(date: Date) {
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+function getScheduleCountText(count: number) {
+  if (count === 0) {
+    return '일정 없음';
+  }
+
+  return `일정 ${count}개`;
+}
+
 export default function ScheduleCalendar({
   cells,
   currentMonth,
@@ -168,7 +180,7 @@ export default function ScheduleCalendar({
   const memberLaneOffsetMap = buildLaneOffsetMap(cells, memberRangeSegments);
 
   return (
-    <div className="py-2 sm:px-7 sm:py-6">
+    <section className="py-2 sm:px-7 sm:py-6" aria-label={`${currentMonth} 일정 달력`}>
       <div className="border-gray2 md:hidden">
         <div className="flex items-center justify-center gap-2">
           <button
@@ -177,10 +189,10 @@ export default function ScheduleCalendar({
             className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
             aria-label="이전 달"
           >
-            <ChevronsLeft className="h-5 w-5" />
+            <ChevronsLeft className="h-5 w-5" aria-hidden="true" />
           </button>
 
-          <div className="text-body text-center font-bold text-black">{currentMonth}</div>
+          <h2 className="text-body text-center font-bold text-black">{currentMonth}</h2>
 
           <button
             type="button"
@@ -188,7 +200,7 @@ export default function ScheduleCalendar({
             className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
             aria-label="다음 달"
           >
-            <ChevronsRight className="h-5 w-5" />
+            <ChevronsRight className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -201,18 +213,18 @@ export default function ScheduleCalendar({
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="이전 달"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </button>
-          <div className="text-body sm:text-title text-center font-bold text-black">
+          <h2 className="text-body sm:text-title text-center font-bold text-black">
             {currentMonth}
-          </div>
+          </h2>
           <button
             type="button"
             onClick={() => onMoveMonthAction(1)}
             className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
             aria-label="다음 달"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -222,9 +234,8 @@ export default function ScheduleCalendar({
               type="button"
               onClick={onCreateAction}
               className="border-primary/20 bg-primary/5 text-primary-foreground text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold"
-              aria-label="일정 추가"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" aria-hidden="true" />
               일정 추가
             </button>
           ) : null}
@@ -233,14 +244,17 @@ export default function ScheduleCalendar({
             onClick={onTodayAction}
             className="border-gray2 text-gray6 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
           >
-            <CalendarDays className="h-4 w-4" />
+            <CalendarDays className="h-4 w-4" aria-hidden="true" />
             오늘 날짜로 이동
           </button>
         </div>
       </div>
 
       <div className="mt-2">
-        <div className="text-body grid grid-cols-7 gap-2 pb-2 text-center font-semibold">
+        <div
+          className="text-body grid grid-cols-7 gap-2 pb-2 text-center font-semibold"
+          aria-hidden="true"
+        >
           {WEEK_LABELS.map((week, index) => (
             <div key={week} className={weekColorClass(index)}>
               {week}
@@ -299,6 +313,8 @@ export default function ScheduleCalendar({
             const isSelected = key === selected;
             const isToday = key === toDateKey(today);
             const textColor = dateColorClass(cell.date, cell.inMonth);
+            const scheduleCount = (scheduleMap[key] ?? []).length;
+            const dateLabel = getDateLabel(cell.date);
 
             return (
               <button
@@ -311,7 +327,9 @@ export default function ScheduleCalendar({
                   index >= 35 ? 'sm:border-b-0' : '',
                   isSelected ? 'bg-primary/5' : '',
                 ].join(' ')}
-                aria-label={`${cell.date.getMonth() + 1}월 ${day}일`}
+                aria-label={`${dateLabel}, ${getScheduleCountText(scheduleCount)}`}
+                aria-pressed={isSelected}
+                aria-current={isToday ? 'date' : undefined}
               >
                 <div className={dayBox}>
                   <span
@@ -371,7 +389,7 @@ export default function ScheduleCalendar({
                                 : 'bg-gray7 text-schedule-muted',
                             ].join(' ')}
                           >
-                            <div className="truncate">{schedule.title}</div>
+                            <span className="truncate">{schedule.title}</span>
                           </div>
                         ))}
                       </div>
@@ -384,6 +402,6 @@ export default function ScheduleCalendar({
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

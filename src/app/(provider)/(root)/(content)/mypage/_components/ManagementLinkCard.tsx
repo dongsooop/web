@@ -21,16 +21,17 @@ export default function ManagementLinkCard({
     <>
       <div className="flex min-w-0 items-center gap-4">
         <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-          <Icon className="h-5 w-5" />
+          <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
+
         <div className="min-w-0">
-          <div className="text-body font-semibold text-black">{title}</div>
+          <h3 className="text-body font-semibold text-black">{title}</h3>
           <p className="text-caption text-gray5 mt-1 hidden break-keep sm:block">{description}</p>
         </div>
       </div>
 
       <div className="flex h-11 w-11 shrink-0 items-center justify-center">
-        <ChevronRight className="text-gray4 h-5 w-5" />
+        <ChevronRight className="text-gray4 h-5 w-5" aria-hidden="true" />
       </div>
     </>
   );

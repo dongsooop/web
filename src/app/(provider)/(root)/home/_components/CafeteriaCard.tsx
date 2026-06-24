@@ -28,17 +28,17 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
           className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
           aria-label="이전 식단"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
 
-        <span className="text-body font-bold text-black">{title}</span>
+        <h2 className="text-body font-bold text-black">{title}</h2>
 
         <button
           onClick={handleNext}
           className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
           aria-label="이후 식단"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
 

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Search } from 'lucide-react';
 
 import Button from '@/components/ui/Button';
+import { FieldLegend } from '@/components/ui/FieldTitle';
 import { categoryOptions } from '@/features/restaurant/category';
 import {
   restaurantTags,
@@ -11,20 +12,6 @@ import {
   type RestaurantTagKey,
 } from '@/features/restaurant/options';
 import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
-
-type FieldTitleProps = {
-  children: React.ReactNode;
-  required?: boolean;
-};
-
-function FieldTitle({ children, required = false }: FieldTitleProps) {
-  return (
-    <div className="text-bodySm font-semibold text-black">
-      {children}
-      {required ? <span className="text-primary ml-1">*</span> : null}
-    </div>
-  );
-}
 
 type FieldHeadProps = {
   children: React.ReactNode;
@@ -34,10 +21,10 @@ type FieldHeadProps = {
 
 function FieldHead({ children, hint, required = false }: FieldHeadProps) {
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-      <FieldTitle required={required}>{children}</FieldTitle>
-      {hint ? <p className="text-caption text-gray5">{hint}</p> : null}
-    </div>
+    <>
+      <FieldLegend required={required}>{children}</FieldLegend>
+      {hint ? <p className="text-caption text-gray5 -mt-1">{hint}</p> : null}
+    </>
   );
 }
 
@@ -52,6 +39,7 @@ function SelectChip({ label, selected, onClickAction }: SelectChipProps) {
     <button
       type="button"
       onClick={onClickAction}
+      aria-pressed={selected}
       className={`text-bodySm inline-flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border px-3 py-2 font-semibold transition ${
         selected
           ? 'border-primary bg-primary/5 text-primary'
@@ -63,9 +51,18 @@ function SelectChip({ label, selected, onClickAction }: SelectChipProps) {
   );
 }
 
-function HorizontalChips({ children }: { children: React.ReactNode }) {
+function HorizontalChips({
+  children,
+  ariaLabel,
+}: {
+  children: React.ReactNode;
+  ariaLabel: string;
+}) {
   return (
-    <div className="scrollbar-hidden mt-3 overflow-x-auto overflow-y-visible">
+    <div
+      className="scrollbar-hidden mt-3 overflow-x-auto overflow-y-visible"
+      aria-label={ariaLabel}
+    >
       <div className="flex min-w-max gap-3">{children}</div>
     </div>
   );
@@ -115,10 +112,16 @@ export function RestaurantWriteForm({
   const isSubmitDisabled = isSubmitting || isCheckingDuplicate || isDuplicate;
 
   return (
-    <div className="max-w-content mx-auto flex w-full flex-col gap-4">
+    <form
+      className="max-w-content mx-auto flex w-full flex-col gap-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmitAction();
+      }}
+    >
       <div className="border-gray2 rounded-xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
         <div className="space-y-6 sm:space-y-7">
-          <section>
+          <fieldset className="min-w-0">
             <FieldHead required hint="학교 주변(1km) 가게만 등록 가능해요.">
               가게 검색
             </FieldHead>
@@ -134,7 +137,7 @@ export function RestaurantWriteForm({
               >
                 {selectedPlace ? selectedPlace.name : '가게 이름을 입력해주세요'}
               </span>
-              <Search className="text-gray5 h-4 w-4 shrink-0" />
+              <Search className="text-gray5 h-4 w-4 shrink-0" aria-hidden="true" />
             </Link>
 
             {selectedPlace?.address ? (
@@ -142,14 +145,16 @@ export function RestaurantWriteForm({
             ) : null}
 
             {selectedPlace && isDuplicate ? (
-              <p className="text-caption text-warning-100 mt-2">이미 등록된 맛집이에요.</p>
+              <p className="text-caption text-warning-100 mt-2" role="alert">
+                이미 등록된 맛집이에요.
+              </p>
             ) : null}
-          </section>
+          </fieldset>
 
-          <section>
-            <FieldTitle required>카테고리</FieldTitle>
+          <fieldset className="min-w-0">
+            <FieldLegend required>카테고리</FieldLegend>
 
-            <HorizontalChips>
+            <HorizontalChips ariaLabel="맛집 카테고리 선택">
               {categoryOptions.filter(isWriteCategoryOption).map((item) => (
                 <SelectChip
                   key={item.value}
@@ -159,12 +164,12 @@ export function RestaurantWriteForm({
                 />
               ))}
             </HorizontalChips>
-          </section>
+          </fieldset>
 
-          <section>
+          <fieldset className="min-w-0">
             <FieldHead hint="최대 3개까지 선택 가능해요.">태그</FieldHead>
 
-            <div className="mt-3 space-y-3">
+            <div className="mt-3 space-y-3" aria-label="맛집 태그 선택">
               {tagRows.map((row, index) => (
                 <div key={index} className="scrollbar-hidden overflow-x-auto overflow-y-visible">
                   <div className="flex min-w-max gap-3">
@@ -182,12 +187,12 @@ export function RestaurantWriteForm({
             </div>
 
             <p className="text-caption text-gray5 mt-4">{tagCount} / 3개 선택</p>
-          </section>
+          </fieldset>
         </div>
       </div>
 
       {displayErrorMessage ? (
-        <p className="text-caption text-warning-100 px-1 whitespace-pre-line">
+        <p className="text-caption text-warning-100 px-1 whitespace-pre-line" role="alert">
           {displayErrorMessage}
         </p>
       ) : null}
@@ -201,7 +206,7 @@ export function RestaurantWriteForm({
         </Link>
 
         <Button
-          onClick={onSubmitAction}
+          type="submit"
           disabled={isSubmitDisabled}
           isLoading={isSubmitting}
           className="text-bodySm min-w-36"
@@ -212,7 +217,7 @@ export function RestaurantWriteForm({
 
       <div className="sm:hidden">
         <Button
-          onClick={onSubmitAction}
+          type="submit"
           disabled={isSubmitDisabled}
           fullWidth
           isLoading={isSubmitting}
@@ -221,6 +226,6 @@ export function RestaurantWriteForm({
           추천하기
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

@@ -350,7 +350,10 @@ export default function ScheduleBoard() {
           />
         </div>
 
-        <section className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border">
+        <section
+          className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border"
+          aria-label="일정 캘린더"
+        >
           <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
           <div className="md:grid-cols-schedule grid gap-0">
@@ -406,7 +409,12 @@ export default function ScheduleBoard() {
         </section>
 
         {!createOpen && detailOpen ? (
-          <div className="fixed inset-0 z-40 md:hidden">
+          <div
+            className="fixed inset-0 z-40 md:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="일정 상세"
+          >
             <button
               type="button"
               className="absolute inset-0 bg-black/40"

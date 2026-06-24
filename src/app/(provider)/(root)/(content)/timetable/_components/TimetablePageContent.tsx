@@ -159,100 +159,107 @@ export default function TimetablePageContent() {
           backLabel="마이페이지로 돌아가기"
         />
 
-        <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-          <div className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule grid gap-0 overflow-hidden rounded-xl border bg-white lg:min-h-[44rem]">
-            <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
-                  {year}년 {semesterLabel}
-                </div>
+        <section
+          className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule grid gap-0 overflow-hidden rounded-xl border bg-white lg:min-h-[44rem]"
+          aria-label="시간표 관리"
+        >
+          <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
+            <header className="mb-5 flex items-center justify-between gap-4">
+              <h2 className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
+                {year}년 {semesterLabel}
+              </h2>
 
-                <Link
-                  href="/timetable/write"
-                  className="text-primary border-primary/10 bg-primary/5 hover:bg-primary/10 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border shadow-sm transition sm:hidden"
-                >
-                  <Plus className="h-4 w-4" />
-                </Link>
+              <Link
+                href="/timetable/write"
+                className="text-primary border-primary/10 bg-primary/5 hover:bg-primary/10 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border shadow-sm transition sm:hidden"
+                aria-label="강의 추가"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
+              </Link>
 
-                <button
-                  type="button"
-                  onClick={() => setPanel({ type: 'create' })}
-                  className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition sm:inline-flex"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>강의 추가</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setPanel({ type: 'create' })}
+                className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition sm:inline-flex"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                <span>강의 추가</span>
+              </button>
+            </header>
 
-              <div className="w-full lg:min-h-[44rem]">
-                {!isQueryReady || (isLoading && lectures.length === 0) ? (
-                  <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
-                ) : isError ? (
-                  <div className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center whitespace-pre-line">
-                    {displayErrorMessage}
-                  </div>
-                ) : (
-                  <TimetableGrid
-                    lectures={lectures}
-                    preview={preview}
-                    onSelectAction={(lecture) => {
-                      setPreview(null);
-                      setPanel({ id: lecture.id, type: 'detail' });
-                      setMobileDetailId(lecture.id);
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="border-gray2 hidden lg:block lg:border-l">
-              {panel.type === 'create' ? (
-                <TimetableCreatePanel
-                  key="create"
-                  isSaving={create.isPending}
-                  lectures={lectures}
-                  onCloseAction={() => {
-                    setPreview(null);
-                    setPanel({ type: 'idle' });
-                  }}
-                  onPreviewAction={setPreview}
-                  onSaveAction={saveLecture}
-                />
-              ) : panel.type === 'edit' && activeLecture ? (
-                <TimetableCreatePanel
-                  key={`edit-${activeLecture.id}`}
-                  isSaving={update.isPending}
-                  item={activeLecture}
-                  lectures={lectures}
-                  onCloseAction={() => {
-                    setPreview(null);
-                    setPanel({ id: activeLecture.id, type: 'detail' });
-                  }}
-                  onPreviewAction={setPreview}
-                  onSaveAction={saveLecture}
-                />
-              ) : panel.type === 'detail' && activeLecture ? (
-                <TimetableDetailPanel
-                  isDeleting={remove.isPending}
-                  isEditing={isEditingDetail}
-                  lecture={activeLecture}
-                  onCloseAction={() => {
-                    setPreview(null);
-                    setIsEditingDetail(false);
-                    setPanel({ type: 'idle' });
-                  }}
-                  onDeleteAction={() => deleteLecture(activeLecture.id)}
-                  onEditAction={() => openEditPanel(activeLecture.id)}
-                />
+            <div className="w-full lg:min-h-[44rem]">
+              {!isQueryReady || (isLoading && lectures.length === 0) ? (
+                <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
+              ) : isError ? (
+                <p className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center whitespace-pre-line">
+                  {displayErrorMessage}
+                </p>
               ) : (
-                <TimetablePanelEmpty />
+                <TimetableGrid
+                  lectures={lectures}
+                  preview={preview}
+                  onSelectAction={(lecture) => {
+                    setPreview(null);
+                    setPanel({ id: lecture.id, type: 'detail' });
+                    setMobileDetailId(lecture.id);
+                  }}
+                />
               )}
             </div>
           </div>
-        </div>
+
+          <div className="border-gray2 hidden lg:block lg:border-l">
+            {panel.type === 'create' ? (
+              <TimetableCreatePanel
+                key="create"
+                isSaving={create.isPending}
+                lectures={lectures}
+                onCloseAction={() => {
+                  setPreview(null);
+                  setPanel({ type: 'idle' });
+                }}
+                onPreviewAction={setPreview}
+                onSaveAction={saveLecture}
+              />
+            ) : panel.type === 'edit' && activeLecture ? (
+              <TimetableCreatePanel
+                key={`edit-${activeLecture.id}`}
+                isSaving={update.isPending}
+                item={activeLecture}
+                lectures={lectures}
+                onCloseAction={() => {
+                  setPreview(null);
+                  setPanel({ id: activeLecture.id, type: 'detail' });
+                }}
+                onPreviewAction={setPreview}
+                onSaveAction={saveLecture}
+              />
+            ) : panel.type === 'detail' && activeLecture ? (
+              <TimetableDetailPanel
+                isDeleting={remove.isPending}
+                isEditing={isEditingDetail}
+                lecture={activeLecture}
+                onCloseAction={() => {
+                  setPreview(null);
+                  setIsEditingDetail(false);
+                  setPanel({ type: 'idle' });
+                }}
+                onDeleteAction={() => deleteLecture(activeLecture.id)}
+                onEditAction={() => openEditPanel(activeLecture.id)}
+              />
+            ) : (
+              <TimetablePanelEmpty />
+            )}
+          </div>
+        </section>
 
         {mobileLecture ? (
-          <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="fixed inset-0 z-40 lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="강의 정보"
+          >
             <button
               type="button"
               className="absolute inset-0 cursor-pointer bg-black/40"

@@ -9,7 +9,7 @@ type ScheduleTabsProps = {
 export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps) {
   return (
     <div className="border-gray2 border-b">
-      <div className="flex">
+      <div className="flex" role="tablist" aria-label="일정 분류">
         {items.map((item) => {
           const isActive = item.id === tab;
 
@@ -17,6 +17,8 @@ export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps
             <button
               key={item.id}
               type="button"
+              role="tab"
+              aria-selected={isActive}
               onClick={() => onChange(item.id)}
               className={[
                 'text-bodySm flex h-12 flex-1 cursor-pointer items-center justify-center border-b-2 px-0 py-0 font-semibold transition sm:h-14 sm:min-w-28 sm:flex-none',

@@ -4,6 +4,7 @@ import { Check, ChevronDown, MapPin, Trash2 } from 'lucide-react';
 
 import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
+import { FieldLabel, FieldLegend } from '@/components/ui/FieldTitle';
 import { useScheduleForm } from '@/features/schedule/hooks/useScheduleForm';
 import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTimePicker';
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
@@ -25,14 +26,15 @@ type ScheduleCreateFormProps = {
 type ColorItem = {
   id: ScheduleColorToken;
   bg: string;
+  label: string;
 };
 
 const colors: ColorItem[] = [
-  { id: 'red', bg: 'bg-schedule-redLine' },
-  { id: 'yellow', bg: 'bg-schedule-yellowLine' },
-  { id: 'green', bg: 'bg-schedule-greenLine' },
-  { id: 'blue', bg: 'bg-schedule-blueLine' },
-  { id: 'purple', bg: 'bg-schedule-purpleLine' },
+  { id: 'red', bg: 'bg-schedule-redLine', label: '빨간색' },
+  { id: 'yellow', bg: 'bg-schedule-yellowLine', label: '노란색' },
+  { id: 'green', bg: 'bg-schedule-greenLine', label: '초록색' },
+  { id: 'blue', bg: 'bg-schedule-blueLine', label: '파란색' },
+  { id: 'purple', bg: 'bg-schedule-purpleLine', label: '보라색' },
 ];
 
 function fieldClass() {
@@ -56,11 +58,15 @@ function DateTimeField({
   onClickAction,
   disabled = false,
 }: DateTimeFieldProps) {
+  const valueText = `${dateText} ${timeText}`.trim();
+
   return (
     <button
       type="button"
       onClick={onClickAction}
       disabled={disabled}
+      aria-expanded={open}
+      aria-label={`${label} 일시 선택: ${valueText}`}
       className={[
         'border-gray2 flex min-h-11 w-full items-center justify-between rounded-xl border bg-white px-4 text-left',
         disabled ? 'cursor-default opacity-50' : 'cursor-pointer',
@@ -68,23 +74,16 @@ function DateTimeField({
     >
       <div className="flex min-w-0 items-center">
         <span className="text-bodySm font-regular shrink-0 text-black">{label}</span>
-
-        <span className="bg-gray2 mx-3 h-4 w-px shrink-0" />
-
-        <div className="text-bodySm min-w-0 truncate text-black">
-          {dateText} {allDayText(timeText)}
-        </div>
+        <span className="bg-gray2 mx-3 h-4 w-px shrink-0" aria-hidden="true" />
+        <span className="text-bodySm min-w-0 truncate text-black">{valueText}</span>
       </div>
 
       <ChevronDown
         className={['text-gray5 h-4 w-4 shrink-0 transition', open ? 'rotate-180' : ''].join(' ')}
+        aria-hidden="true"
       />
     </button>
   );
-}
-
-function allDayText(timeText: string) {
-  return timeText;
 }
 
 export default function ScheduleCreateForm({
@@ -119,7 +118,13 @@ export default function ScheduleCreateForm({
 
   return (
     <>
-      <div className="flex flex-col bg-white">
+      <form
+        className="flex flex-col bg-white"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void save();
+        }}
+      >
         <div className="border-gray2 flex items-center justify-between px-4 pt-3">
           <h2 className="text-heading font-bold text-black">{formTitle}</h2>
 
@@ -133,7 +138,7 @@ export default function ScheduleCreateForm({
               className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
               aria-label="일정 삭제"
             >
-              <Trash2 className="h-5 w-5" />
+              <Trash2 className="h-5 w-5" aria-hidden="true" />
             </button>
           ) : (
             <div className="h-11 w-11 shrink-0" aria-hidden="true" />
@@ -145,9 +150,7 @@ export default function ScheduleCreateForm({
         <div className={bodyClass}>
           <div className="space-y-5">
             <section className="space-y-0">
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                제목 <span className="text-primary ml-1">*</span>
-              </label>
+              <FieldLabel required>제목</FieldLabel>
 
               <input
                 disabled={isPending}
@@ -155,6 +158,7 @@ export default function ScheduleCreateForm({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="예) 스터디 모임"
                 maxLength={60}
+                aria-label="일정 제목"
                 className={fieldClass()}
               />
 
@@ -163,25 +167,8 @@ export default function ScheduleCreateForm({
               </p>
             </section>
 
-            <section className="space-y-0">
-              <div className="flex min-h-11 items-center justify-between gap-3">
-                <label className="text-bodySm flex items-center font-semibold text-black">
-                  일시 <span className="text-primary ml-1">*</span>
-                </label>
-
-                <label className="flex min-h-11 cursor-pointer items-center gap-2">
-                  <input
-                    disabled={isPending}
-                    type="checkbox"
-                    checked={allDay}
-                    onChange={(e) => setAllDay(e.target.checked)}
-                    className="accent-primary h-4 w-4 cursor-pointer"
-                  />
-
-                  <span className="text-bodySm text-gray6 font-semibold">종일</span>
-                </label>
-              </div>
-
+            <fieldset>
+              <FieldLegend required>일시</FieldLegend>
               <div className="space-y-2">
                 <DateTimeField
                   label="시작"
@@ -202,17 +189,29 @@ export default function ScheduleCreateForm({
                 />
               </div>
 
+              <div className="flex min-h-11 items-center justify-end">
+                <label className="flex min-h-11 cursor-pointer items-center gap-2">
+                  <input
+                    disabled={isPending}
+                    type="checkbox"
+                    checked={allDay}
+                    onChange={(e) => setAllDay(e.target.checked)}
+                    className="accent-primary h-4 w-4 cursor-pointer"
+                  />
+
+                  <span className="text-bodySm text-gray6 font-semibold">종일</span>
+                </label>
+              </div>
+
               {invalidTimeRange ? (
-                <p className="text-caption text-warning-100 mt-2">
+                <p className="text-caption text-warning-100 mt-2" role="alert">
                   종료 일시는 시작 일시보다 늦어야 해요.
                 </p>
               ) : null}
-            </section>
+            </fieldset>
 
             <section className="space-y-0">
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                장소
-              </label>
+              <FieldLabel>장소</FieldLabel>
 
               <div className="relative">
                 <input
@@ -221,10 +220,14 @@ export default function ScheduleCreateForm({
                   onChange={(e) => setPlace(e.target.value)}
                   placeholder="예) 도서관 3층 세미나실"
                   maxLength={20}
+                  aria-label="일정 장소"
                   className={[fieldClass(), 'pr-11'].join(' ')}
                 />
 
-                <MapPin className="text-gray5 absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+                <MapPin
+                  className="text-gray5 absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2"
+                  aria-hidden="true"
+                />
               </div>
 
               <p className="text-caption text-gray5 font-regular mt-2 mr-1 text-right">
@@ -232,10 +235,8 @@ export default function ScheduleCreateForm({
               </p>
             </section>
 
-            <section className="space-y-0">
-              <div className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                일정 색상
-              </div>
+            <fieldset>
+              <FieldLegend>일정 색상</FieldLegend>
 
               <div className="flex flex-wrap items-center gap-3">
                 {colors.map((item) => {
@@ -248,13 +249,15 @@ export default function ScheduleCreateForm({
                       disabled={isPending}
                       onClick={() => setColor(item.id)}
                       className="inline-flex h-11 w-7 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
-                      aria-label={`${item.id} 색상 선택`}
+                      aria-pressed={selected}
+                      aria-label={`${item.label} 일정 색상`}
                     >
                       <span
                         className={[
                           item.bg,
                           'flex h-7 w-7 items-center justify-center rounded-full',
                         ].join(' ')}
+                        aria-hidden="true"
                       >
                         {selected ? <Check className="h-4 w-4 text-white" strokeWidth={3} /> : null}
                       </span>
@@ -262,12 +265,13 @@ export default function ScheduleCreateForm({
                   );
                 })}
               </div>
-            </section>
+            </fieldset>
           </div>
         </div>
 
         <div className="my-3 grid shrink-0 grid-cols-2 gap-3 bg-white p-4">
           <Button
+            type="button"
             onClick={closeCreate}
             disabled={isPending}
             color="text"
@@ -277,7 +281,7 @@ export default function ScheduleCreateForm({
           </Button>
 
           <Button
-            onClick={save}
+            type="submit"
             disabled={showDeleting}
             isLoading={showSaving}
             className="text-bodySm min-h-11 rounded-xl"
@@ -285,7 +289,7 @@ export default function ScheduleCreateForm({
             {schedule ? '수정' : '저장'}
           </Button>
         </div>
-      </div>
+      </form>
 
       <ScheduleDateTimePicker
         key={target ? `${target}-${pickerValue.toISOString()}` : 'datetime'}

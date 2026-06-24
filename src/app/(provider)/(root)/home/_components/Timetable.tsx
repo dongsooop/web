@@ -33,8 +33,8 @@ export default function Timetable({ timetable }: TimetableProps) {
     <Card>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="text-body font-semibold text-black">강의시간표</div>
-          <div className="text-caption text-gray5 mt-1">오늘 수업을 한눈에 확인하세요</div>
+          <h2 className="text-body font-semibold text-black">강의시간표</h2>
+          <p className="text-caption text-gray5 mt-1">오늘 수업을 한눈에 확인하세요</p>
         </div>
 
         {isLoggedIn ? (

@@ -45,7 +45,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseClass =
-    'text-bodySm inline-flex items-center justify-center rounded-xl px-4 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex items-center justify-center rounded-xl px-4 text-[14px]/[20px] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
 
   const widthClass = fullWidth ? 'w-full' : '';
   const colorClass = COLOR_CLASS_MAP[color];
@@ -56,7 +56,7 @@ export default function Button({
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={cn(baseClass, widthClass, colorClass, heightClass, fontWeightClass, className)}
+      className={cn(baseClass, widthClass, className, colorClass, heightClass, fontWeightClass)}
       {...props}
     >
       <span className={cn('flex items-center', isLoading ? 'gap-2' : 'gap-0')}>

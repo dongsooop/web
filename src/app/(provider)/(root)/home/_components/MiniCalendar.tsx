@@ -69,7 +69,7 @@ export default function MiniCalendar() {
   return (
     <Card className="min-h-0 overflow-hidden">
       <div className="flex items-center justify-between">
-        <div className="text-body font-semibold text-black">일정</div>
+        <h2 className="text-body font-semibold text-black">일정</h2>
 
         <div className="flex items-center gap-1">
           <button

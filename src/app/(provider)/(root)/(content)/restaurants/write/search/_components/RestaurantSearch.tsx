@@ -1,16 +1,16 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
+import { MapPin, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import PageHeader from '@/components/ui/PageHeader';
 import { checkDuplication } from '@/features/restaurant/client/restaurant.api';
 import { useRestaurantSearch } from '@/features/restaurant/hooks/useRestaurantSearch';
+import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { useToastStore } from '@/store/useToastStore';
-import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
 
 function buildWriteUrl(restaurant: RestaurantSearchItem) {
   const query = new URLSearchParams({
@@ -50,6 +50,12 @@ export default function RestaurantSearch() {
 
   function submitSearch() {
     setSubmittedKeyword(keyword.trim());
+  }
+
+  function clearKeyword() {
+    setKeyword('');
+    setDebouncedKeyword('');
+    setSubmittedKeyword('');
   }
 
   async function selectRestaurant(restaurant: RestaurantSearchItem) {
@@ -92,57 +98,76 @@ export default function RestaurantSearch() {
           />
 
           <form
+            role="search"
             onSubmit={(e) => {
               e.preventDefault();
               submitSearch();
             }}
           >
-            <label className="border-gray2 flex h-11 w-full items-center rounded-2xl border bg-white px-5">
+            <label className="border-gray2 flex h-11 w-full items-center rounded-2xl border bg-white px-3">
               <input
+                type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 placeholder="가게를 검색해주세요"
+                aria-label="가게 검색"
                 className="text-heading placeholder:text-gray5 w-full bg-transparent text-black outline-none"
                 enterKeyHint="search"
                 autoFocus
               />
+
+              {keyword ? (
+                <button
+                  type="button"
+                  onClick={clearKeyword}
+                  className="text-gray5 flex h-11 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full transition hover:text-black"
+                  aria-label="검색어 지우기"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              ) : null}
             </label>
           </form>
 
           {displayErrorMessage ? (
-            <p className="text-caption text-warning-100 whitespace-pre-line">
+            <p className="text-caption text-warning-100 whitespace-pre-line" role="alert">
               {displayErrorMessage}
             </p>
           ) : null}
 
-          <div className="flex flex-col">
-            {items.map((restaurant) => (
-              <button
-                key={restaurant.externalMapId}
-                type="button"
-                onClick={() => {
-                  void selectRestaurant(restaurant);
-                }}
-                disabled={checkingId === restaurant.externalMapId}
-                className="border-gray2 flex h-20 cursor-pointer items-center gap-4 border-b text-left disabled:cursor-default disabled:opacity-60"
-              >
-                <MapPin className="text-gray5 h-6 w-6 shrink-0" />
+          <section aria-label="맛집 검색 결과">
+            {items.length > 0 ? (
+              <ul>
+                {items.map((restaurant) => (
+                  <li key={restaurant.externalMapId}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void selectRestaurant(restaurant);
+                      }}
+                      disabled={checkingId === restaurant.externalMapId}
+                      className="border-gray2 flex h-20 w-full cursor-pointer items-center gap-4 border-b text-left disabled:cursor-default disabled:opacity-60"
+                    >
+                      <MapPin className="text-gray5 h-6 w-6 shrink-0" aria-hidden="true" />
 
-                <div className="min-w-0">
-                  <h2 className="text-body sm:text-heading font-semibold text-black">
-                    {restaurant.name}
-                  </h2>
-                  <p className="text-bodySm text-gray5 mt-1 truncate">{restaurant.address}</p>
-                </div>
-              </button>
-            ))}
+                      <div className="min-w-0">
+                        <p className="text-body sm:text-heading font-semibold text-black">
+                          {restaurant.name}
+                        </p>
+                        <p className="text-bodySm text-gray5 mt-1 truncate">{restaurant.address}</p>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             {showEmptyState ? (
               <div className="py-10 text-center">
                 <p className="text-bodySm text-gray5">검색 결과가 없어요.</p>
               </div>
             ) : null}
-          </div>
+          </section>
         </div>
       </div>
     </div>

@@ -17,7 +17,10 @@ export default function ScheduleCreatePanel({
   schedule,
 }: ScheduleCreatePanelProps) {
   return (
-    <aside className="border-gray2 hidden border-t bg-white md:flex md:min-h-0 md:flex-1 md:flex-col md:border-t-0">
+    <aside
+      className="border-gray2 hidden border-t bg-white md:flex md:min-h-0 md:flex-1 md:flex-col md:border-t-0"
+      aria-label={schedule ? '일정 편집 패널' : '일정 추가 패널'}
+    >
       <div className="flex flex-col overflow-hidden rounded-2xl border border-white bg-white">
         <ScheduleCreateForm
           isDeleting={isDeleting}

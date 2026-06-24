@@ -96,15 +96,18 @@ export default function TimetableGrid({
     visibleEnd > visibleStart;
 
   return (
-    <div className="border-schedule-gridLine overflow-x-auto rounded-2xl border bg-white">
-      <div className="grid-cols-timetable-xs grid-rows-timetable-shell grid w-full min-w-0 sm:grid-cols-timetable-sm lg:grid-cols-timetable">
+    <section
+      className="border-schedule-gridLine overflow-x-auto rounded-2xl border bg-white"
+      aria-label="시간표"
+    >
+      <div className="grid-cols-timetable-xs grid-rows-timetable-shell sm:grid-cols-timetable-sm lg:grid-cols-timetable grid w-full min-w-0">
         <div className="border-schedule-gridLine border-r border-b bg-white" />
 
         <div className="grid grid-cols-5">
           {timetableDays.map((day, dayIndex) => (
             <div
               key={day}
-              className={`border-schedule-gridLine flex h-9 items-center justify-center border-b text-[10px] font-semibold text-black sm:text-bodySm ${
+              className={`border-schedule-gridLine sm:text-bodySm flex h-9 items-center justify-center border-b text-[10px] font-semibold text-black ${
                 dayIndex < timetableDays.length - 1 ? 'border-r' : ''
               }`}
             >
@@ -117,7 +120,7 @@ export default function TimetableGrid({
           {visibleHours.map((hour, hourIndex) => (
             <div
               key={hour}
-              className={`border-schedule-gridLine text-gray5 flex h-14 items-start justify-center pt-2 text-[9px] font-semibold sm:text-caption ${
+              className={`border-schedule-gridLine text-gray5 sm:text-caption flex h-14 items-start justify-center pt-2 text-[9px] font-semibold ${
                 hourIndex < visibleHours.length - 1 ? 'border-b' : ''
               }`}
             >
@@ -143,7 +146,7 @@ export default function TimetableGrid({
           {showPreview ? (
             <div className="pointer-events-none absolute inset-0 z-20">
               <div
-                className="absolute bg-gray5/24"
+                className="bg-gray5/24 absolute"
                 style={{
                   height: `${previewHeight}px`,
                   left: `${previewDay * 20}%`,
@@ -177,18 +180,18 @@ export default function TimetableGrid({
                     width: '20%',
                   }}
                 >
-                  <div className="truncate text-[9px] font-semibold sm:text-bodySm">
+                  <p className="sm:text-bodySm truncate text-[9px] font-semibold">
                     {lecture.title}
-                  </div>
+                  </p>
                   {showRoom ? (
-                    <div className="mt-0.5 text-[8px] font-semibold sm:mt-1 sm:text-caption">
+                    <p className="sm:text-caption mt-0.5 text-[8px] font-semibold sm:mt-1">
                       {lecture.room}
-                    </div>
+                    </p>
                   ) : null}
                   {showTeacher ? (
-                    <div className="mt-0.5 line-clamp-2 text-[8px] sm:text-caption">
+                    <p className="sm:text-caption mt-0.5 line-clamp-2 text-[8px]">
                       {lecture.teacher}
-                    </div>
+                    </p>
                   ) : null}
                 </article>
               );
@@ -196,6 +199,6 @@ export default function TimetableGrid({
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import { Divider } from '@/components/ui/Divider';
+import { FieldLabel, FieldLegend } from '@/components/ui/FieldTitle';
 import {
   timetableTimeOptions,
   timetableWeekDays,
@@ -70,20 +71,22 @@ function countClass() {
 }
 
 type TimeChipProps = {
+  label: string;
   onClickAction: () => void;
   placeholder: string;
   value: string;
 };
 
-function TimeChip({ onClickAction, placeholder, value }: TimeChipProps) {
+function TimeChip({ label, onClickAction, placeholder, value }: TimeChipProps) {
   return (
     <button
       type="button"
       onClick={onClickAction}
       className="border-gray2 text-bodySm flex min-h-11 min-w-23 cursor-pointer items-center justify-between rounded-xl border bg-white px-3 text-left text-black"
+      aria-label={`${label} 시간 선택`}
     >
       <span className={value ? 'text-black' : 'text-gray5'}>{value || placeholder}</span>
-      <ChevronDown className="text-gray5 h-4 w-4 shrink-0" />
+      <ChevronDown className="text-gray5 h-4 w-4 shrink-0" aria-hidden="true" />
     </button>
   );
 }
@@ -212,7 +215,7 @@ export default function TimetableCreatePanel({
               : 'h-full',
         ].join(' ')}
       >
-        <div className="flex items-center justify-between px-4 pt-3">
+        <header className="flex items-center justify-between px-4 pt-3">
           <h2 className="text-heading font-bold text-black">
             {item ? '강의 정보 수정' : '강의 추가'}
           </h2>
@@ -221,20 +224,24 @@ export default function TimetableCreatePanel({
             type="button"
             onClick={onCloseAction}
             className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full"
-            aria-label="강의 추가 패널 닫기"
+            aria-label="닫기"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
-        </div>
+        </header>
 
         <Divider />
 
-        <div className="flex-1 px-4 pb-4">
+        <form
+          className="flex-1 px-4 pb-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            save();
+          }}
+        >
           <div className="space-y-5">
             <section>
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                강의명 <span className="text-primary ml-1">*</span>
-              </label>
+              <FieldLabel required>강의명</FieldLabel>
               <input
                 value={form.name}
                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -246,9 +253,7 @@ export default function TimetableCreatePanel({
             </section>
 
             <section>
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                강의실
-              </label>
+              <FieldLabel>강의실</FieldLabel>
               <input
                 value={form.location}
                 onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
@@ -260,9 +265,7 @@ export default function TimetableCreatePanel({
             </section>
 
             <section>
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                교수명
-              </label>
+              <FieldLabel>교수명</FieldLabel>
               <input
                 value={form.professor}
                 onChange={(e) => setForm((prev) => ({ ...prev, professor: e.target.value }))}
@@ -273,10 +276,8 @@ export default function TimetableCreatePanel({
               <p className={countClass()}>{form.professor.length}/8</p>
             </section>
 
-            <section>
-              <div className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                요일 <span className="text-primary ml-1">*</span>
-              </div>
+            <fieldset>
+              <FieldLegend required>요일</FieldLegend>
 
               <div className="flex flex-wrap gap-2">
                 {timetableWeekDays.map((day) => {
@@ -287,6 +288,7 @@ export default function TimetableCreatePanel({
                       key={day.key}
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, week: day.key }))}
+                      aria-pressed={selected}
                       className={[
                         'border-gray2 text-bodySm inline-flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-full border px-4 font-semibold transition',
                         selected
@@ -299,38 +301,46 @@ export default function TimetableCreatePanel({
                   );
                 })}
               </div>
-            </section>
+            </fieldset>
 
-            <section className="pb-5">
-              <label className="text-bodySm flex min-h-11 items-center font-semibold text-black">
-                시간 <span className="text-primary ml-1">*</span>
-              </label>
+            <fieldset className="pb-5">
+              <FieldLegend required>시간</FieldLegend>
 
               <div className="flex items-center gap-2">
                 <TimeChip
+                  label="시작"
                   value={form.startAt}
                   placeholder="09:00"
                   onClickAction={() => setTarget('startAt')}
                 />
-                <span className="text-gray5 text-bodySm">~</span>
+                <span className="text-gray5 text-bodySm" aria-hidden="true">
+                  ~
+                </span>
                 <TimeChip
+                  label="종료"
                   value={form.endAt}
                   placeholder="10:00"
                   onClickAction={() => setTarget('endAt')}
                 />
               </div>
-            </section>
+            </fieldset>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button color="outline" onClick={onCloseAction} className="border-gray2 text-gray6">
+              <Button
+                type="button"
+                color="outline"
+                onClick={onCloseAction}
+                className="border-gray2 text-gray6"
+              >
                 취소
               </Button>
-              <Button isLoading={isSaving} onClick={save}>
+
+              <Button type="submit" isLoading={isSaving}>
                 {item ? '수정' : '저장'}
               </Button>
             </div>
           </div>
-        </div>
+        </form>
       </aside>
 
       <TimePicker
