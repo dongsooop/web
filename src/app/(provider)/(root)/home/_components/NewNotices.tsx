@@ -12,9 +12,9 @@ type NewNoticesProps = {
 
 export default function NewNotices({ notices }: NewNoticesProps) {
   return (
-    <Card
-      title="새로운 공지"
-      right={
+    <Card>
+      <div className="flex items-center justify-between gap-4">
+        <div className="text-body font-semibold text-black">새로운 공지</div>
         <Link
           href="/notices"
           className="text-body text-gray5 inline-flex min-h-11 items-center gap-2 px-2 font-semibold hover:text-black"
@@ -22,9 +22,9 @@ export default function NewNotices({ notices }: NewNoticesProps) {
           더보기
           <ChevronRight className="h-4 w-4" />
         </Link>
-      }
-    >
-      <div className="border-gray2 bg-white px-2">
+      </div>
+
+      <div className="border-gray2 mt-4 bg-white px-2">
         {notices.map((it, idx) => (
           <div key={it.link} className={idx === 0 ? '' : 'border-gray2 border-t'}>
             <ListItem

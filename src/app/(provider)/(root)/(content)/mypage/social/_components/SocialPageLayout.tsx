@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import Card from '@/components/ui/Card';
 import PageHeader from '@/components/ui/PageHeader';
 
 type SocialPageLayoutProps = {
@@ -17,7 +18,7 @@ export default function SocialPageLayout({ children }: SocialPageLayoutProps) {
       />
 
       <div className="mx-auto w-full py-3">
-        <div className="w-full rounded-xl bg-white p-4">{children}</div>
+        <Card>{children}</Card>
       </div>
     </div>
   );

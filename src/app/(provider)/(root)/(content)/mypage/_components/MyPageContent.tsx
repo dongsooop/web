@@ -17,7 +17,7 @@ export default function MyPageContent() {
         description="내 정보와 서비스 이용 내역을 한곳에서 관리할 수 있어요."
       />
 
-      <div className="mx-auto w-full py-3">
+      <div className="mx-auto w-full">
         {!isReady ? (
           <MyPageSkeleton />
         ) : isLoggedIn && user ? (

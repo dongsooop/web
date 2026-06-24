@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { CalendarDays, KeyRound, Link2, Table2, UserX } from 'lucide-react';
 import type { User } from '@/features/auth/types/ui-model';
 
+import Card from '@/components/ui/Card';
 import { getDepartmentDisplayName } from '@/constants/department';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -60,7 +61,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   return (
     <>
       <div className="space-y-4">
-        <div className="relative min-h-20 overflow-hidden rounded-xl bg-white p-4">
+        <Card className="relative min-h-20 overflow-hidden">
           <div className="flex h-full items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-full">
               <Image
@@ -79,56 +80,60 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="w-full rounded-xl bg-white p-4">
-          <div className="text-body mb-3 font-bold text-black">학사 관리</div>
+        <Card>
+          <div className="text-body font-bold text-black">학사 관리</div>
 
-          <ManagementLinkCard
-            href="/timetable"
-            icon={Table2}
-            title="시간표 관리"
-            description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
-          />
+          <div className="mt-3">
+            <ManagementLinkCard
+              href="/timetable"
+              icon={Table2}
+              title="시간표 관리"
+              description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
+            />
 
-          <div className="bg-gray2 m-3 h-px" />
+            <div className="bg-gray2 m-3 h-px" />
 
-          <ManagementLinkCard
-            href="/schedule"
-            icon={CalendarDays}
-            title="일정 관리"
-            description="나의 일정을 추가하고 계획을 관리할 수 있어요."
-          />
-        </div>
+            <ManagementLinkCard
+              href="/schedule"
+              icon={CalendarDays}
+              title="일정 관리"
+              description="나의 일정을 추가하고 계획을 관리할 수 있어요."
+            />
+          </div>
+        </Card>
 
-        <div className="w-full rounded-xl bg-white p-4">
-          <div className="text-body mb-3 font-bold text-black">계정 관리</div>
+        <Card>
+          <div className="text-body font-bold text-black">계정 관리</div>
 
-          <ManagementLinkCard
-            href="/mypage/social"
-            icon={Link2}
-            title="소셜 계정 연동"
-            description="원하는 소셜 계정을 연동하거나 해제할 수 있어요."
-          />
+          <div className="mt-3">
+            <ManagementLinkCard
+              href="/mypage/social"
+              icon={Link2}
+              title="소셜 계정 연동"
+              description="원하는 소셜 계정을 연동하거나 해제할 수 있어요."
+            />
 
-          <div className="bg-gray2 m-3 h-px" />
+            <div className="bg-gray2 m-3 h-px" />
 
-          <ManagementLinkCard
-            href="/password-reset?from=mypage"
-            icon={KeyRound}
-            title="비밀번호 변경"
-            description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
-          />
+            <ManagementLinkCard
+              href="/password-reset?from=mypage"
+              icon={KeyRound}
+              title="비밀번호 변경"
+              description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
+            />
 
-          <div className="bg-gray2 m-3 h-px" />
+            <div className="bg-gray2 m-3 h-px" />
 
-          <ManagementLinkCard
-            icon={UserX}
-            title="회원 탈퇴"
-            description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."
-            onClick={handleOpenDialog}
-          />
-        </div>
+            <ManagementLinkCard
+              icon={UserX}
+              title="회원 탈퇴"
+              description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."
+              onClick={handleOpenDialog}
+            />
+          </div>
+        </Card>
       </div>
     </>
   );
