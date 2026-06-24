@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Button from '@/components/ui/Button';
 import type { LoginPlatform } from '@/features/auth/types/ui-model';
 
 type SocialLoginCardProps = {
@@ -34,7 +35,7 @@ export default function SocialLoginCard({
   const text = isConnected ? '연동 해제' : '연동하기';
 
   return (
-    <div className="flex min-h-12 w-full items-center gap-4 py-2 py-4">
+    <div className="flex min-h-12 w-full items-center gap-4 py-4">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center">
         <Image
           src={meta.imageSrc}
@@ -50,16 +51,15 @@ export default function SocialLoginCard({
         <div className="text-small text-gray5 mt-1">{statusText}</div>
       </div>
 
-      <button
-        type="button"
+      <Button
         onClick={onClick}
         disabled={isLoading}
-        className={`text-small min-w-11 rounded-xl px-4 py-2 font-semibold ${
-          isLoading ? 'cursor-wait opacity-70' : 'cursor-pointer'
-        } ${isConnected ? 'border-warning-100 text-warning-100 border' : 'bg-primary text-white'}`}
+        color={isConnected ? 'danger' : 'primary'}
+        fontWeight="regular"
+        className="rounded-3xl"
       >
         {text}
-      </button>
+      </Button>
     </div>
   );
 }

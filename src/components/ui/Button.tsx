@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
 type BtnColor = 'primary' | 'outline' | 'text' | 'gray' | 'danger';
 type BtnHeight = 'default' | 'large';
@@ -18,7 +19,7 @@ const COLOR_CLASS_MAP: Record<BtnColor, string> = {
   outline: 'border border-gray2 bg-white text-gray6',
   text: 'bg-transparent text-gray4',
   gray: 'bg-gray1 text-gray4',
-  danger: 'bg-warning text-white',
+  danger: 'border border-warning-100 bg-white text-warning-100',
 };
 
 const HEIGHT_CLASS_MAP: Record<BtnHeight, string> = {
@@ -55,10 +56,10 @@ export default function Button({
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={`${baseClass} ${widthClass} ${colorClass} ${heightClass} ${fontWeightClass} ${className}`}
+      className={cn(baseClass, widthClass, colorClass, heightClass, fontWeightClass, className)}
       {...props}
     >
-      <span className={`flex items-center ${isLoading ? 'gap-2' : 'gap-0'}`.trim()}>
+      <span className={cn('flex items-center', isLoading ? 'gap-2' : 'gap-0')}>
         {isLoading && (
           <span
             className="h-4 w-4 animate-spin rounded-lg border-2 border-current border-t-transparent"
