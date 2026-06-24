@@ -124,16 +124,18 @@ function buildRestaurantSearchUrl(queryText: string) {
 }
 
 function buildRestaurantDuplicationUrl(externalMapId: string) {
+  const endpoint = getRequiredRestaurantDuplicationEndpoint();
   const query = new URLSearchParams({
     externalMapId,
   });
-  const url = new URL(getRequiredRestaurantDuplicationEndpoint(), 'http://localhost');
+  const isAbsolute = endpoint.startsWith('http://') || endpoint.startsWith('https://');
+  const url = new URL(endpoint, 'http://localhost');
 
   query.forEach((value, key) => {
     url.searchParams.set(key, value);
   });
 
-  return `${url.pathname}${url.search}`;
+  return isAbsolute ? url.toString() : `${url.pathname}${url.search}`;
 }
 
 export function fetchGuestRestaurantListWithSpring(
