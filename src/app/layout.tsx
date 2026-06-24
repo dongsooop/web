@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -28,6 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body className={`${pretendard.variable} font-pretendard flex min-h-dvh flex-col`}>
+        <Script
+          id="adsense-script"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9706697545903881"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <QueryProvider>
           <FirebaseProvider>
             <AuthInitializer />
