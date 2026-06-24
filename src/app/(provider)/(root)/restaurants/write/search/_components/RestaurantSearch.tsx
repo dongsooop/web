@@ -103,6 +103,7 @@ export default function RestaurantSearch() {
             }}
           >
             <label className="border-gray2 flex h-11 w-full items-center rounded-2xl border bg-white px-5">
+              <span className="sr-only">가게 검색</span>
               <input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
