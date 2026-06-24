@@ -5,10 +5,10 @@ import { ChevronDown, Plus } from 'lucide-react';
 
 import { Divider } from '@/components/ui/Divider';
 import PageHeader from '@/components/ui/PageHeader';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { useRestaurantList } from '@/features/restaurant/hooks/useRestaurantList';
 
 import { RestaurantCard } from './RestaurantCard';
+import { RestaurantCardSkeleton } from './RestaurantCardSkeleton';
 import { RestaurantHeader } from './RestaurantHeader';
 
 export default function RestaurantsList() {
@@ -38,28 +38,39 @@ export default function RestaurantsList() {
 
       <RestaurantHeader selectedCategory={selectedCategory} onCategoryAction={selectCategory} />
 
-      <section className="border-gray2 flex min-h-40 flex-col rounded-xl border bg-white px-4 py-2">
+      <section
+        className="border-gray2 flex min-h-40 flex-col rounded-xl border bg-white px-4"
+        aria-label="맛집 목록"
+      >
         <div className="flex flex-1 flex-col">
           {isInitialLoading ? (
-            <Skeleton className="h-[44rem] rounded-xl sm:h-[46rem]" />
+            <ul aria-hidden="true">
+              {Array.from({ length: 7 }, (_, index) => (
+                <li key={index}>
+                  <RestaurantCardSkeleton />
+                </li>
+              ))}
+            </ul>
           ) : visibleItems.length > 0 ? (
-            visibleItems.map((restaurant, index) => (
-              <div key={restaurant.id}>
-                <RestaurantCard
-                  restaurant={restaurant}
-                  isLiking={isLiking && likingId === restaurant.id}
-                  onLikeAction={likeRestaurant}
-                />
-                {index < visibleItems.length - 1 ? <Divider spacing={false} /> : null}
-              </div>
-            ))
+            <ul>
+              {visibleItems.map((restaurant, index) => (
+                <li key={restaurant.id}>
+                  <RestaurantCard
+                    restaurant={restaurant}
+                    isLiking={isLiking && likingId === restaurant.id}
+                    onLikeAction={likeRestaurant}
+                  />
+                  {index < visibleItems.length - 1 ? <Divider spacing={false} /> : null}
+                </li>
+              ))}
+            </ul>
           ) : (
             <div className="flex flex-1 items-center justify-center px-4 text-center">
-              <span className="text-bodySm text-gray5 inline-flex items-center leading-none">
+              <p className="text-bodySm text-gray5 inline-flex items-center leading-none">
                 {isError && displayErrorMessage
                   ? displayErrorMessage
                   : '조건에 맞는 맛집이 없어요.'}
-              </span>
+              </p>
             </div>
           )}
         </div>
@@ -79,7 +90,7 @@ export default function RestaurantsList() {
                 />
               ) : null}
               더 많은 맛집 보기
-              {!isFetchingNextPage ? <ChevronDown className="h-4 w-4" /> : null}
+              {!isFetchingNextPage ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
             </button>
           ) : null}
         </div>
@@ -90,7 +101,7 @@ export default function RestaurantsList() {
         className="bg-primary fixed right-5 bottom-6 z-30 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full text-white lg:hidden"
         aria-label="맛집 추가하기"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-6 w-6" aria-hidden="true" />
       </Link>
     </div>
   );
