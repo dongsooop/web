@@ -31,9 +31,8 @@ export default function RestaurantsList() {
     <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <PageHeader
         title="학교 근처 맛집 추천"
+        showBackButton
         description="동미대 학생들이 추천하는 맛집을 한 화면에서 살펴보세요"
-        backHref="/"
-        backLabel="홈으로 돌아가기"
       />
 
       <RestaurantHeader selectedCategory={selectedCategory} onCategoryAction={selectCategory} />

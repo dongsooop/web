@@ -92,9 +92,8 @@ export default function RestaurantSearch() {
         <div className="mx-auto flex w-full flex-col gap-4 pb-5 sm:px-6 lg:px-8">
           <PageHeader
             title="학교 근처 맛집 검색"
+            showBackButton
             description="추천할 가게를 검색해주세요"
-            backHref="/restaurants/write"
-            backLabel="맛집 추천 화면으로 돌아가기"
           />
 
           <form

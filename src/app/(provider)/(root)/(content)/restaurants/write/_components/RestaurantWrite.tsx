@@ -29,9 +29,8 @@ export default function RestaurantWrite({ selectedPlace }: RestaurantWriteProps)
       <div className="max-w-content mx-auto flex w-full flex-col gap-4">
         <PageHeader
           title="학교 근처 맛집 추천"
+          showBackButton
           description="동미대 학생들에게 추천할 맛집 정보를 입력해주세요"
-          backHref="/restaurants"
-          backLabel="맛집 목록으로 돌아가기"
         />
         <RestaurantWriteForm
           selectedPlace={selectedPlace}

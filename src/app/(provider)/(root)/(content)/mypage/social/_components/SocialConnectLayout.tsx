@@ -12,9 +12,8 @@ export default function SocialConnectLayout({ children }: SocialConnectLayoutPro
     <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <PageHeader
         title="소셜 계정 연동"
+        showBackButton
         description="연결된 계정을 확인하고 로그인 연동 상태를 관리할 수 있어요."
-        backHref="/mypage"
-        backLabel="마이페이지로 돌아가기"
       />
 
       <div className="mx-auto w-full py-3">

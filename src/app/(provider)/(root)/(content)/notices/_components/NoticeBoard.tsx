@@ -92,9 +92,8 @@ export default function NoticeBoard() {
     <div className="max-w-content mx-auto flex w-full flex-col gap-4">
       <PageHeader
         title="공지"
+        showBackButton
         description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
-        backHref="/"
-        backLabel="홈으로 돌아가기"
       />
 
       <section className="border-gray2 rounded-xl border bg-white" aria-label="공지 목록">

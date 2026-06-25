@@ -7,34 +7,25 @@ type PageHeaderProps = {
   title: string;
   description?: string;
   isPreparing?: boolean;
-  backHref?: string;
-  backLabel?: string;
+  showBackButton?: boolean;
 };
 
 export default function PageHeader({
   title,
   description,
   isPreparing = false,
-  backHref,
-  backLabel = '이전 화면으로 돌아가기',
+  showBackButton = false,
 }: PageHeaderProps) {
   const router = useRouter();
 
   return (
     <section className="flex w-full flex-col gap-1">
       <div className="flex items-center gap-2">
-        {backHref ? (
+        {showBackButton ? (
           <button
             type="button"
-            aria-label={backLabel}
-            onClick={() => {
-              if (window.history.length > 1) {
-                router.back();
-                return;
-              }
-
-              router.push(backHref);
-            }}
+            aria-label="이전 화면으로 돌아가기"
+            onClick={() => router.back()}
             className="hover:bg-gray1 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition"
           >
             <ArrowLeft className="h-5 w-5 text-black" />
@@ -52,7 +43,7 @@ export default function PageHeader({
       </div>
 
       {description ? (
-        <p className={`text-bodySm text-gray6 sm:text-body ${backHref ? 'px-2' : ''}`.trim()}>
+        <p className={`text-bodySm text-gray6 sm:text-body ${showBackButton ? 'px-2' : ''}`.trim()}>
           {description}
         </p>
       ) : null}

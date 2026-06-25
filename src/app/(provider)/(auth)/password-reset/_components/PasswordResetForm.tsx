@@ -115,22 +115,17 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const errorMessage = status.error
     ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
     : '';
-  const isFromMyPage = from === 'mypage';
-  const backHref = isFromMyPage ? '/mypage' : '/sign-in';
-  const backLabel = isFromMyPage ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
-
   return (
     <div className="flex w-full flex-col gap-6">
       <section className="flex flex-col gap-4">
         <PageHeader
           title="비밀번호 재설정"
+          showBackButton
           description={
             step === 'email'
               ? '학교 이메일과 인증 코드를 입력해 주세요.'
               : '새로운 비밀번호를 입력해 주세요.'
           }
-          backHref={backHref}
-          backLabel={backLabel}
         />
 
         {step === 'email' ? (

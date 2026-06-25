@@ -322,9 +322,8 @@ export default function ScheduleBoard() {
         <div className="px-1">
           <PageHeader
             title="일정"
+            showBackButton
             description={descriptionText()}
-            backHref="/mypage"
-            backLabel="마이페이지로 돌아가기"
           />
         </div>
 
@@ -344,9 +343,8 @@ export default function ScheduleBoard() {
         <div className="px-1">
           <PageHeader
             title="일정"
+            showBackButton
             description={descriptionText()}
-            backHref="/mypage"
-            backLabel="마이페이지로 돌아가기"
           />
         </div>
 

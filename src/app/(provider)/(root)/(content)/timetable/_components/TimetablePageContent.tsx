@@ -154,9 +154,8 @@ export default function TimetablePageContent() {
       <div className="max-w-content mx-auto flex w-full flex-col gap-4">
         <PageHeader
           title="시간표 관리"
+          showBackButton
           description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
-          backHref="/mypage"
-          backLabel="마이페이지로 돌아가기"
         />
 
         <section
