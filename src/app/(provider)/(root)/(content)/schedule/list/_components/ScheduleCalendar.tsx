@@ -327,8 +327,7 @@ export default function ScheduleCalendar({
                   index >= 35 ? 'sm:border-b-0' : '',
                   isSelected ? 'bg-primary/5' : '',
                 ].join(' ')}
-                aria-label={`${dateLabel}, ${getScheduleCountText(scheduleCount)}`}
-                aria-pressed={isSelected}
+                aria-label={`${isSelected ? '선택됨, ' : ''}${dateLabel}, ${getScheduleCountText(scheduleCount)}`}
                 aria-current={isToday ? 'date' : undefined}
               >
                 <div className={dayBox}>
