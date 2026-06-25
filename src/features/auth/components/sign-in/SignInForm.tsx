@@ -7,8 +7,8 @@ import Script from 'next/script';
 
 import Button from '@/components/ui/Button';
 import SocialLoginButtons from './SocialButtons';
-import SchoolEmailInput from '../../_components/SchoolEmailInput';
-import AuthInput from '../../_components/AuthInput';
+import SchoolEmailInput from '@/features/auth/components/common/SchoolEmailInput';
+import AuthInput from '@/features/auth/components/common/AuthInput';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';

@@ -16,7 +16,7 @@ export default function AuthInput({
   disabled,
 }: InputProps) {
   const borderClass = hasError
-    ? 'border-red-500 focus:border-red-500'
+    ? 'border-warning-100 focus:border-warning-100'
     : 'border-gray2 focus:border-primary';
 
   return (
