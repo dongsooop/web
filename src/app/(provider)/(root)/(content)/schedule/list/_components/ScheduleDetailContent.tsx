@@ -90,55 +90,60 @@ export default function ScheduleDetailContent({
             <ul className="flex flex-col gap-3">
               {selectedList.map((schedule, index) => {
                 const canSelect = tab === 'MEMBER' && schedule.id !== null;
+                const cardClassName = [
+                  'border-gray2 shadow-schedule-card min-h-11 rounded-2xl border bg-white',
+                  canSelect ? 'cursor-pointer' : '',
+                ].join(' ');
+                const content = (
+                  <>
+                    <span
+                      className={[
+                        'mt-0.5 w-1 shrink-0 rounded-full',
+                        scheduleLineColor(schedule),
+                      ].join(' ')}
+                      aria-hidden="true"
+                    />
+
+                    <span className="min-w-0 flex-1">
+                      <span className="text-caption text-gray6 font-regular flex items-center justify-between gap-3">
+                        <span className="truncate">{dateText(schedule)}</span>
+
+                        {timeText(schedule, tab) ? (
+                          <span className="shrink-0">{timeText(schedule, tab)}</span>
+                        ) : null}
+                      </span>
+
+                      <span className="sm:text-body text-bodySm mt-1 block font-semibold text-black">
+                        {schedule.title}
+                      </span>
+
+                      {schedule.location ? (
+                        <span className="text-caption text-gray5 mt-2 flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                          <span className="truncate">{schedule.location}</span>
+                        </span>
+                      ) : null}
+                    </span>
+                  </>
+                );
 
                 return (
                   <li key={`${schedule.title}-${schedule.startAt}-${index}`}>
-                    <article
-                      className={[
-                        'border-gray2 shadow-schedule-card min-h-11 rounded-2xl border bg-white',
-                        canSelect ? 'cursor-pointer' : '',
-                      ].join(' ')}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (canSelect) {
-                            onSelectScheduleAction?.(schedule);
-                          }
-                        }}
-                        disabled={!canSelect}
-                        className="flex min-h-11 w-full gap-3.5 p-3 text-left disabled:cursor-default"
-                      >
-                        <span
-                          className={[
-                            'mt-0.5 w-1 shrink-0 rounded-full',
-                            scheduleLineColor(schedule),
-                          ].join(' ')}
-                          aria-hidden="true"
-                        />
-
-                        <span className="min-w-0 flex-1">
-                          <span className="text-caption text-gray6 font-regular flex items-center justify-between gap-3">
-                            <span className="truncate">{dateText(schedule)}</span>
-
-                            {timeText(schedule, tab) ? (
-                              <span className="shrink-0">{timeText(schedule, tab)}</span>
-                            ) : null}
-                          </span>
-
-                          <span className="sm:text-body text-bodySm mt-1 block font-semibold text-black">
-                            {schedule.title}
-                          </span>
-
-                          {schedule.location ? (
-                            <span className="text-caption text-gray5 mt-2 flex items-center gap-1.5">
-                              <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                              <span className="truncate">{schedule.location}</span>
-                            </span>
-                          ) : null}
-                        </span>
-                      </button>
-                    </article>
+                    {canSelect ? (
+                      <article className={cardClassName}>
+                        <button
+                          type="button"
+                          onClick={() => onSelectScheduleAction?.(schedule)}
+                          className="flex min-h-11 w-full gap-3.5 p-3 text-left"
+                        >
+                          {content}
+                        </button>
+                      </article>
+                    ) : (
+                      <article className={cardClassName}>
+                        <div className="flex min-h-11 w-full gap-3.5 p-3 text-left">{content}</div>
+                      </article>
+                    )}
                   </li>
                 );
               })}
