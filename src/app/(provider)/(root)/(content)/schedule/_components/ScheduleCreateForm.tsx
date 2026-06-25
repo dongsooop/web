@@ -274,8 +274,8 @@ export default function ScheduleCreateForm({
             type="button"
             onClick={closeCreate}
             disabled={isPending}
-            color="text"
-            className="border-gray2 text-bodySm text-gray6 min-h-11 rounded-xl border bg-white"
+            color="outline"
+            className="text-bodySm min-h-11 rounded-xl"
           >
             취소
           </Button>

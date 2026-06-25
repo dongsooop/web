@@ -97,8 +97,8 @@ export default function TimePicker({
           <div className="grid grid-cols-2 gap-3 py-2">
             <Button
               onClick={onCloseAction}
-              color="text"
-              className="text-bodySm border-gray2 text-gray6 min-h-11 border bg-white"
+              color="outline"
+              className="text-bodySm min-h-11"
             >
               취소
             </Button>
