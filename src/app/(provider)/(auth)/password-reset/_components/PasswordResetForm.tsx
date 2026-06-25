@@ -70,8 +70,15 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
     const isSuccess = await handleReset();
 
     if (isSuccess) {
-      alert('비밀번호가 성공적으로 변경되었습니다.');
-      router.push('/sign-in');
+      showDialog({
+        title: '비밀번호 변경',
+        content: '비밀번호가 성공적으로 변경되었어요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {
+          router.push('/sign-in');
+        },
+      });
     }
   };
 
