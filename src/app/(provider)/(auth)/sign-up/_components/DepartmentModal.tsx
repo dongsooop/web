@@ -18,6 +18,8 @@ export default function DeptSelectModal({
   onSelect,
   selectedCode,
 }: DeptSelectModalProps) {
+  const titleId = 'department-modal-title';
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -38,17 +40,23 @@ export default function DeptSelectModal({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className="max-w-sheet flex max-h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white sm:mx-8 sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-gray1 sticky top-0 flex items-center justify-between rounded-t-2xl border-b bg-white p-5 sm:rounded-t-2xl">
-          <h2 className="text-heading font-bold text-black">학과 선택</h2>
+          <h2 id={titleId} className="text-heading font-bold text-black">
+            학과 선택
+          </h2>
           <button
             onClick={onClose}
             type="button"
+            aria-label="학과 선택 닫기"
             className="text-gray4 min-h-11 cursor-pointer p-1 transition-colors"
           >
-            <X size={24} strokeWidth={2} />
+            <X size={24} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
 
