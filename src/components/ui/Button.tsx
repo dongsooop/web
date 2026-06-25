@@ -60,13 +60,13 @@ export default function Button({
       {...props}
     >
       <span className={cn('flex items-center', isLoading ? 'gap-2' : 'gap-0')}>
+        {children}
         {isLoading && (
           <span
             className="h-4 w-4 animate-spin rounded-lg border-2 border-current border-t-transparent"
             aria-hidden="true"
           />
         )}
-        {children}
       </span>
     </button>
   );

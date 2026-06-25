@@ -125,7 +125,10 @@ const config: Config = {
 
       maxWidth: {
         calendar: '90rem',
-        content: '65rem',
+        content: '55rem',
+        sheet: '40rem',
+        form: '30rem',
+        dialog: '24rem',
       },
 
       maxHeight: {

@@ -25,8 +25,8 @@ export default function ManagementLinkCard({
         </div>
 
         <div className="min-w-0">
-          <h3 className="text-body font-semibold text-black">{title}</h3>
-          <p className="text-caption text-gray5 mt-1 hidden break-keep sm:block">{description}</p>
+          <h3 className="text-bodySm sm:text-body font-semibold text-black">{title}</h3>
+          <p className="text-caption text-gray5 hidden break-keep sm:block">{description}</p>
         </div>
       </div>
 

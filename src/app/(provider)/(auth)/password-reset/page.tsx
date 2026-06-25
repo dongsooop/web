@@ -8,7 +8,7 @@ export default async function PasswordResetPage({ searchParams }: PasswordResetP
   const params = await searchParams;
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center bg-white px-5 pt-20">
+    <main className="max-w-form mx-auto flex min-h-screen w-full flex-col items-center bg-white p-4 pt-30 sm:px-6 md:max-w-md">
       <PasswordResetForm from={params?.from} />
     </main>
   );

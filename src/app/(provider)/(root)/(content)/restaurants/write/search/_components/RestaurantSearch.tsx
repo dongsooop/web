@@ -88,7 +88,7 @@ export default function RestaurantSearch() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col py-4">
-      <div className="mx-auto w-full">
+      <div className="max-w-content mx-auto w-full">
         <div className="mx-auto flex w-full flex-col gap-4 pb-5 sm:px-6 lg:px-8">
           <PageHeader
             title="학교 근처 맛집 검색"

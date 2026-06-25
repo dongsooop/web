@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import { DEPARTMENTS } from '@/constants/department';
 import { Check, X } from 'lucide-react';
+import { lockBody, unlockBody } from '@/lib/body-lock';
 
 interface DeptSelectModalProps {
   isOpen: boolean;
@@ -16,15 +18,27 @@ export default function DeptSelectModal({
   onSelect,
   selectedCode,
 }: DeptSelectModalProps) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    lockBody();
+
+    return () => {
+      unlockBody();
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[85vh] w-full max-w-[480px] flex-col overflow-hidden rounded-t-2xl bg-white sm:rounded-2xl"
+        className="max-w-sheet flex max-h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white sm:mx-8 sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-gray1 sticky top-0 flex items-center justify-between rounded-t-2xl border-b bg-white p-5 sm:rounded-t-2xl">

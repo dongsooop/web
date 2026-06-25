@@ -79,7 +79,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-heading font-bold text-black">{user.nickname}</p>
+            <p className="text-body sm:text-heading font-bold text-black">{user.nickname}</p>
             <p className="bg-primary-5 text-caption text-primary mt-2 inline-flex max-w-full items-center rounded-full px-3 py-1 font-bold">
               <span className="truncate">{departmentLabel}</span>
             </p>

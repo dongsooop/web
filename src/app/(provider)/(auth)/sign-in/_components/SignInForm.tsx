@@ -161,73 +161,75 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   };
 
   return (
-    <section className="flex w-full max-w-[480px] flex-col items-center gap-4 pt-4">
-      <Script
-        src={kakaoSdkUrl}
-        strategy="afterInteractive"
-        onLoad={() => {
-          kakao.init();
-          setIsKakaoReady(true);
-        }}
-        onError={() => {
-          setIsKakaoReady(false);
-        }}
-      />
-
-      <div className="h-4" />
-
-      <div className="flex items-center">
-        <Image
-          src="/img/logo.svg"
-          alt="동숲 로고"
-          width={128}
-          height={128}
-          className="h-32 w-32"
-          priority
+    <div className="max-w-form mx-auto flex min-h-screen w-full flex-col items-center justify-center bg-white px-4">
+      <section className="flex w-full flex-col items-center gap-4 pt-4">
+        <Script
+          src={kakaoSdkUrl}
+          strategy="afterInteractive"
+          onLoad={() => {
+            kakao.init();
+            setIsKakaoReady(true);
+          }}
+          onError={() => {
+            setIsKakaoReady(false);
+          }}
         />
-      </div>
 
-      <div className="h-2" />
+        <div className="h-4" />
 
-      <div className="w-full">
-        <SchoolEmailInput
-          value={email}
-          onChange={setEmail}
-          placeholder="학교 Gmail을 입력해 주세요"
-        />
-      </div>
+        <div className="flex items-center">
+          <Image
+            src="/img/logo.svg"
+            alt="동숲 로고"
+            width={128}
+            height={128}
+            className="h-32 w-32"
+            priority
+          />
+        </div>
 
-      <div className="w-full">
-        <AuthInput
-          type="password"
-          value={password}
-          onChange={setPassword}
-          placeholder="비밀번호를 입력해 주세요"
-        />
-      </div>
+        <div className="h-2" />
 
-      {errorMessage && (
-        <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
-          {errorMessage}
-        </p>
-      )}
+        <div className="w-full">
+          <SchoolEmailInput
+            value={email}
+            onChange={setEmail}
+            placeholder="학교 Gmail을 입력해 주세요"
+          />
+        </div>
 
-      <Button fullWidth color="primary" onClick={handleLogin} isLoading={isSigningIn}>
-        로그인
-      </Button>
+        <div className="w-full">
+          <AuthInput
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="비밀번호를 입력해 주세요"
+          />
+        </div>
 
-      <Button fullWidth color="outline" onClick={handleSignUp}>
-        회원가입
-      </Button>
+        {errorMessage && (
+          <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
+            {errorMessage}
+          </p>
+        )}
 
-      <button
-        type="button"
-        onClick={handlePasswordReset}
-        className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
-      >
-        비밀번호 변경
-      </button>
-      <SocialLoginButtons onLogin={socialLogin} />
-    </section>
+        <Button fullWidth color="primary" onClick={handleLogin} isLoading={isSigningIn}>
+          로그인
+        </Button>
+
+        <Button fullWidth color="outline" onClick={handleSignUp}>
+          회원가입
+        </Button>
+
+        <button
+          type="button"
+          onClick={handlePasswordReset}
+          className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
+        >
+          비밀번호 변경
+        </button>
+        <SocialLoginButtons onLogin={socialLogin} />
+      </section>
+    </div>
   );
 }

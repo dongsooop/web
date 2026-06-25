@@ -21,7 +21,9 @@ const AgreementItem = ({ label, link, checked, onChange }: AgreementItemProps) =
             className="accent-primary h-4 w-4 cursor-pointer"
           />
         </div>
-        <span className="text-body font-regular leading-none text-black">{label}</span>
+        <span className="text-bodySm sm:text-body font-regular leading-none text-black">
+          {label}
+        </span>
       </label>
       <Link
         href={link}

@@ -24,7 +24,7 @@ export function FieldLabel({ children, required = false }: FieldTitleProps) {
 
 export function FieldLegend({ children, required = false }: FieldTitleProps) {
   return (
-    <legend className="text-bodySm flex min-h-11 w-full items-center font-semibold text-black">
+    <legend className="text-bodySm flex items-center font-semibold text-black">
       {children}
       {required ? <RequiredMark /> : null}
     </legend>

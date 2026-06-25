@@ -83,13 +83,13 @@ export default function ConfirmDialog({
   const Icon = iconConfig.icon;
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onClick={handleBackdropClick}
       aria-modal="true"
       role="dialog"
     >
       <div
-        className="animate-in fade-in zoom-in-95 relative w-full max-w-xs overflow-hidden rounded-xl bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
+        className="animate-in fade-in zoom-in-95 relative mx-4 w-full max-w-sm overflow-hidden rounded-xl bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center">

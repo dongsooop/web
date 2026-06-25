@@ -13,6 +13,7 @@ import { DEPARTMENTS } from '@/constants/department';
 import { useSignUp } from '@/features/auth/hooks/useSignUp';
 import { ChevronDown } from 'lucide-react';
 import { analyzeNickname, analyzePassword } from '@/features/auth/validators/authValidators';
+import { FieldLegend } from '@/components/ui/FieldTitle';
 
 const CREATE_EMAIL_URL = 'https://www.dongyang.ac.kr/dmu/4888/subview.do';
 
@@ -63,18 +64,26 @@ export default function SignUpForm() {
   const getNicknameGuide = () => {
     if (nicknameError) return status.error ?? undefined;
     if (status.isNicknameChecked) return '사용 가능한 닉네임이에요';
+
     if (inputs.nickname.length > 0) {
       const { isValid, message } = analyzeNickname(inputs.nickname);
       if (!isValid) return message;
       return '중복 확인이 필요해요';
     }
+
     return '2~8자 (특수문자 제외)';
   };
 
   return (
-    <>
-      <section className="flex w-full max-w-[480px] flex-col gap-10 bg-white py-6">
-        <div className="flex flex-col gap-3 px-4">
+    <div className="flex w-full justify-center bg-white px-4 py-6">
+      <form
+        className="flex w-full max-w-[480px] flex-col gap-10 bg-white py-6"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleSignUp();
+        }}
+      >
+        <header className="flex flex-col gap-3 px-4">
           <h1 className="text-title font-bold text-black">동숲 회원가입</h1>
           <p className="text-caption font-regular text-gray4">
             동양미래대학교 Gmail(@dongyang.ac.kr)로만 가입 가능합니다.
@@ -82,22 +91,26 @@ export default function SignUpForm() {
           <Link
             href={CREATE_EMAIL_URL}
             target="_blank"
+            rel="noopener noreferrer"
             className="text-caption font-bold text-black underline underline-offset-2"
           >
             학교 이메일 발급하러 가기
           </Link>
-        </div>
+        </header>
 
-        <div className="flex flex-col gap-4 px-4">
-          <SectionLabel
-            title="이메일"
-            description={
-              emailError || authCodeError
+        <fieldset className="flex flex-col gap-4 px-4">
+          <div className="flex items-end">
+            <FieldLegend required>이메일</FieldLegend>
+            <p
+              className={`text-caption transition-colors ${
+                emailError || authCodeError ? 'text-warning' : 'text-gray4'
+              }`}
+            >
+              {emailError || authCodeError
                 ? (status.error ?? undefined)
-                : '동양미래대학교 Gmail을 입력해주세요.'
-            }
-            descriptionColor={emailError || authCodeError ? 'text-warning' : 'text-gray4'}
-          />
+                : '동양미래대학교 Gmail을 입력해주세요.'}
+            </p>
+          </div>
 
           <div className="flex gap-2">
             <div className="min-w-0 flex-1">
@@ -110,6 +123,7 @@ export default function SignUpForm() {
               />
             </div>
             <Button
+              type="button"
               color={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
               className="h-11 shrink-0 px-4"
               onClick={handleCheckEmail}
@@ -132,6 +146,7 @@ export default function SignUpForm() {
               </div>
 
               <Button
+                type="button"
                 color={
                   !status.isCodeVerified &&
                   status.isEmailChecked &&
@@ -160,6 +175,7 @@ export default function SignUpForm() {
               </Button>
 
               <Button
+                type="button"
                 color={
                   status.isCodeSent && status.emailCode.length > 0 && !status.isCodeVerified
                     ? 'primary'
@@ -178,26 +194,30 @@ export default function SignUpForm() {
               </Button>
             </div>
 
-            {status.isCodeVerified && (
+            {status.isCodeVerified ? (
               <p className="text-caption text-primary font-regular px-1">
                 이메일 인증이 완료되었습니다.
               </p>
-            )}
+            ) : null}
           </div>
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col gap-4 px-4">
-          <SectionLabel
-            title="비밀번호"
-            description={getPasswordGuide()}
-            descriptionColor={
-              passwordError || passCheckError
-                ? 'text-warning'
-                : isPassMatched
-                  ? 'text-primary'
-                  : 'text-gray4'
-            }
-          />
+        <fieldset className="flex flex-col gap-4 px-4">
+          <div className="flex items-end">
+            <FieldLegend required>비밀번호</FieldLegend>
+            <p
+              className={`text-caption transition-colors ${
+                passwordError || passCheckError
+                  ? 'text-warning'
+                  : isPassMatched
+                    ? 'text-primary'
+                    : 'text-gray4'
+              }`}
+            >
+              {getPasswordGuide()}
+            </p>
+          </div>
+
           <AuthInput
             type="password"
             value={inputs.password}
@@ -212,20 +232,24 @@ export default function SignUpForm() {
             placeholder="비밀번호 확인"
             hasError={passCheckError}
           />
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col gap-4 px-4">
-          <SectionLabel
-            title="닉네임"
-            description={getNicknameGuide()}
-            descriptionColor={
-              nicknameError
-                ? 'text-warning'
-                : status.isNicknameChecked
-                  ? 'text-primary'
-                  : 'text-gray4'
-            }
-          />
+        <fieldset className="flex flex-col gap-4 px-4">
+          <div className="flex items-end">
+            <FieldLegend required>닉네임</FieldLegend>
+            <p
+              className={`text-caption transition-colors ${
+                nicknameError
+                  ? 'text-warning'
+                  : status.isNicknameChecked
+                    ? 'text-primary'
+                    : 'text-gray4'
+              }`}
+            >
+              {getNicknameGuide()}
+            </p>
+          </div>
+
           <div className="flex gap-2">
             <div className="flex-1">
               <AuthInput
@@ -236,6 +260,7 @@ export default function SignUpForm() {
               />
             </div>
             <Button
+              type="button"
               color={isNicknameValid && !status.isNicknameChecked ? 'primary' : 'gray'}
               className="h-11 shrink-0 px-4"
               onClick={handleCheckNickname}
@@ -244,24 +269,27 @@ export default function SignUpForm() {
               {status.isNicknameChecked ? '확인 완료' : '중복 검사'}
             </Button>
           </div>
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col gap-4 px-4">
-          <SectionLabel title="학과" />
+        <fieldset className="flex flex-col gap-4 px-4">
+          <div className="flex items-end">
+            <FieldLegend required>학과</FieldLegend>
+          </div>
+
           <button
             type="button"
             onClick={() => setIsDeptModalOpen(true)}
             className="border-gray2 active:border-primary flex h-12 w-full items-center justify-between rounded-xl border bg-white px-4 transition-all outline-none"
           >
-            <span className={`text-[16px] ${inputs.departmentType ? 'text-black' : 'text-gray3'}`}>
+            <span
+              className={`text-bodySm sm:text-body ${inputs.departmentType ? 'text-black' : 'text-gray3'}`}
+            >
               {DEPARTMENTS.find((d) => d.code === inputs.departmentType)?.displayName ||
                 '학과 선택'}
             </span>
-            <div className="text-gray4">
-              <ChevronDown size={12} strokeWidth={1.5} />
-            </div>
+            <ChevronDown size={12} strokeWidth={1.5} className="text-gray4" aria-hidden="true" />
           </button>
-        </div>
+        </fieldset>
 
         <AgreementSection
           agreedTerms={status.agreedTerms}
@@ -270,25 +298,28 @@ export default function SignUpForm() {
           onPrivacyChange={(val) => actions.setStatus({ agreedPrivacy: val })}
         />
 
-        <div className="mt-4 px-4">
-          {status.error && (
-            <p className="text-caption text-warning animate-in fade-in slide-in-from-bottom-1 font-regular mb-3 px-1 text-center">
+        <footer className="mt-4 px-4">
+          {status.error ? (
+            <p
+              className="text-caption text-warning animate-in fade-in slide-in-from-bottom-1 font-regular mb-3 px-1 text-center"
+              role="alert"
+            >
               {status.error}
             </p>
-          )}
+          ) : null}
 
           <Button
             fullWidth
+            type="submit"
             color={isFormValid ? 'primary' : 'gray'}
             className="h-[52px]"
             disabled={!isFormValid}
             isLoading={isLoading}
-            onClick={handleSignUp}
           >
             가입하기
           </Button>
-        </div>
-      </section>
+        </footer>
+      </form>
 
       <DeptSelectModal
         isOpen={isDeptModalOpen}
@@ -304,28 +335,6 @@ export default function SignUpForm() {
         isSingleAction
         onConfirm={handleDialogConfirm}
       />
-    </>
-  );
-}
-
-function SectionLabel({
-  title,
-  description,
-  descriptionColor = 'text-gray4',
-}: {
-  title: string;
-  description?: string;
-  descriptionColor?: string;
-}) {
-  return (
-    <div className="flex items-end gap-2">
-      <p className="text-body font-bold text-black">
-        {title}
-        <span className="text-primary"> *</span>
-      </p>
-      {description && (
-        <p className={`text-caption transition-colors ${descriptionColor}`}>{description}</p>
-      )}
     </div>
   );
 }

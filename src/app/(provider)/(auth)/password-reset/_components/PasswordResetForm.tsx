@@ -113,8 +113,8 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const backLabel = isFromMyPage ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
 
   return (
-    <div className="flex w-full flex-col gap-9">
-      <section className="flex flex-col gap-8">
+    <div className="flex w-full flex-col gap-6">
+      <section className="flex flex-col gap-4">
         <PageHeader
           title="비밀번호 재설정"
           description={
@@ -128,7 +128,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
 
         {step === 'email' ? (
           <div className="flex flex-col gap-4">
-            <div className="flex gap-2">
+            <div className="flex">
               <div className="min-w-0 flex-1">
                 <SchoolEmailInput
                   value={inputs.email}
