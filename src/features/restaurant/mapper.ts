@@ -44,12 +44,16 @@ function normalizeSearchDistance(value: number | string | null | undefined) {
   return 0;
 }
 
+function normalizeSearchText(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 function toSearchItem(item: RestaurantSearchResponse): RestaurantSearchItem {
   return {
-    externalMapId: item.id.trim(),
-    name: item.place_name.trim(),
-    address: item.road_address_name.trim(),
-    placeUrl: item.place_url.trim(),
+    externalMapId: normalizeSearchText(item.id),
+    name: normalizeSearchText(item.place_name),
+    address: normalizeSearchText(item.road_address_name),
+    placeUrl: normalizeSearchText(item.place_url),
     distance: normalizeSearchDistance(item.distance),
   };
 }

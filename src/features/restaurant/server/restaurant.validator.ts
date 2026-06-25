@@ -36,7 +36,13 @@ function parseDistance(value: unknown) {
   }
 
   if (typeof value === 'string') {
-    const distance = Number(value);
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return null;
+    }
+
+    const distance = Number(trimmed);
 
     if (Number.isFinite(distance) && distance >= 0) {
       return distance;

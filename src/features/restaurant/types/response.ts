@@ -16,11 +16,11 @@ export type RestaurantResponse = {
 export type RestaurantListResponse = RestaurantResponse[];
 
 export type RestaurantSearchResponse = {
-  id: string;
-  place_name: string;
-  road_address_name: string;
-  place_url: string;
-  distance?: string;
+  id: unknown;
+  place_name: unknown;
+  road_address_name: unknown;
+  place_url: unknown;
+  distance?: number | string | null;
 };
 
 export type RestaurantSearchListResponse = RestaurantSearchResponse[];

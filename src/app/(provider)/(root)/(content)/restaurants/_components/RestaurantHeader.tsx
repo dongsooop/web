@@ -12,9 +12,11 @@ type RestaurantHeaderProps = {
 };
 
 export function RestaurantHeader({ selectedCategory, onCategoryAction }: RestaurantHeaderProps) {
+  const showSearch = false;
+
   return (
     <section
-      className="border-gray2 flex-1 rounded-xl border bg-white px-4 py-5 sm:px-6 sm:py-7"
+      className="border-gray2 flex-1 rounded-3xl border bg-white px-4 py-5 sm:px-6 sm:py-7"
       aria-label="맛집 검색 및 필터"
     >
       <div className="flex flex-col gap-4">
@@ -30,16 +32,17 @@ export function RestaurantHeader({ selectedCategory, onCategoryAction }: Restaur
               맛집 추가하기
             </Link>
 
-            <label className="border-gray2 flex min-h-11 w-full cursor-text items-center gap-2 rounded-2xl border bg-white px-4 lg:w-[240px]">
-              <Search className="text-gray5 h-4 w-4" aria-hidden="true" />
-
-              <input
-                type="search"
-                placeholder="가게 검색"
-                aria-label="가게 검색"
-                className="text-bodySm placeholder:text-gray5 w-full bg-transparent text-black outline-none"
-              />
-            </label>
+            {showSearch && (
+              <label className="border-gray2 flex min-h-11 w-full cursor-text items-center gap-2 rounded-2xl border bg-white px-4 lg:w-[240px]">
+                <Search className="text-gray5 h-4 w-4" aria-hidden="true" />
+                <input
+                  type="search"
+                  placeholder="가게 검색"
+                  aria-label="가게 검색"
+                  className="text-bodySm placeholder:text-gray5 w-full bg-transparent text-black outline-none"
+                />
+              </label>
+            )}
           </div>
         </div>
 

@@ -44,17 +44,17 @@ export function useRestaurantLike() {
   return useMutation({
     mutationFn: ({ id, isAdding }: ToggleVars) => likeRestaurant(id, isAdding),
     onMutate: async (vars) => {
-      await queryClient.cancelQueries({
-        queryKey: ['restaurant-list'],
-      });
+      const filter = {
+        predicate: (query: { queryKey: readonly unknown[] }) =>
+          query.queryKey[0] === 'restaurant-list' && query.queryKey[2] === true,
+      };
 
-      const snapshots = queryClient.getQueriesData<InfiniteData<RestaurantPage>>({
-        queryKey: ['restaurant-list'],
-      });
+      await queryClient.cancelQueries(filter);
 
-      queryClient.setQueriesData<InfiniteData<RestaurantPage>>(
-        { queryKey: ['restaurant-list'] },
-        (data) => patchRestaurantPage(data, vars),
+      const snapshots = queryClient.getQueriesData<InfiniteData<RestaurantPage>>(filter);
+
+      queryClient.setQueriesData<InfiniteData<RestaurantPage>>(filter, (data) =>
+        patchRestaurantPage(data, vars),
       );
 
       return { snapshots };
@@ -66,7 +66,7 @@ export function useRestaurantLike() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['restaurant-list'],
+        predicate: (query) => query.queryKey[0] === 'restaurant-list' && query.queryKey[2] === true,
       });
     },
     meta: {

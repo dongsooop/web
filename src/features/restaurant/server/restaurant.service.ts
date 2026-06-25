@@ -104,12 +104,17 @@ async function fetchAuthHasMore(options: ListOptions) {
   });
 
   if (result.response.status === HttpStatusCode.UNAUTHORIZED) {
-    return null;
+    return {
+      hasMore: false,
+      authResult: result,
+      isUnauthorized: true,
+    };
   }
 
   return {
     hasMore: await readHasMore(result.response),
     authResult: result,
+    isUnauthorized: false,
   };
 }
 
@@ -129,13 +134,13 @@ export async function fetchRestaurantPage(options: ListOptions): Promise<ListRes
       const next =
         items.length === options.size
           ? await fetchAuthHasMore(options)
-          : { hasMore: false, authResult };
-      const hasMore = next === null ? await fetchGuestHasMore(options) : next.hasMore;
+          : { hasMore: false, authResult, isUnauthorized: false };
+      const hasMore = next.isUnauthorized ? await fetchGuestHasMore(options) : next.hasMore;
 
       return {
         status: authResult.response.status,
         body: buildPage(items, hasMore),
-        authResult: next?.authResult ?? authResult,
+        authResult: next.authResult,
       };
     }
 

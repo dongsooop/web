@@ -104,7 +104,8 @@ export default function RestaurantSearch() {
               submitSearch();
             }}
           >
-            <label className="border-gray2 flex h-11 w-full items-center rounded-2xl border bg-white px-3">
+            <label className="border-gray2 flex h-11 w-full items-center rounded-2xl border bg-white px-5">
+              <span className="sr-only">가게 검색</span>
               <input
                 type="text"
                 value={keyword}
