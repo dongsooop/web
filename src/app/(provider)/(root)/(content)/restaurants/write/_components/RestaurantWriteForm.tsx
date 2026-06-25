@@ -21,10 +21,12 @@ type FieldHeadProps = {
 
 function FieldHead({ children, hint, required = false }: FieldHeadProps) {
   return (
-    <>
-      <FieldLegend required={required}>{children}</FieldLegend>
-      {hint ? <p className="text-caption text-gray5 -mt-1">{hint}</p> : null}
-    </>
+    <FieldLegend
+      required={required}
+      description={hint ? <span className="text-caption font-regular text-gray5">{hint}</span> : null}
+    >
+      {children}
+    </FieldLegend>
   );
 }
 

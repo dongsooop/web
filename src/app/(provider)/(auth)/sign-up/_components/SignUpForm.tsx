@@ -74,19 +74,26 @@ export default function SignUpForm() {
     return '2~8자 (특수문자 제외)';
   };
 
+  const handleSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']> = (event) => {
+    event.preventDefault();
+
+    if (!isFormValid || isLoading) {
+      return;
+    }
+
+    void handleSignUp();
+  };
+
   return (
     <div className="flex w-full justify-center bg-white px-4 py-6">
       <form
         className="flex w-full max-w-[480px] flex-col gap-10 bg-white py-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void handleSignUp();
-        }}
+        onSubmit={handleSubmit}
       >
         <header className="flex flex-col gap-3 px-4">
           <h1 className="text-title font-bold text-black">동숲 회원가입</h1>
           <p className="text-caption font-regular text-gray4">
-            동양미래대학교 Gmail(@dongyang.ac.kr)로만 가입 가능합니다.
+            동양미래대학교 Gmail(@dongyang.ac.kr)로만 가입 가능해요.
           </p>
           <Link
             href={CREATE_EMAIL_URL}
@@ -99,18 +106,22 @@ export default function SignUpForm() {
         </header>
 
         <fieldset className="flex flex-col gap-4 px-4">
-          <div className="flex items-end">
-            <FieldLegend required>이메일</FieldLegend>
-            <p
-              className={`text-caption transition-colors ${
-                emailError || authCodeError ? 'text-warning' : 'text-gray4'
-              }`}
-            >
-              {emailError || authCodeError
-                ? (status.error ?? undefined)
-                : '동양미래대학교 Gmail을 입력해주세요.'}
-            </p>
-          </div>
+          <FieldLegend
+            required
+            description={
+              <span
+                className={`text-caption font-regular transition-colors ${
+                  emailError || authCodeError ? 'text-warning' : 'text-gray4'
+                }`}
+              >
+                {emailError || authCodeError
+                  ? (status.error ?? undefined)
+                  : '동양미래대학교 Gmail을 입력해주세요.'}
+              </span>
+            }
+          >
+            이메일
+          </FieldLegend>
 
           <div className="flex gap-2">
             <div className="min-w-0 flex-1">
@@ -203,52 +214,64 @@ export default function SignUpForm() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 px-4">
-          <div className="flex items-end">
-            <FieldLegend required>비밀번호</FieldLegend>
-            <p
-              className={`text-caption transition-colors ${
-                passwordError || passCheckError
-                  ? 'text-warning'
-                  : isPassMatched
-                    ? 'text-primary'
-                    : 'text-gray4'
-              }`}
-            >
-              {getPasswordGuide()}
-            </p>
-          </div>
+          <FieldLegend
+            required
+            description={
+              <span
+                className={`text-caption font-regular transition-colors ${
+                  passwordError || passCheckError
+                    ? 'text-warning'
+                    : isPassMatched
+                      ? 'text-primary'
+                      : 'text-gray4'
+                }`}
+              >
+                {getPasswordGuide()}
+              </span>
+            }
+          >
+            비밀번호
+          </FieldLegend>
 
-          <AuthInput
-            type="password"
-            value={inputs.password}
-            onChange={(val) => actions.setField('password', val)}
-            placeholder="비밀번호"
-            hasError={passwordError}
-          />
-          <AuthInput
-            type="password"
-            value={inputs.passCheck}
-            onChange={(val) => actions.setField('passCheck', val)}
-            placeholder="비밀번호 확인"
-            hasError={passCheckError}
-          />
+          <div>
+            <AuthInput
+              type="password"
+              value={inputs.password}
+              onChange={(val) => actions.setField('password', val)}
+              placeholder="비밀번호"
+              hasError={passwordError}
+            />
+          </div>
+          <div>
+            <AuthInput
+              type="password"
+              value={inputs.passCheck}
+              onChange={(val) => actions.setField('passCheck', val)}
+              placeholder="비밀번호 확인"
+              hasError={passCheckError}
+            />
+          </div>
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 px-4">
-          <div className="flex items-end">
-            <FieldLegend required>닉네임</FieldLegend>
-            <p
-              className={`text-caption transition-colors ${
-                nicknameError
-                  ? 'text-warning'
-                  : status.isNicknameChecked
-                    ? 'text-primary'
-                    : 'text-gray4'
-              }`}
-            >
-              {getNicknameGuide()}
-            </p>
-          </div>
+          <FieldLegend
+            required
+            description={
+              <span
+                className={`text-caption font-regular transition-colors ${
+                  nicknameError
+                    ? 'text-warning'
+                    : status.isNicknameChecked
+                      ? 'text-primary'
+                      : 'text-gray4'
+                }`}
+              >
+                {getNicknameGuide()}
+              </span>
+            }
+          >
+            닉네임
+          </FieldLegend>
 
           <div className="flex gap-2">
             <div className="flex-1">
@@ -272,9 +295,7 @@ export default function SignUpForm() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 px-4">
-          <div className="flex items-end">
-            <FieldLegend required>학과</FieldLegend>
-          </div>
+          <FieldLegend required>학과</FieldLegend>
 
           <button
             type="button"

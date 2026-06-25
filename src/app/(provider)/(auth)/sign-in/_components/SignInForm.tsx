@@ -139,6 +139,11 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
     router.push('/password-reset?from=sign-in');
   };
 
+  const handleSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']> = async (event) => {
+    event.preventDefault();
+    await handleLogin();
+  };
+
   const socialLogin = (platform: 'kakao' | 'google') => {
     if (isSigningIn || loadingPlatform) {
       return;
@@ -190,44 +195,46 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
 
         <div className="h-2" />
 
-        <div className="w-full">
-          <SchoolEmailInput
-            value={email}
-            onChange={setEmail}
-            placeholder="학교 Gmail을 입력해 주세요"
-          />
-        </div>
+        <form className="flex w-full flex-col items-center gap-4" onSubmit={handleSubmit}>
+          <div className="w-full">
+            <SchoolEmailInput
+              value={email}
+              onChange={setEmail}
+              placeholder="학교 Gmail을 입력해 주세요"
+            />
+          </div>
 
-        <div className="w-full">
-          <AuthInput
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="비밀번호를 입력해 주세요"
-          />
-        </div>
+          <div className="w-full">
+            <AuthInput
+              type="password"
+              value={password}
+              onChange={setPassword}
+              placeholder="비밀번호를 입력해 주세요"
+            />
+          </div>
 
-        {errorMessage && (
-          <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
-            {errorMessage}
-          </p>
-        )}
+          {errorMessage && (
+            <p className="text-caption font-regular text-warning w-full whitespace-pre-line">
+              {errorMessage}
+            </p>
+          )}
 
-        <Button fullWidth color="primary" onClick={handleLogin} isLoading={isSigningIn}>
-          로그인
-        </Button>
+          <Button fullWidth type="submit" color="primary" isLoading={isSigningIn}>
+            로그인
+          </Button>
 
-        <Button fullWidth color="outline" onClick={handleSignUp}>
-          회원가입
-        </Button>
+          <Button fullWidth type="button" color="outline" onClick={handleSignUp}>
+            회원가입
+          </Button>
 
-        <button
-          type="button"
-          onClick={handlePasswordReset}
-          className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
-        >
-          비밀번호 변경
-        </button>
+          <button
+            type="button"
+            onClick={handlePasswordReset}
+            className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
+          >
+            비밀번호 변경
+          </button>
+        </form>
         <SocialLoginButtons onLogin={socialLogin} />
       </section>
     </div>
