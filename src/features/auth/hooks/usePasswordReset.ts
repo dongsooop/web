@@ -71,6 +71,10 @@ export const usePasswordReset = () => {
     status,
     step,
     actions,
+    isCheckingEmail: emailCheckMutation.isPending,
+    isSendingCode: sendCodeMutation.isPending,
+    isVerifyingCode: verifyCodeMutation.isPending,
+    isResetting: resetMutation.isPending,
     isLoading: 
       emailCheckMutation.isPending || 
       sendCodeMutation.isPending || 

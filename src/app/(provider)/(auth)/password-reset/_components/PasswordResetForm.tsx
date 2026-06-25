@@ -9,6 +9,7 @@ import AuthInput from '../../_components/AuthInput';
 import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
 import { analyzePassword, validatePassword } from '@/features/auth/validators/authValidators';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useDialogStore } from '@/store/useDialogStore';
 
 type PasswordResetFormProps = {
   from?: string;
@@ -16,17 +17,30 @@ type PasswordResetFormProps = {
 
 export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const router = useRouter();
+  const showDialog = useDialogStore((state) => state.showDialog);
   const {
     inputs,
     status,
     step,
     actions,
     isLoading,
+    isCheckingEmail,
+    isSendingCode,
+    isVerifyingCode,
+    isResetting,
     handleCheckEmail,
     handleSendCode,
     handleVerifyCode,
     handleReset,
   } = usePasswordReset();
+
+  useEffect(() => {
+    actions.reset();
+
+    return () => {
+      actions.reset();
+    };
+  }, [actions]);
 
   useEffect(() => {
     if (
@@ -61,6 +75,36 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
     }
   };
 
+  const moveToPasswordStep = () => {
+    if (isLoading) {
+      return;
+    }
+
+    if (!status.isEmailChecked) {
+      showDialog({
+        title: '이메일 확인 필요',
+        content: '학교 이메일 인증을 먼저 완료해주세요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    if (!status.isCodeVerified) {
+      showDialog({
+        title: '인증 확인 필요',
+        content: '인증 코드 확인을 먼저 완료해주세요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    actions.setStep('password');
+  };
+
   const errorMessage = status.error
     ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
     : '';
@@ -69,7 +113,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const backLabel = isFromMyPage ? '마이페이지로 돌아가기' : '로그인 화면으로 돌아가기';
 
   return (
-    <div className="flex w-full max-w-[480px] flex-col gap-12">
+    <div className="flex w-full flex-col gap-9">
       <section className="flex flex-col gap-8">
         <PageHeader
           title="비밀번호 재설정"
@@ -98,6 +142,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
                 color={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
                 onClick={handleCheckEmail}
                 disabled={!inputs.email.trim() || status.isEmailChecked}
+                isLoading={isCheckingEmail}
               >
                 {status.isEmailChecked ? '확인 완료' : '확인'}
               </Button>
@@ -131,6 +176,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
                       status.remainingSeconds > 0 &&
                       status.error !== 'CODE_LIMIT_EXCEEDED')
                   }
+                  isLoading={isSendingCode}
                 >
                   {(() => {
                     if (status.error === 'CODE_LIMIT_EXCEEDED') return '재전송';
@@ -149,6 +195,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
                   color={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
                   onClick={handleVerifyCode}
                   disabled={!status.isCodeSent || status.isCodeVerified || !inputs.code}
+                  isLoading={isVerifyingCode}
                 >
                   {status.isCodeVerified ? '완료' : '확인'}
                 </Button>
@@ -204,8 +251,8 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
             fullWidth
             color="primary"
             height="large"
-            onClick={() => actions.setStep('password')}
-            disabled={!status.isCodeVerified}
+            onClick={moveToPasswordStep}
+            disabled={isLoading}
           >
             다음
           </Button>
@@ -223,7 +270,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
                   : 'gray'
               }
               onClick={onResetSubmit}
-              isLoading={isLoading}
+              isLoading={isResetting}
             >
               비밀번호 변경하기
             </Button>
