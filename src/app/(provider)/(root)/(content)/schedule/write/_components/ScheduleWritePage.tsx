@@ -53,7 +53,12 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   const isEdit = scheduleId !== null;
 
   const closeWrite = useCallback(() => {
-    router.push('/schedule');
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.replace('/schedule');
   }, [router]);
 
   const saveCreate = useCallback(

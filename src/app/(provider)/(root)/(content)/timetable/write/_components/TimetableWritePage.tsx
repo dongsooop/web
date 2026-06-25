@@ -49,6 +49,15 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
   }, [data, isInvalidEditId, lectureId]);
 
   const isMissingLecture = hasEditId && isQueryReady && !isLoading && !lecture;
+  const closeWrite = useCallback(() => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.replace('/timetable');
+  }, [router]);
+
   const saveLecture = useCallback(
     async (payload: TimetableItem) => {
       const request = {
@@ -107,7 +116,7 @@ export default function TimetableWritePage({ id }: TimetableWritePageProps) {
               item={lecture}
               lectures={data ?? []}
               mode="page"
-              onCloseAction={() => router.push('/timetable')}
+              onCloseAction={closeWrite}
               onSaveAction={saveLecture}
             />
           </div>
