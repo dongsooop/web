@@ -101,6 +101,7 @@ export default function TimetableCreatePanel({
   onCloseAction,
 }: TimetableCreatePanelProps) {
   const showDialog = useDialogStore((state) => state.showDialog);
+  const showCloseButton = mode !== 'page';
   const [form, setForm] = useState<FormState>(() =>
     item
       ? {
@@ -220,14 +221,18 @@ export default function TimetableCreatePanel({
             {item ? '강의 정보 수정' : '강의 추가'}
           </h2>
 
-          <button
-            type="button"
-            onClick={onCloseAction}
-            className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full"
-            aria-label="닫기"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
+          {showCloseButton ? (
+            <button
+              type="button"
+              onClick={onCloseAction}
+              className="text-gray5 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full"
+              aria-label="닫기"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          ) : (
+            <div className="h-11 w-11 shrink-0" aria-hidden="true" />
+          )}
         </header>
 
         <Divider />
