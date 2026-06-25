@@ -58,6 +58,7 @@ export default function NoticeBoard() {
     hasMore,
     isInitialLoading,
     isError,
+    isFetchNextPageError,
     isFetchingNextPage,
     fetchNextPage,
     displayErrorMessage,
@@ -77,8 +78,9 @@ export default function NoticeBoard() {
   const canExpand = !isExpanded && items.length > initialCount;
   const showMoreButton = canExpand || hasMore;
   const visibleItems = isExpanded ? items : items.slice(0, initialCount);
+  const loadMoreError = isFetchNextPageError ? displayErrorMessage : null;
 
-  if (isError) {
+  if (isError && items.length === 0) {
     return (
       <div className="max-w-content mx-auto flex min-h-[60vh] w-full items-center justify-center px-4 text-center">
         <p className="text-body text-gray5">{displayErrorMessage}</p>
@@ -157,7 +159,13 @@ export default function NoticeBoard() {
           )}
         </div>
 
-        <div className="my-6 flex justify-center">
+        <div className="my-6 flex flex-col items-center gap-3">
+          {loadMoreError ? (
+            <p className="text-caption text-warning-100 px-4 text-center" role="alert">
+              공지를 더 불러오지 못했어요. 다시 시도해주세요.
+            </p>
+          ) : null}
+
           {showMoreButton ? (
             <button
               type="button"
@@ -171,7 +179,7 @@ export default function NoticeBoard() {
               disabled={isFetchingNextPage}
               className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
             >
-              {isFetchingNextPage ? '불러오는 중...' : '더보기'}
+              {isFetchingNextPage ? '불러오는 중...' : loadMoreError ? '다시 시도' : '더보기'}
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
           ) : null}
