@@ -7,7 +7,7 @@ export default function StudyRoomBanner() {
       href="https://lib.dongyang.ac.kr/studyroom/groupReserveStat"
       target="_blank"
       rel="noopener noreferrer"
-      className="flex h-full min-h-14 items-center justify-between rounded-lg bg-white p-4 shadow-sm"
+      className="flex h-full min-h-14 items-center justify-between rounded-xl bg-white p-4 shadow-sm"
     >
       <div className="flex items-center gap-6">
         <BookOpen className="text-gray6 h-6 w-6" />

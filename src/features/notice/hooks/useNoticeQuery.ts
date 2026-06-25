@@ -27,6 +27,7 @@ export function useNoticeQuery(tab: NoticeTab) {
     ...query,
     items: query.data?.pages.flatMap((page) => page.items) ?? [],
     hasMore: query.hasNextPage,
+    isInitialLoading: !query.data && (query.isPending || query.isFetching),
     displayErrorMessage: query.error ? getErrorMessage('home', query.error) : null,
   };
 }

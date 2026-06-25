@@ -26,7 +26,7 @@ export default function AuthInput({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className={`text-body placeholder:text-gray4 font-regular h-11 w-full rounded-lg border bg-white px-4 text-black transition outline-none ${borderClass}`}
+      className={`text-bodySm sm:text-body placeholder:text-gray4 font-regular h-11 w-full rounded-lg border bg-white px-4 text-black transition outline-none ${borderClass}`}
     />
   );
 }

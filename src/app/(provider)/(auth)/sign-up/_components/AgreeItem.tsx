@@ -21,7 +21,9 @@ const AgreementItem = ({ label, link, checked, onChange }: AgreementItemProps) =
             className="accent-primary h-4 w-4 cursor-pointer"
           />
         </div>
-        <span className="text-body font-regular leading-none text-black">{label}</span>
+        <span className="text-bodySm sm:text-body font-regular leading-none text-black">
+          {label}
+        </span>
       </label>
       <Link
         href={link}
@@ -60,7 +62,7 @@ export default function AgreementSection({
           약관 동의<span className="text-primary"> *</span>
         </p>
       </div>
-      <div className="border-gray2 flex flex-col gap-4 rounded-[8px] border p-4">
+      <div className="border-gray2 flex flex-col gap-4 rounded-lg border p-4">
         <AgreementItem
           label="동숲 서비스 이용약관 동의"
           link={TERMS_URL}

@@ -19,7 +19,7 @@ export default function DialogView() {
     onConfirm,
     onClose,
     isSingleAction = false,
-    variant = 'primary',
+    color = 'primary',
   } = dialog;
 
   const handleConfirm = async () => {
@@ -51,7 +51,7 @@ export default function DialogView() {
         onConfirm={handleConfirm}
         onClose={onClose ? handleClose : undefined}
         isSingleAction
-        variant={variant}
+        color={color}
       />
     );
   }
@@ -65,7 +65,7 @@ export default function DialogView() {
       confirm={confirm}
       onConfirm={handleConfirm}
       onClose={handleClose}
-      variant={variant}
+      color={color}
     />
   );
 }

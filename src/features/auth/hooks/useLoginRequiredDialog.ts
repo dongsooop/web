@@ -15,7 +15,7 @@ export function useLoginRequiredDialog() {
       content: '로그인 화면으로 이동하시겠어요?',
       cancel: '취소',
       confirm: '확인',
-      variant: 'primary',
+      color: 'primary',
       onConfirm: () => {
         router.push('/sign-in');
       },

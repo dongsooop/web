@@ -3,25 +3,44 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import PageHeader from '@/components/ui/PageHeader';
 import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import AuthInput from '../../_components/AuthInput';
 import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
 import { analyzePassword, validatePassword } from '@/features/auth/validators/authValidators';
 import { getErrorMessage } from '@/lib/errors/messages';
+import { useDialogStore } from '@/store/useDialogStore';
 
-export default function PasswordResetForm() {
+type PasswordResetFormProps = {
+  from?: string;
+};
+
+export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const router = useRouter();
+  const showDialog = useDialogStore((state) => state.showDialog);
   const {
     inputs,
     status,
     step,
     actions,
     isLoading,
+    isCheckingEmail,
+    isSendingCode,
+    isVerifyingCode,
+    isResetting,
     handleCheckEmail,
     handleSendCode,
     handleVerifyCode,
     handleReset,
   } = usePasswordReset();
+
+  useEffect(() => {
+    actions.reset();
+
+    return () => {
+      actions.reset();
+    };
+  }, [actions]);
 
   useEffect(() => {
     if (
@@ -51,30 +70,67 @@ export default function PasswordResetForm() {
     const isSuccess = await handleReset();
 
     if (isSuccess) {
-      alert('비밀번호가 성공적으로 변경되었습니다.');
-      router.push('/sign-in');
+      showDialog({
+        title: '비밀번호 변경',
+        content: '비밀번호가 성공적으로 변경되었어요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {
+          router.push('/sign-in');
+        },
+      });
     }
+  };
+
+  const moveToPasswordStep = () => {
+    if (isLoading) {
+      return;
+    }
+
+    if (!status.isEmailChecked) {
+      showDialog({
+        title: '이메일 확인 필요',
+        content: '학교 이메일 인증을 먼저 완료해주세요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    if (!status.isCodeVerified) {
+      showDialog({
+        title: '인증 확인 필요',
+        content: '인증 코드 확인을 먼저 완료해주세요.',
+        confirm: '확인',
+        isSingleAction: true,
+        onConfirm: () => {},
+      });
+      return;
+    }
+
+    actions.setStep('password');
   };
 
   const errorMessage = status.error
     ? getErrorMessage('auth', status.error, status.errorContext ?? undefined)
     : '';
-
   return (
-    <div className="flex w-full max-w-[480px] flex-col gap-12">
-      <section className="flex flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <h1 className="text-title font-bold text-black">비밀번호 재설정</h1>
-          <p className="text-body text-gray-500">
-            {step === 'email'
+    <div className="flex w-full flex-col gap-6">
+      <section className="flex flex-col gap-4">
+        <PageHeader
+          title="비밀번호 재설정"
+          showBackButton
+          description={
+            step === 'email'
               ? '학교 이메일과 인증 코드를 입력해 주세요.'
-              : '새로운 비밀번호를 입력해 주세요.'}
-          </p>
-        </header>
+              : '새로운 비밀번호를 입력해 주세요.'
+          }
+        />
 
         {step === 'email' ? (
           <div className="flex flex-col gap-4">
-            <div className="flex gap-2">
+            <div className="flex">
               <div className="min-w-0 flex-1">
                 <SchoolEmailInput
                   value={inputs.email}
@@ -85,9 +141,10 @@ export default function PasswordResetForm() {
               </div>
 
               <Button
-                variant={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
+                color={inputs.email.trim() && !status.isEmailChecked ? 'primary' : 'gray'}
                 onClick={handleCheckEmail}
                 disabled={!inputs.email.trim() || status.isEmailChecked}
+                isLoading={isCheckingEmail}
               >
                 {status.isEmailChecked ? '확인 완료' : '확인'}
               </Button>
@@ -105,7 +162,7 @@ export default function PasswordResetForm() {
                 </div>
 
                 <Button
-                  variant={
+                  color={
                     status.isEmailChecked &&
                     !status.isCodeVerified &&
                     (status.error === 'CODE_LIMIT_EXCEEDED' ||
@@ -121,6 +178,7 @@ export default function PasswordResetForm() {
                       status.remainingSeconds > 0 &&
                       status.error !== 'CODE_LIMIT_EXCEEDED')
                   }
+                  isLoading={isSendingCode}
                 >
                   {(() => {
                     if (status.error === 'CODE_LIMIT_EXCEEDED') return '재전송';
@@ -136,9 +194,10 @@ export default function PasswordResetForm() {
                 </Button>
 
                 <Button
-                  variant={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
+                  color={inputs.code && !status.isCodeVerified ? 'primary' : 'gray'}
                   onClick={handleVerifyCode}
                   disabled={!status.isCodeSent || status.isCodeVerified || !inputs.code}
+                  isLoading={isVerifyingCode}
                 >
                   {status.isCodeVerified ? '완료' : '확인'}
                 </Button>
@@ -192,28 +251,28 @@ export default function PasswordResetForm() {
         {step === 'email' ? (
           <Button
             fullWidth
-            variant="primary"
-            height="cta"
-            onClick={() => actions.setStep('password')}
-            disabled={!status.isCodeVerified}
+            color="primary"
+            height="large"
+            onClick={moveToPasswordStep}
+            disabled={isLoading}
           >
             다음
           </Button>
         ) : (
           <div className="flex gap-2">
-            <Button variant="gray" className="flex-1" onClick={() => actions.setStep('email')}>
+            <Button color="gray" className="flex-1" onClick={() => actions.setStep('email')}>
               이전
             </Button>
             <Button
               className="flex-[2]"
-              height="cta"
-              variant={
+              height="large"
+              color={
                 validatePassword(inputs.pass) && inputs.pass === inputs.passCheck
                   ? 'primary'
                   : 'gray'
               }
               onClick={onResetSubmit}
-              isLoading={isLoading}
+              isLoading={isResetting}
             >
               비밀번호 변경하기
             </Button>

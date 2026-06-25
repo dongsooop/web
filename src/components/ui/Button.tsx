@@ -1,38 +1,40 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
-type ButtonVariant = 'primary' | 'outline' | 'text' | 'gray';
-type ButtonHeight = 'default' | 'cta';
-type ButtonFontWeight = 'regular' | 'semibold';
+type BtnColor = 'primary' | 'outline' | 'text' | 'gray' | 'danger';
+type BtnHeight = 'default' | 'large';
+type BtnFontWeight = 'regular' | 'semibold';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: ButtonVariant;
-  height?: ButtonHeight;
-  fontWeight?: ButtonFontWeight;
+  color?: BtnColor;
+  height?: BtnHeight;
+  fontWeight?: BtnFontWeight;
   fullWidth?: boolean;
   isLoading?: boolean;
 }
 
-const VARIANT_CLASS_MAP: Record<ButtonVariant, string> = {
+const COLOR_CLASS_MAP: Record<BtnColor, string> = {
   primary: 'bg-primary text-white',
-  outline: 'border border-primary bg-white text-primary',
+  outline: 'border border-gray2 bg-white text-gray6',
   text: 'bg-transparent text-gray4',
   gray: 'bg-gray1 text-gray4',
+  danger: 'border border-warning-100 bg-white text-warning-100',
 };
 
-const HEIGHT_CLASS_MAP: Record<ButtonHeight, string> = {
+const HEIGHT_CLASS_MAP: Record<BtnHeight, string> = {
   default: 'h-11',
-  cta: 'min-h-12',
+  large: 'h-12',
 };
 
-const FONT_WEIGHT_CLASS_MAP: Record<ButtonFontWeight, string> = {
+const FONT_WEIGHT_CLASS_MAP: Record<BtnFontWeight, string> = {
   regular: 'font-regular',
   semibold: 'font-semibold',
 };
 
 export default function Button({
   children,
-  variant = 'primary',
+  color = 'primary',
   height = 'default',
   fontWeight = 'semibold',
   fullWidth = false,
@@ -43,10 +45,10 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseClass =
-    'inline-flex items-center justify-center rounded-[8px] px-4 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex items-center justify-center rounded-xl px-4 text-[14px]/[20px] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
 
   const widthClass = fullWidth ? 'w-full' : '';
-  const variantClass = VARIANT_CLASS_MAP[variant];
+  const colorClass = COLOR_CLASS_MAP[color];
   const heightClass = HEIGHT_CLASS_MAP[height];
   const fontWeightClass = FONT_WEIGHT_CLASS_MAP[fontWeight];
 
@@ -54,17 +56,17 @@ export default function Button({
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={`${baseClass} ${widthClass} ${variantClass} ${heightClass} ${fontWeightClass} ${className}`}
+      className={cn(baseClass, widthClass, className, colorClass, heightClass, fontWeightClass)}
       {...props}
     >
-      <span className="flex items-center gap-2">
+      <span className={cn('flex items-center', isLoading ? 'gap-2' : 'gap-0')}>
+        {children}
         {isLoading && (
           <span
-            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            className="h-4 w-4 animate-spin rounded-lg border-2 border-current border-t-transparent"
             aria-hidden="true"
           />
         )}
-        <span>{children}</span>
       </span>
     </button>
   );

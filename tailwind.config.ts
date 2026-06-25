@@ -124,12 +124,11 @@ const config: Config = {
       },
 
       maxWidth: {
-        content: '61.25rem',
-        form: '48.75rem',
-        layout: '150rem',
-        timetable: '65rem',
-        'timetable-content': '58rem',
-        'timetable-grid': '52rem',
+        calendar: '90rem',
+        content: '55rem',
+        sheet: '40rem',
+        form: '30rem',
+        dialog: '24rem',
       },
 
       maxHeight: {
@@ -166,10 +165,6 @@ const config: Config = {
       gridTemplateRows: {
         timetable: 'repeat(14, minmax(0, 3.5rem))',
         'timetable-shell': '2.25rem minmax(0, 1fr)',
-      },
-
-      borderRadius: {
-        timetable: '1.75rem',
       },
 
       fontSize: {

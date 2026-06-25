@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
+import Card from '@/components/ui/Card';
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
 import {
   buildCalendarCells,
@@ -66,9 +67,9 @@ export default function MiniCalendar() {
   };
 
   return (
-    <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
+    <Card className="min-h-0 overflow-hidden">
       <div className="flex items-center justify-between">
-        <div className="text-body font-semibold text-black">일정</div>
+        <h2 className="text-body font-semibold text-black">일정</h2>
 
         <div className="flex items-center gap-1">
           <button
@@ -227,6 +228,6 @@ export default function MiniCalendar() {
           </div>
         </div>
       ) : null}
-    </section>
+    </Card>
   );
 }

@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import Card from '@/components/ui/Card';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import type { HomeUiModel } from '@/features/home/types/ui-model';
 
@@ -29,11 +30,11 @@ export default function Timetable({ timetable }: TimetableProps) {
   );
 
   return (
-    <section className="border-gray2 flex h-full flex-col rounded-2xl border bg-white p-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-body font-semibold text-black">강의시간표</div>
-          <div className="text-caption text-gray5">오늘 수업을 한눈에 확인하세요</div>
+    <Card>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="text-body font-semibold text-black">강의시간표</h2>
+          <p className="text-caption text-gray5 mt-1">오늘 수업을 한눈에 확인하세요</p>
         </div>
 
         {isLoggedIn ? (
@@ -108,6 +109,6 @@ export default function Timetable({ timetable }: TimetableProps) {
           )}
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

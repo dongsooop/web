@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type DialogVariant = 'primary' | 'danger';
+type DialogColor = 'primary' | 'danger';
 
 type DialogOptions = {
   title: string;
@@ -10,7 +10,7 @@ type DialogOptions = {
   onConfirm: () => void | Promise<void>;
   onClose?: () => void;
   isSingleAction?: boolean;
-  variant?: DialogVariant;
+  color?: DialogColor;
 };
 
 type DialogStore = {
