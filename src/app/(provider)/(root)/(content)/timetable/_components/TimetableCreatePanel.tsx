@@ -131,6 +131,10 @@ export default function TimetableCreatePanel({
   }, [form, onPreviewAction]);
 
   const save = () => {
+    if (isSaving) {
+      return;
+    }
+
     if (!name) {
       showDialog({
         title: '필수 값 확인',
@@ -241,6 +245,9 @@ export default function TimetableCreatePanel({
           className="flex-1 px-4 pb-4"
           onSubmit={(event) => {
             event.preventDefault();
+            if (isSaving) {
+              return;
+            }
             save();
           }}
         >
