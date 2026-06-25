@@ -345,8 +345,8 @@ export default function ScheduleBoard() {
           <PageHeader
             title="일정"
             description={descriptionText()}
-            backHref="/"
-            backLabel="홈으로 돌아가기"
+            backHref="/mypage"
+            backLabel="마이페이지로 돌아가기"
           />
         </div>
 
