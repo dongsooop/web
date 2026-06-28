@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 type BtnColor = 'primary' | 'outline' | 'text' | 'gray' | 'danger';
-type BtnHeight = 'default' | 'large';
+type BtnHeight = 'default' | 'large' | 'xlarge';
 type BtnFontWeight = 'regular' | 'semibold';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,6 +25,7 @@ const COLOR_CLASS_MAP: Record<BtnColor, string> = {
 const HEIGHT_CLASS_MAP: Record<BtnHeight, string> = {
   default: 'h-11',
   large: 'h-12',
+  xlarge: 'h-14',
 };
 
 const FONT_WEIGHT_CLASS_MAP: Record<BtnFontWeight, string> = {
@@ -45,7 +46,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseClass =
-    'inline-flex items-center justify-center rounded-xl px-4 text-[14px]/[20px] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
+    'inline-flex items-center justify-center rounded-xl px-4 text-body transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
 
   const widthClass = fullWidth ? 'w-full' : '';
   const colorClass = COLOR_CLASS_MAP[color];

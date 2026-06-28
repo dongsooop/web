@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
-import { DEPARTMENTS } from '@/constants/department';
+import { DEPARTMENTS, type DepartmentType } from '@/constants/department';
 import { Check, X } from 'lucide-react';
 import { lockBody, unlockBody } from '@/lib/body-lock';
 
 interface DeptSelectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (code: string) => void;
-  selectedCode: string;
+  onSelect: (code: DepartmentType) => void;
+  selectedCode: DepartmentType;
 }
 
 export default function DeptSelectModal({

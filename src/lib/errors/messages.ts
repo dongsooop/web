@@ -229,10 +229,14 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
           return '이미 사용 중인 닉네임이에요.';
         case 'INVALID_EMAIL_DOMAIN':
           return '학교 이메일(@dongyang.ac.kr)만 가입 가능해요.';
+        case 'EMAIL_NOT_FOUND':
+          return '입력하신 이메일을 찾을 수 없어요.\n이메일을 다시 확인해 주세요';
         case 'EXPIRED_CODE':
           return '인증 시간이 만료되었어요. 다시 요청해주세요.';
         case 'CODE_LIMIT_EXCEEDED':
           return '인증 시도 횟수를 초과했어요. 다시 인증 요청을 해주세요.';
+        case 'INVALID_VERIFY_CODE':
+          return '인증 코드가 일치하지 않아요.';
         default:
           break;
       }

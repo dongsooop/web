@@ -4,6 +4,7 @@ interface InputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   hasError?: boolean;
+  isSuccess?: boolean;
   disabled?: boolean;
 }
 
@@ -13,11 +14,14 @@ export default function AuthInput({
   onChange,
   placeholder,
   hasError = false,
+  isSuccess = false,
   disabled,
 }: InputProps) {
   const borderClass = hasError
     ? 'border-warning-100 focus:border-warning-100'
-    : 'border-gray2 focus:border-primary';
+    : isSuccess
+      ? 'border-primary focus:border-primary'
+      : 'border-gray2 focus:border-primary';
 
   return (
     <input
