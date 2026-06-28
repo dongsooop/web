@@ -36,14 +36,14 @@ export default function DeptSelectModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center"
+      className="fixed inset-0 z-50 flex cursor-pointer items-end justify-center bg-black/50 p-0 sm:items-center"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-w-sheet flex max-h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white sm:mx-8 sm:rounded-2xl"
+        className="max-w-sheet flex max-h-[85vh] w-full cursor-default flex-col overflow-hidden rounded-t-2xl bg-white sm:mx-8 sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-gray1 sticky top-0 flex items-center justify-between rounded-t-2xl border-b bg-white p-5 sm:rounded-t-2xl">

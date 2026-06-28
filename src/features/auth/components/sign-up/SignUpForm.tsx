@@ -73,9 +73,9 @@ export default function SignUpForm() {
   const isNicknameSectionError = status.errorContext === 'checkNickname';
 
   const domainErrorMessage = useMemo(() => {
-    if (!status.errorKey) return '';
-    return getErrorMessage('signup', status.errorKey, status.errorContext ?? undefined);
-  }, [status.errorKey, status.errorContext]);
+    if (!status.error) return '';
+    return getErrorMessage('signup', status.error, status.errorContext ?? undefined);
+  }, [status.error, status.errorContext]);
 
   const isPassValid = validatePassword(inputs.pwd);
   const isPassMatched = inputs.pwd === inputs.pwdCheck;
@@ -180,15 +180,6 @@ export default function SignUpForm() {
         />
 
         <footer className="mt-4 px-4">
-          {domainErrorMessage ? (
-            <p
-              className="text-caption text-warning animate-in fade-in slide-in-from-bottom-1 font-regular mb-3 px-1 text-center whitespace-pre-line"
-              role="alert"
-            >
-              {domainErrorMessage}
-            </p>
-          ) : null}
-
           <Button
             fullWidth
             type="submit"

@@ -9,10 +9,12 @@ export default async function PasswordResetPage({ searchParams }: PasswordResetP
   const params = await searchParams;
 
   return (
-    <main className="max-w-form mx-auto flex min-h-screen w-full flex-col items-center bg-white p-4 pt-30 sm:px-6">
-      <PasswordResetProvider>
-        <PasswordResetForm from={params?.from} />
-      </PasswordResetProvider>
+    <main className="flex min-h-screen w-full justify-center bg-white p-4 pt-30 sm:px-6">
+      <div className="max-w-form w-full">
+        <PasswordResetProvider>
+          <PasswordResetForm from={params?.from} />
+        </PasswordResetProvider>
+      </div>
     </main>
   );
 }

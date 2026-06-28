@@ -2,13 +2,15 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-
-import { signInKakaoSocial } from '@/features/auth/client/auth.api';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getKakaoCallbackResult } from '@/features/auth/lib/socialCallback';
-import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
-import { toUserModel } from '@/features/auth/mapper';
+import {
+  clearSocialState,
+  getSocialState,
+  isSocialStateValid,
+} from '@/features/auth/lib/socialState';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { getErrorMessage } from '@/lib/errors/messages';
 
@@ -16,8 +18,9 @@ const kakaoStateKey = 'kakao_signin_state';
 
 function KakaoSignInCallbackContent() {
   const searchParams = useSearchParams();
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearExpired = useAuthStore((state) => state.clearExpired);
+  const setError = useAuthStore((state) => state.actions.setError);
+  const { signInKakaoSocial } = useAuth();
+
   const message = useSocialCallback({
     result: getKakaoCallbackResult(searchParams),
     pendingMessage: '보안 확인 중이에요.',
@@ -36,14 +39,13 @@ function KakaoSignInCallbackContent() {
       return null;
     },
     runAction: async ({ code }) => {
-      const result = await signInKakaoSocial(code);
-
-      if (!result?.user) {
-        throw new Error(getErrorMessage('social', new Error(), 'login'));
+      try {
+        await signInKakaoSocial(code);
+      } catch (error) {
+        const errorMsg = getErrorMessage('social', error, 'login');
+        setError(errorMsg, 'signInKakao');
+        throw new Error(errorMsg);
       }
-
-      setUser(toUserModel(result.user));
-      clearExpired();
     },
     clearAction: () => {
       clearSocialState(kakaoStateKey);

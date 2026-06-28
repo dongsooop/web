@@ -1,19 +1,24 @@
 'use client';
 
-import { signInGoogleSocial } from '@/features/auth/client/auth.api';
+import { useMemo } from 'react';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
-import { toUserModel } from '@/features/auth/mapper';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
-import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
+import {
+  clearSocialState,
+  getSocialState,
+  isSocialStateValid,
+} from '@/features/auth/lib/socialState';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { getErrorMessage } from '@/lib/errors/messages';
 
 const googleStateKey = 'google_signin_state';
 
 export default function GoogleSignInCallbackPage() {
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearExpired = useAuthStore((state) => state.clearExpired);
+  const setError = useAuthStore((state) => state.actions.setError);
+  const { signInGoogleSocial } = useAuth();
+
   const message = useSocialCallback({
     result: getGoogleCallbackResult(),
     pendingMessage: '보안 확인 중이에요.',
@@ -32,14 +37,13 @@ export default function GoogleSignInCallbackPage() {
       return null;
     },
     runAction: async ({ accessToken }) => {
-      const result = await signInGoogleSocial(accessToken);
-
-      if (!result?.user) {
-        throw new Error(getErrorMessage('social', new Error(), 'login'));
+      try {
+        await signInGoogleSocial(accessToken);
+      } catch (error) {
+        const errorMsg = getErrorMessage('social', error, 'login');
+        setError(errorMsg, 'signInGoogle');
+        throw new Error(errorMsg);
       }
-
-      setUser(toUserModel(result.user));
-      clearExpired();
     },
     clearAction: () => {
       clearSocialState(googleStateKey);

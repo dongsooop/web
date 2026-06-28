@@ -75,9 +75,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
 
   const errorMessage = useMemo(() => {
     if (!status.error) return '';
-    const errorKey =
-      typeof status.error === 'string' ? status.error : (status.error as any)?.message || '';
-    return getErrorMessage('auth', errorKey, status.errorContext ?? undefined);
+    return getErrorMessage('auth', status.error, status.errorContext ?? undefined);
   }, [status.error, status.errorContext]);
 
   const handleNextStepClick = () => {
@@ -171,7 +169,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
               이전
             </Button>
             <Button
-              className="flex-"
+              className="flex-1"
               height="large"
               color={submitPasswordColor}
               onClick={handlePasswordResetSubmit}

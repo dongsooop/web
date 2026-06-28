@@ -19,7 +19,7 @@ export default function DepartmentSection({ value, onOpen }: DepartmentSectionPr
       <button
         type="button"
         onClick={onOpen}
-        className="border-gray2 active:border-primary flex h-12 w-full items-center justify-between rounded-xl border bg-white px-4 transition-all outline-none"
+        className="border-gray2 active:border-primary flex h-12 w-full cursor-pointer items-center justify-between rounded-xl border bg-white px-4 transition-all outline-none"
       >
         <span className={`text-bodySm sm:text-body ${hasValue ? 'text-black' : 'text-gray3'}`}>
           {displayText}

@@ -33,11 +33,11 @@ export const useSignUp = () => {
 
   const verifyCode = useCallback(() => {
     if (status.failCount >= 3) {
-      actions.setStatus({ errorKey: 'CODE_LIMIT_EXCEEDED', errorContext: 'verifyCode' });
+      actions.setStatus({ error: 'CODE_LIMIT_EXCEEDED', errorContext: 'verifyCode' });
       return;
     }
     if (status.remainingSeconds <= 0 && !status.isCodeVerified) {
-      actions.setStatus({ errorKey: 'EXPIRED_CODE', errorContext: 'verifyCode' });
+      actions.setStatus({ error: 'EXPIRED_CODE', errorContext: 'verifyCode' });
       return;
     }
     mutations.verifyCode.mutate({ email: inputs.email, emailCode: status.emailCode });

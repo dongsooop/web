@@ -7,6 +7,7 @@ type Scope =
   | 'restaurant'
   | 'auth'
   | 'signup'
+  | 'passwordReset'
   | 'schedule'
   | 'timetable'
   | 'mypage'
@@ -63,12 +64,14 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       common(err) ?? '홈 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
+
   cafeteria: (err) => {
     return (
       common(err) ??
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
+
   restaurant: (err, context) => {
     if (err instanceof ApiError && err.status === HttpStatusCode.CONFLICT) {
       return '이미 등록된 맛집이에요.';
@@ -87,7 +90,9 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     }
 
     if (context === 'duplicate') {
-      return common(err) ?? '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return (
+        common(err) ?? '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      );
     }
 
     if (context === 'like') {
@@ -95,9 +100,11 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     }
 
     return (
-      common(err) ?? '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      common(err) ??
+      '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
+
   schedule: (err, context) => {
     if (context === 'create') {
       return common(err) ?? '일정을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
@@ -111,8 +118,12 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       return common(err) ?? '일정을 삭제하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
     }
 
-    return common(err) ?? '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    return (
+      common(err) ??
+      '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    );
   },
+
   timetable: (err, context) => {
     if (context === 'create') {
       return (
@@ -143,12 +154,15 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     }
 
     return (
-      common(err) ?? '시간표 데이터를 처리하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      common(err) ??
+      '시간표 데이터를 처리하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
     );
   },
+
   mypage: (err) => {
     return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
   },
+
   social: (err, context) => {
     if (context === 'kakaoRateLimit') {
       return socialMessages.rateLimit;
@@ -186,36 +200,37 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
 
     return common(err) ?? socialMessages.login;
   },
+
   auth: (err, context) => {
-    if (context) {
-      if (typeof err === 'string') {
-        switch (err) {
-          case 'EMAIL_NOT_FOUND':
-            return '가입되지 않은 학교 이메일이에요.';
-          case 'INVALID_INPUT':
-            return '이메일 형식이 올바르지 않아요.';
-          case 'PASSWORD_MISMATCH':
-            return '비밀번호가 일치하지 않아요. 다시 확인해 주세요.';
-          case 'CODE_LIMIT_EXCEEDED':
-            return '인증 시도 횟수를 초과했어요. 다시 시도해주세요';
-          default:
-            break;
-        }
-      }
-      if (err instanceof ApiError) {
-        if (context === 'deleteAccount') {
-          return common(err) ?? '회원 탈퇴 중 오류가 발생했어요.';
-        }
-        if (context === 'verifyCode' && err.status === HttpStatusCode.BAD_REQUEST) {
-          return '인증 코드가 일치하지 않아요.';
-        }
+    if (typeof err === 'string') {
+      switch (err) {
+        case 'INPUT_EMAIL_REQUIRED':
+          return '학교 이메일을 입력해 주세요.';
+        case 'INPUT_PASSWORD_REQUIRED':
+          return '비밀번호를 입력해 주세요.';
+        case 'NO_USER_INFO_IN_RESPONSE':
+          return '회원 정보를 불러오지 못했어요. 다시 시도해주세요.';
+        default:
+          break;
       }
     }
+
     if (err instanceof ApiError) {
-      if (err.status === HttpStatusCode.BAD_REQUEST)
+      if (context === 'deleteAccount') {
+        return common(err) ?? '회원 탈퇴 중 오류가 발생했어요.';
+      }
+
+      if (err.status === HttpStatusCode.BAD_REQUEST) {
         return '아이디 또는 비밀번호가 잘못되었습니다.';
-      if (err.status === HttpStatusCode.FORBIDDEN) return '현재 제재 중인 계정입니다.';
-      if (err.status === HttpStatusCode.NOT_FOUND) return '등록된 회원 정보를 찾을 수 없습니다.';
+      }
+
+      if (err.status === HttpStatusCode.FORBIDDEN) {
+        return '현재 제재 중인 계정입니다.';
+      }
+
+      if (err.status === HttpStatusCode.NOT_FOUND) {
+        return '등록된 회원 정보를 찾을 수 없습니다.';
+      }
     }
 
     return common(err) ?? '로그인 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
@@ -223,20 +238,14 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
   signup: (err, context) => {
     if (typeof err === 'string') {
       switch (err) {
-        case 'DUPLICATE_EMAIL':
-          return '이미 가입된 이메일이에요.';
-        case 'DUPLICATE_NICKNAME':
-          return '이미 사용 중인 닉네임이에요.';
         case 'INVALID_EMAIL_DOMAIN':
           return '학교 이메일(@dongyang.ac.kr)만 가입 가능해요.';
-        case 'EMAIL_NOT_FOUND':
-          return '입력하신 이메일을 찾을 수 없어요.\n이메일을 다시 확인해 주세요';
         case 'EXPIRED_CODE':
           return '인증 시간이 만료되었어요. 다시 요청해주세요.';
         case 'CODE_LIMIT_EXCEEDED':
           return '인증 시도 횟수를 초과했어요. 다시 인증 요청을 해주세요.';
-        case 'INVALID_VERIFY_CODE':
-          return '인증 코드가 일치하지 않아요.';
+        case 'INVALID_INPUT':
+          return '이메일 형식이 올바르지 않아요.';
         default:
           break;
       }
@@ -251,12 +260,54 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       if (context === 'checkNickname' && status === HttpStatusCode.CONFLICT) {
         return '이미 사용 중인 닉네임이에요.';
       }
+
+      if (context === 'sendCode' && status === HttpStatusCode.BAD_REQUEST) {
+        return '입력하신 이메일을 찾을 수 없어요.\n이메일을 다시 확인해 주세요';
+      }
+
       if (context === 'verifyCode' && status === HttpStatusCode.BAD_REQUEST) {
         return '인증 코드가 일치하지 않아요.';
       }
     }
 
     return common(err) ?? '회원가입 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+  },
+
+  passwordReset: (err, context) => {
+    if (typeof err === 'string') {
+      switch (err) {
+        case 'INVALID_INPUT':
+          return '이메일 형식이 올바르지 않아요.';
+        case 'PASSWORD_MISMATCH':
+          return '비밀번호가 일치하지 않아요. 다시 확인해 주세요.';
+        case 'INVALID_PASSWORD_FORMAT':
+          return '비밀번호 형식을 다시 확인해 주세요.';
+        case 'CODE_LIMIT_EXCEEDED':
+          return '인증 시도 횟수를 초과했어요. 다시 시도해주세요';
+        default:
+          break;
+      }
+    }
+
+    if (err instanceof ApiError) {
+      if (context === 'verifyCode' && err.status === HttpStatusCode.BAD_REQUEST) {
+        return '인증 코드가 일치하지 않아요.';
+      }
+
+      if (context === 'sendCode' && err.status === HttpStatusCode.BAD_REQUEST) {
+        return '입력하신 이메일을 찾을 수 없어요.\n이메일을 다시 확인해 주세요';
+      }
+
+      if (context === 'reset' && err.status === HttpStatusCode.BAD_REQUEST) {
+        return '입력 정보를 다시 확인해 주세요.';
+      }
+
+      if (err.status === HttpStatusCode.NOT_FOUND) {
+        return '가입되지 않은 학교 이메일이에요.';
+      }
+    }
+
+    return common(err) ?? '비밀번호 재설정 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
   },
 };
 

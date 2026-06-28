@@ -14,7 +14,7 @@ export type SignUpStatus = {
   isCodeSent: boolean;
   isCodeVerified: boolean;
   isNicknameChecked: boolean;
-  errorKey: string | null;
+  error: unknown | null;
   errorContext: string | null;
   remainingSeconds: number;
   emailCode: string;
@@ -50,7 +50,7 @@ const initialStatus: SignUpStatus = {
   isCodeSent: false,
   isCodeVerified: false,
   isNicknameChecked: false,
-  errorKey: null,
+  error: null,
   errorContext: null,
   remainingSeconds: 0,
   emailCode: '',
@@ -71,13 +71,13 @@ export const useSignUpStore = create<SignUpStore>((set) => ({
     setField: (field, value) =>
       set((state) => {
         const isEmailField = field === 'email';
-        const isLimitError = state.status.errorKey === 'CODE_LIMIT_EXCEEDED';
+        const isLimitError = state.status.error === 'CODE_LIMIT_EXCEEDED';
 
         return {
           inputs: { ...state.inputs, [field]: value },
           status: {
             ...state.status,
-            errorKey: isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null,
+            error: isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null,
             errorContext: isEmailField ? null : state.status.errorContext,
             ...(isEmailField
               ? {

@@ -64,7 +64,7 @@ export default function EmailVerificationStep({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex">
+      <div className="flex gap-2">
         <div className="min-w-0 flex-1">
           <SchoolEmailInput
             value={inputs.email}
