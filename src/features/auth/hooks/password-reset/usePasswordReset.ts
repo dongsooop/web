@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
-import { usePasswordResetStore } from '../providers/PasswordResetProvider';
-import { useAuthMutations } from './useAuthMutations';
+import { usePasswordResetStore } from '@/features/auth/providers/PasswordResetProvider';
+import { usePasswordResetMutations } from './usePasswordResetMutations';
 
 export function usePasswordReset() {
   const inputs = usePasswordResetStore((state) => state.inputs);
   const status = usePasswordResetStore((state) => state.status);
   const actions = usePasswordResetStore((state) => state.actions);
 
-  const mutations = useAuthMutations(inputs, status, actions);
+  const mutations = usePasswordResetMutations(inputs, status, actions);
 
   const changeField = useCallback(
     (key: keyof typeof inputs, value: string) => {

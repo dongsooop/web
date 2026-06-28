@@ -1,14 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
-import { checkPasswordResetEmail as checkEmailApi } from '../api/emailValidation';
-import { sendPasswordResetCode as sendCodeApi, verifyPasswordResetCode as verifyCodeApi, resetPassword } from '../client/auth.api';
-import { buildSchoolEmail } from '../validators/authValidators';
+import { checkPasswordResetEmail as checkEmailApi } from '@/features/auth/api/emailValidation';
+import {
+  resetPassword,
+  sendPasswordResetCode as sendCodeApi,
+  verifyPasswordResetCode as verifyCodeApi,
+} from '@/features/auth/client/auth.api';
+import { buildSchoolEmail } from '@/features/auth/validators/authValidators';
 import type {
   PasswordResetInputs,
   PasswordResetStatus,
   PasswordResetStore,
-} from '../stores/passwordResetStore';
+} from '@/features/auth/stores/passwordResetStore';
 
-export function useAuthMutations(
+export function usePasswordResetMutations(
   inputs: PasswordResetInputs,
   status: PasswordResetStatus,
   actions: PasswordResetStore['actions'],

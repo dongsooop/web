@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button';
 import PageHeader from '@/components/ui/PageHeader';
 import EmailVerificationStep from '@/features/auth/components/password-reset/EmailVerificationStep';
 import PasswordResetStep from '@/features/auth/components/password-reset/PasswordResetStep';
-import { usePasswordReset } from '@/features/auth/hooks/usePasswordReset';
+import { usePasswordReset } from '@/features/auth/hooks/password-reset/usePasswordReset';
 import { usePasswordResetStore } from '@/features/auth/providers/PasswordResetProvider';
 import { validatePassword, analyzePassword } from '@/features/auth/validators/authValidators';
 import { getErrorMessage } from '@/lib/errors/messages';
