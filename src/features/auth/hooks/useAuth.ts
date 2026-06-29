@@ -1,18 +1,9 @@
 import { useCallback, useRef } from 'react';
-
 import { useAppCheckStore } from '@/store/useAppCheckStore';
-
-import {
-  deleteAccount as deleteRequest,
-  getSession,
-  logout as logoutRequest,
-  signInGoogleSocial as signInGoogleSocialRequest,
-  signInKakaoSocial as signInKakaoSocialRequest,
-  signIn as signInRequest,
-} from '../client/auth.api';
-import { toUserModel } from '../mapper';
 import { useAuthStore } from '../stores/useAuthStore';
-
+import { useAuthMutations } from './useAuthMutations';
+import { getSession } from '../client/auth.api';
+import { toUserModel } from '../mapper';
 import type { SignInRequest } from '../types/request';
 import type { UserResponse } from '../types/response';
 
@@ -25,42 +16,34 @@ export function useAuth() {
   const isReady = useAuthStore((state) => state.isReady);
   const isExpired = useAuthStore((state) => state.isExpired);
 
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
-  const setReady = useAuthStore((state) => state.setReady);
-  const expireSession = useAuthStore((state) => state.expireSession);
-  const clearExpired = useAuthStore((state) => state.clearExpired);
+  const setUser = useAuthStore((state) => state.actions.setUser);
+  const clearAuth = useAuthStore((state) => state.actions.clearAuth);
+  const setReady = useAuthStore((state) => state.actions.setReady);
+  const expireSession = useAuthStore((state) => state.actions.expireSession);
+  const clearExpired = useAuthStore((state) => state.actions.clearExpired);
 
   const saveSignedInUser = useCallback(
-    (user: UserResponse) => {
-      setUser(toUserModel(user));
+    (userResponse: UserResponse) => {
+      setUser(toUserModel(userResponse));
       clearExpired();
     },
     [clearExpired, setUser],
   );
 
   const initSession = useCallback(async () => {
-    if (initInFlightRef.current) {
-      return;
-    }
-
+    if (initInFlightRef.current) return;
     initInFlightRef.current = true;
     const startTime = Date.now();
 
     try {
       const appCheckToken = useAppCheckStore.getState().token;
-
-      if (!appCheckToken) {
-        return;
-      }
+      if (!appCheckToken) return;
 
       const session = await getSession();
-
       if (session?.isLoggedIn && session.user) {
         saveSignedInUser(session.user);
         return;
       }
-
       clearAuth();
     } catch {
       clearAuth();
@@ -77,69 +60,36 @@ export function useAuth() {
     }
   }, [clearAuth, saveSignedInUser, setReady]);
 
+  const mutations = useAuthMutations(saveSignedInUser, clearAuth, initSession);
+
   const signIn = useCallback(
-    async (payload: SignInRequest) => {
-      const response = await signInRequest(payload);
-
-      if (!response?.user) {
-        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
-      }
-
-      saveSignedInUser(response.user);
-
-      return response;
-    },
-    [saveSignedInUser],
+    (payload: SignInRequest) => mutations.signIn.mutateAsync(payload),
+    [mutations.signIn],
   );
-
   const signInGoogleSocial = useCallback(
-    async (token: string) => {
-      const response = await signInGoogleSocialRequest(token);
-
-      if (!response?.user) {
-        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
-      }
-
-      saveSignedInUser(response.user);
-      return response;
-    },
-    [saveSignedInUser],
+    (token: string) => mutations.signInGoogle.mutateAsync(token),
+    [mutations.signInGoogle],
   );
-
   const signInKakaoSocial = useCallback(
-    async (code: string) => {
-      const response = await signInKakaoSocialRequest(code);
-
-      if (!response?.user) {
-        throw new Error('로그인 응답에 사용자 정보가 없습니다.');
-      }
-
-      saveSignedInUser(response.user);
-      return response;
-    },
-    [saveSignedInUser],
+    (code: string) => mutations.signInKakao.mutateAsync(code),
+    [mutations.signInKakao],
   );
-
-  const logout = useCallback(async () => {
-    try {
-      await logoutRequest();
-    } finally {
-      clearAuth();
-      void initSession();
-    }
-  }, [clearAuth, initSession]);
-
-  const deleteAccount = useCallback(async () => {
-    await deleteRequest();
-    clearAuth();
-    void initSession();
-  }, [clearAuth, initSession]);
+  const logout = useCallback(() => mutations.logout.mutateAsync(), [mutations.logout]);
+  const deleteAccount = useCallback(
+    () => mutations.deleteAccount.mutateAsync(),
+    [mutations.deleteAccount],
+  );
 
   return {
     user,
     isLoggedIn: !!user,
     isReady,
     isExpired,
+    isSubmitting: mutations.signIn.isPending,
+    isSigningGoogle: mutations.signInGoogle.isPending,
+    isSigningKakao: mutations.signInKakao.isPending,
+    isLoggingOut: mutations.logout.isPending,
+    isDeletingAccount: mutations.deleteAccount.isPending,
     initSession,
     signIn,
     signInGoogleSocial,

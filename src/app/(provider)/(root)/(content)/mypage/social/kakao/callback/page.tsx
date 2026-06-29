@@ -12,7 +12,6 @@ import {
   getSocialState,
   isSocialStateValid,
 } from '@/features/auth/lib/socialState';
-import { getErrorMessage } from '@/lib/errors/messages';
 import SocialConnectLayout from '../../_components/SocialConnectLayout';
 
 const kakaoStateKey = 'kakao_oauth_state';
@@ -26,13 +25,17 @@ function KakaoCallbackContent() {
     successPath: '/mypage/social',
     errorPath: '/mypage/social',
     cancelPath: '/mypage/social',
-    appCheckErrorMessage: 'App Check 초기화에 실패했어요. 잠시 후 다시 시도해 주세요.',
+    appCheckErrorKey: 'SOCIAL_SDK',
     context: 'link',
     validateAction: ({ code, state }) => {
       const savedState = getSocialState(kakaoStateKey);
 
-      if (!code || !isSocialStateValid(state, savedState)) {
-        return getErrorMessage('social', new Error(), 'sdk');
+      if (!code) {
+        return 'SOCIAL_SDK';
+      }
+
+      if (!isSocialStateValid(state, savedState)) {
+        return 'SOCIAL_STATE';
       }
 
       return null;

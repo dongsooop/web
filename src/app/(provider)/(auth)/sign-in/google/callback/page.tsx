@@ -1,19 +1,20 @@
 'use client';
 
-import { signInGoogleSocial } from '@/features/auth/client/auth.api';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
-import { toUserModel } from '@/features/auth/mapper';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
-import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
-import { useAuthStore } from '@/features/auth/stores/useAuthStore';
-import { getErrorMessage } from '@/lib/errors/messages';
+import {
+  clearSocialState,
+  getSocialState,
+  isSocialStateValid,
+} from '@/features/auth/lib/socialState';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 const googleStateKey = 'google_signin_state';
 
 export default function GoogleSignInCallbackPage() {
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearExpired = useAuthStore((state) => state.clearExpired);
+  const { signInGoogleSocial } = useAuth();
+
   const message = useSocialCallback({
     result: getGoogleCallbackResult(),
     pendingMessage: '보안 확인 중이에요.',
@@ -25,21 +26,18 @@ export default function GoogleSignInCallbackPage() {
     validateAction: ({ accessToken, state }) => {
       const savedState = getSocialState(googleStateKey);
 
-      if (!accessToken || !isSocialStateValid(state, savedState)) {
-        return getErrorMessage('social', new Error(), 'sdk');
+      if (!accessToken) {
+        return 'SOCIAL_SDK';
+      }
+
+      if (!isSocialStateValid(state, savedState)) {
+        return 'SOCIAL_STATE';
       }
 
       return null;
     },
     runAction: async ({ accessToken }) => {
-      const result = await signInGoogleSocial(accessToken);
-
-      if (!result?.user) {
-        throw new Error(getErrorMessage('social', new Error(), 'login'));
-      }
-
-      setUser(toUserModel(result.user));
-      clearExpired();
+      await signInGoogleSocial(accessToken);
     },
     clearAction: () => {
       clearSocialState(googleStateKey);

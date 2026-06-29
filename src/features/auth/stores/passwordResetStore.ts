@@ -1,95 +1,124 @@
-import { create } from 'zustand';
+import { createStore } from 'zustand/vanilla';
+import type {
+  PasswordResetError,
+  PasswordResetErrorContext,
+} from '@/features/auth/types/error';
 
-interface PasswordResetState {
-  step: 'email' | 'password';
-  inputs: {
-    email: string;
-    code: string;
-    pass: string;
-    passCheck: string;
-  };
-  status: {
-    isEmailChecked: boolean;
-    isCodeSent: boolean;
-    isCodeVerified: boolean;
-    remainingSeconds: number;
-    failCount: number;
-    error: unknown | null;
-    errorContext: string | null;
-  };
-  actions: {
-    setField: (key: keyof PasswordResetState['inputs'], value: string) => void;
-    setStatus: (patch: Partial<PasswordResetState['status']>) => void;
-    tick: () => void;
-    setStep: (step: 'email' | 'password') => void;
-    reset: () => void;
-  };
-}
+export type PasswordResetFormStep = 'email' | 'password';
 
-const initialState = {
-  step: 'email' as const,
-  inputs: { email: '', code: '', pass: '', passCheck: '' },
-  status: {
-    isEmailChecked: false,
-    isCodeSent: false,
-    isCodeVerified: false,
-    remainingSeconds: 0,
-    failCount: 0,
-    error: null,
-    errorContext: null,
-  },
+export type PasswordResetInputs = {
+  email: string;
+  code: string;
+  pwd: string;
+  pwdCheck: string;
 };
 
-export const usePasswordResetStore = create<PasswordResetState>((set) => ({
-  ...initialState,
-  actions: {
-    setField: (key, value) =>
-      set((s) => {
-        const isEmailField = key === 'email';
-        const isLimitError = s.status.error === 'CODE_LIMIT_EXCEEDED';
+export type PasswordResetStatus = {
+  isEmailChecked: boolean;
+  isCodeSent: boolean;
+  isCodeVerified: boolean;
+  remainingSeconds: number;
+  failCount: number;
+  error: PasswordResetError;
+  errorContext: PasswordResetErrorContext | null;
+};
 
-        return {
-          step: isEmailField ? 'email' : s.step,
-          inputs: {
-            ...s.inputs,
-            [key]: value,
-            ...(isEmailField
-              ? {
-                  code: '',
-                  pass: '',
-                  passCheck: '',
-                }
-              : {}),
-          },
+type PasswordResetActions = {
+  setField: (key: keyof PasswordResetInputs, value: string) => void;
+  setStatus: (patch: Partial<PasswordResetStatus>) => void;
+  tick: () => void;
+  setStep: (step: PasswordResetFormStep) => void;
+  reset: () => void;
+};
+
+export type PasswordResetStore = {
+  step: PasswordResetFormStep;
+  inputs: PasswordResetInputs;
+  status: PasswordResetStatus;
+  actions: PasswordResetActions;
+};
+
+const initialInputs: PasswordResetInputs = {
+  email: '',
+  code: '',
+  pwd: '',
+  pwdCheck: '',
+};
+
+const initialStatus: PasswordResetStatus = {
+  isEmailChecked: false,
+  isCodeSent: false,
+  isCodeVerified: false,
+  remainingSeconds: 0,
+  failCount: 0,
+  error: null,
+  errorContext: null,
+};
+
+export const initialPasswordResetState = {
+  step: 'email' as const,
+  inputs: initialInputs,
+  status: initialStatus,
+};
+
+export function createPasswordResetStore() {
+  return createStore<PasswordResetStore>()((set) => ({
+    ...initialPasswordResetState,
+    actions: {
+      setField: (key, value) =>
+        set((state) => {
+          const isEmailField = key === 'email';
+
+          const isCodeLimitError =
+            typeof state.status.error === 'string' && state.status.error === 'CODE_LIMIT_EXCEEDED';
+          const keepCodeLimitError = isCodeLimitError && !isEmailField;
+
+          return {
+            step: isEmailField ? 'email' : state.step,
+            inputs: {
+              ...state.inputs,
+              [key]: value,
+              ...(isEmailField
+                ? {
+                    code: '',
+                    pwd: '',
+                    pwdCheck: '',
+                  }
+                : {}),
+            },
+            status: {
+              ...state.status,
+              error: keepCodeLimitError ? state.status.error : null,
+              errorContext: keepCodeLimitError ? state.status.errorContext : null,
+              ...(isEmailField
+                ? {
+                    isEmailChecked: false,
+                    isCodeSent: false,
+                    isCodeVerified: false,
+                    remainingSeconds: 0,
+                    failCount: 0,
+                  }
+                : {}),
+            },
+          };
+        }),
+
+      setStatus: (patch) =>
+        set((state) => ({
+          status: { ...state.status, ...patch },
+        })),
+
+      tick: () =>
+        set((state) => ({
           status: {
-            ...s.status,
-            error: isEmailField ? null : isLimitError ? s.status.error : null,
-            errorContext: isEmailField ? null : isLimitError ? s.status.errorContext : null,
-            ...(isEmailField
-              ? {
-                  isEmailChecked: false,
-                  isCodeSent: false,
-                  isCodeVerified: false,
-                  remainingSeconds: 0,
-                  failCount: 0,
-                }
-              : {}),
+            ...state.status,
+            remainingSeconds: Math.max(0, state.status.remainingSeconds - 1),
           },
-        };
-      }),
+        })),
 
-    setStatus: (patch) =>
-      set((s) => ({
-        status: { ...s.status, ...patch },
-      })),
+      setStep: (step) => set({ step }),
 
-    tick: () =>
-      set((s) => ({
-        status: { ...s.status, remainingSeconds: Math.max(0, s.status.remainingSeconds - 1) },
-      })),
-
-    setStep: (step) => set({ step }),
-
-    reset: () => set(initialState),
-  },
-}));
+      reset: () => set(initialPasswordResetState),
+    },
+  }));
+}

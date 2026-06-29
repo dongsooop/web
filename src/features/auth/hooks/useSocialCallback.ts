@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { resolveSocialCallbackError, type SocialCallbackResult } from '../lib/socialCallback';
-import { getErrorMessage } from '@/lib/errors/messages';
+import { resolveSocialErrorKey } from '@/features/auth/lib/socialError';
+import type { SocialErrorContext, SocialErrorKey } from '@/features/auth/types/error';
 
 type UseSocialCallbackOptions<T> = {
   result: SocialCallbackResult<T>;
@@ -14,15 +15,15 @@ type UseSocialCallbackOptions<T> = {
   successPath: string;
   errorPath: string;
   cancelPath?: string;
-  appCheckErrorMessage?: string;
-  context: 'login' | 'link' | 'unlink';
-  validateAction?: (payload: T) => string | null;
+  appCheckErrorKey?: SocialErrorKey;
+  context: SocialErrorContext;
+  validateAction?: (payload: T) => SocialErrorKey | null;
   runAction: (payload: T) => Promise<void>;
   clearAction?: () => void;
 };
 
-function buildErrorPath(path: string, message: string) {
-  return `${path}?error=${encodeURIComponent(message)}`;
+function buildErrorPath(path: string, errorKey: SocialErrorKey) {
+  return `${path}?error=${encodeURIComponent(errorKey)}`;
 }
 
 export function useSocialCallback<T>({
@@ -32,7 +33,7 @@ export function useSocialCallback<T>({
   successPath,
   errorPath,
   cancelPath = errorPath,
-  appCheckErrorMessage,
+  appCheckErrorKey,
   context,
   validateAction,
   runAction,
@@ -71,7 +72,7 @@ export function useSocialCallback<T>({
       }
 
       if (result.payload === null) {
-        move(buildErrorPath(errorPath, getErrorMessage('social', new Error(), 'sdk')));
+        move(buildErrorPath(errorPath, 'SOCIAL_SDK'));
         return;
       }
 
@@ -94,7 +95,7 @@ export function useSocialCallback<T>({
         move(
           buildErrorPath(
             errorPath,
-            appCheckErrorMessage ?? getErrorMessage('social', new Error(), 'sdk'),
+            appCheckErrorKey ?? 'SOCIAL_SDK',
           ),
         );
         return;
@@ -122,7 +123,7 @@ export function useSocialCallback<T>({
           return;
         }
 
-        move(buildErrorPath(errorPath, getErrorMessage('social', error, context)));
+        move(buildErrorPath(errorPath, resolveSocialErrorKey(error, context)));
       }
     };
 
@@ -132,7 +133,7 @@ export function useSocialCallback<T>({
       active = false;
     };
   }, [
-    appCheckErrorMessage,
+    appCheckErrorKey,
     cancelPath,
     context,
     errorPath,

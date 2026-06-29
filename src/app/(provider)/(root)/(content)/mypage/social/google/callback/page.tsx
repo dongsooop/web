@@ -8,7 +8,6 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
 import { clearSocialState, getSocialState, isSocialStateValid } from '@/features/auth/lib/socialState';
-import { getErrorMessage } from '@/lib/errors/messages';
 import SocialConnectLayout from '../../_components/SocialConnectLayout';
 
 const googleStateKey = 'google_oauth_state';
@@ -24,13 +23,17 @@ function GoogleCallbackContent() {
     successPath: '/mypage/social',
     errorPath: '/mypage/social',
     cancelPath: '/mypage/social',
-    appCheckErrorMessage: 'App Check 초기화에 실패했어요. 잠시 후 다시 시도해 주세요.',
+    appCheckErrorKey: 'SOCIAL_SDK',
     context: mode,
     validateAction: ({ accessToken, state }) => {
       const savedState = getSocialState(googleStateKey);
 
-      if (!accessToken || !isSocialStateValid(state, savedState)) {
-        return getErrorMessage('social', new Error(), 'sdk');
+      if (!accessToken) {
+        return 'SOCIAL_SDK';
+      }
+
+      if (!isSocialStateValid(state, savedState)) {
+        return 'SOCIAL_STATE';
       }
 
       return null;

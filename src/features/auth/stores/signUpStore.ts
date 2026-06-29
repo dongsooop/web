@@ -1,93 +1,112 @@
-import { create } from 'zustand';
-import { SignUpRequest } from '../types/request';
+import { createStore } from 'zustand/vanilla';
+import type { DepartmentType } from '@/constants/department';
+import type { SignUpErrorContext, SignUpRuntimeError } from '@/features/auth/types/error';
 
-interface SignUpState {
-  inputs: SignUpRequest & { passCheck: string };
-
-  status: {
-    isEmailChecked: boolean;
-    isCodeSent: boolean;
-    isCodeVerified: boolean;
-    isNicknameChecked: boolean;
-    error: string | null;
-    remainingSeconds: number;
-    emailCode: string;
-    dialogMessage: string | null;
-    agreedTerms: boolean;
-    agreedPrivacy: boolean;
-    failCount: number;
-  };
-
-  actions: {
-    setField: (field: keyof SignUpState['inputs'], value: string) => void;
-    setStatus: (status: Partial<SignUpState['status']>) => void;
-    tick: () => void;
-    reset: () => void;
-  };
-}
-
-const initialState = {
-  inputs: {
-    email: '',
-    password: '',
-    passCheck: '',
-    nickname: '',
-    departmentType: '',
-  },
-  status: {
-    isEmailChecked: false,
-    isCodeSent: false,
-    isCodeVerified: false,
-    isNicknameChecked: false,
-    error: null,
-    remainingSeconds: 0,
-    emailCode: '',
-    dialogMessage: null,
-    agreedTerms: false,
-    agreedPrivacy: false,
-    failCount: 0,
-  },
+export type SignUpInputs = {
+  email: string;
+  pwd: string;
+  pwdCheck: string;
+  nickname: string;
+  departmentType: DepartmentType;
 };
 
-export const useSignUpStore = create<SignUpState>((set) => ({
-  ...initialState,
-  actions: {
-    setField: (field, value) =>
-      set((state) => {
-        const isEmailField = field === 'email';
-        const isLimitError = state.status.error === 'CODE_LIMIT_EXCEEDED';
+export type SignUpStatus = {
+  isEmailChecked: boolean;
+  isCodeSent: boolean;
+  isCodeVerified: boolean;
+  isNicknameChecked: boolean;
+  error: SignUpRuntimeError;
+  errorContext: SignUpErrorContext | null;
+  remainingSeconds: number;
+  emailCode: string;
+  dialogMessage: string | null;
+  dialogType: 'success' | 'error' | null;
+  agreedTerms: boolean;
+  agreedPrivacy: boolean;
+  failCount: number;
+};
 
-        return {
-          inputs: { ...state.inputs, [field]: value },
+type SignUpActions = {
+  setField: <K extends keyof SignUpInputs>(field: K, value: SignUpInputs[K]) => void;
+  setStatus: (status: Partial<SignUpStatus>) => void;
+  tick: () => void;
+};
+
+export type SignUpStore = {
+  inputs: SignUpInputs;
+  status: SignUpStatus;
+  actions: SignUpActions;
+};
+
+const initialInputs: SignUpInputs = {
+  email: '',
+  pwd: '',
+  pwdCheck: '',
+  nickname: '',
+  departmentType: 'UNKNOWN',
+};
+
+const initialStatus: SignUpStatus = {
+  isEmailChecked: false,
+  isCodeSent: false,
+  isCodeVerified: false,
+  isNicknameChecked: false,
+  error: null,
+  errorContext: null,
+  remainingSeconds: 0,
+  emailCode: '',
+  dialogMessage: null,
+  dialogType: null,
+  agreedTerms: false,
+  agreedPrivacy: false,
+  failCount: 0,
+};
+
+export const initialSignUpState = {
+  inputs: initialInputs,
+  status: initialStatus,
+};
+
+export function createSignUpStore() {
+  return createStore<SignUpStore>()((set) => ({
+    ...initialSignUpState,
+    actions: {
+      setField: (field, value) =>
+        set((state) => {
+          const isEmailField = field === 'email';
+          const isLimitError = state.status.error === 'CODE_LIMIT_EXCEEDED';
+          const nextError = isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null;
+
+          return {
+            inputs: { ...state.inputs, [field]: value },
+            status: {
+              ...state.status,
+              error: nextError,
+              errorContext: nextError ? state.status.errorContext : null,
+              ...(isEmailField
+                ? {
+                    isEmailChecked: false,
+                    isCodeSent: false,
+                    isCodeVerified: false,
+                    emailCode: '',
+                    failCount: 0,
+                    remainingSeconds: 0,
+                  }
+                : {}),
+              ...(field === 'nickname' ? { isNicknameChecked: false } : {}),
+            },
+          };
+        }),
+
+      setStatus: (newStatus) => set((state) => ({ status: { ...state.status, ...newStatus } })),
+
+      tick: () =>
+        set((state) => ({
           status: {
             ...state.status,
-            error: isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null,
-
-            ...(isEmailField
-              ? {
-                  isEmailChecked: false,
-                  isCodeSent: false,
-                  isCodeVerified: false,
-                  emailCode: '',
-                  failCount: 0,
-                  remainingSeconds: 0,
-                }
-              : {}),
-            ...(field === 'nickname' ? { isNicknameChecked: false } : {}),
+            remainingSeconds: Math.max(0, state.status.remainingSeconds - 1),
           },
-        };
-      }),
-
-    setStatus: (newStatus) => set((state) => ({ status: { ...state.status, ...newStatus } })),
-
-    tick: () =>
-      set((state) => ({
-        status: {
-          ...state.status,
-          remainingSeconds: Math.max(0, state.status.remainingSeconds - 1),
-        },
-      })),
-
-    reset: () => set(initialState),
-  },
-}));
+        })),
+    },
+  }));
+}

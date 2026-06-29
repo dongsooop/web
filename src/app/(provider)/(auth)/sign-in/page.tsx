@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import GoogleProvider from '@/providers/GoogleProvider';
-import SignInForm from './_components/SignInForm';
+import SignInForm from '@/features/auth/components/sign-in/SignInForm';
 
 export const dynamic = 'force-dynamic';
 

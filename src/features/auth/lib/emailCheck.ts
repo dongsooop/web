@@ -1,14 +1,13 @@
-import { ApiError } from '@/lib/api/apiError';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
-
 import { checkEmailDuplicate } from '@/features/auth/client/auth.api';
+import { ApiError } from '@/lib/api/apiError';
 
 export interface EmailCheckResult {
   ok: boolean;
-  reason: 'EMAIL_ALREADY_EXISTS' | 'EMAIL_NOT_FOUND' | 'INVALID_INPUT' | 'UNKNOWN_ERROR' | null;
+  reason: 'EMAIL_NOT_FOUND' | 'INVALID_INPUT' | 'UNKNOWN_ERROR' | null;
 }
 
-async function requestEmailValidation(email: string) {
+async function requestEmailCheck(email: string) {
   try {
     await checkEmailDuplicate({ email });
 
@@ -22,26 +21,12 @@ async function requestEmailValidation(email: string) {
   }
 }
 
-export async function checkSignUpEmail(email: string): Promise<EmailCheckResult> {
-  const response = await requestEmailValidation(email);
-
-  if (response.status === HttpStatusCode.NO_CONTENT) {
-    return { ok: true, reason: null };
-  }
-
-  if (response.status === HttpStatusCode.CONFLICT) {
-    return { ok: false, reason: 'EMAIL_ALREADY_EXISTS' };
-  }
-
-  if (response.status === HttpStatusCode.BAD_REQUEST) {
-    return { ok: false, reason: 'INVALID_INPUT' };
-  }
-
-  return { ok: false, reason: 'UNKNOWN_ERROR' };
+export async function checkSignUpEmail(email: string) {
+  await checkEmailDuplicate({ email });
 }
 
 export async function checkPasswordResetEmail(email: string): Promise<EmailCheckResult> {
-  const response = await requestEmailValidation(email);
+  const response = await requestEmailCheck(email);
 
   if (response.status === HttpStatusCode.CONFLICT) {
     return { ok: true, reason: null };
