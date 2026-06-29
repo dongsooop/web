@@ -16,6 +16,20 @@ type PasswordResetFormProps = {
   from?: string;
 };
 
+const defaultReturnPath = '/sign-in';
+
+function getSafeReturnPath(from?: string) {
+  if (!from) {
+    return defaultReturnPath;
+  }
+
+  if (!from.startsWith('/') || from.startsWith('//')) {
+    return defaultReturnPath;
+  }
+
+  return from;
+}
+
 function stepDescription(step: 'email' | 'password') {
   return step === 'email'
     ? '학교 이메일과 인증 코드를 입력해 주세요.'
@@ -25,6 +39,7 @@ function stepDescription(step: 'email' | 'password') {
 export default function PasswordResetForm({ from }: PasswordResetFormProps) {
   const router = useRouter();
   const showDialog = useDialogStore((state) => state.showDialog);
+  const returnPath = getSafeReturnPath(from);
 
   const step = usePasswordResetStore((state) => state.step);
   const inputs = usePasswordResetStore((state) => state.inputs);
@@ -120,7 +135,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
         content: '비밀번호가 성공적으로 변경되었어요.',
         confirm: '확인',
         isSingleAction: true,
-        onConfirm: () => router.push(from ?? '/sign-in'),
+        onConfirm: () => router.push(returnPath),
       });
     }
   };
