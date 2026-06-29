@@ -12,7 +12,7 @@ import PasswordSection from './PasswordSection';
 import NicknameSection from './NicknameSection';
 import DepartmentSection from './DepartmentSection';
 import { useSignUp } from '@/features/auth/hooks/sign-up/useSignUp';
-import { useSignUpStore } from '@/features/auth/stores/signUpStore';
+import { useSignUpStore } from '@/features/auth/providers/SignUpProvider';
 import { validateNickname, validatePassword } from '@/features/auth/validators/authValidators';
 import { getErrorMessage } from '@/lib/errors/messages';
 
@@ -39,11 +39,6 @@ export default function SignUpForm() {
     checkNickname,
     registerUser,
   } = useSignUp();
-
-  useEffect(() => {
-    actions.reset();
-    return () => actions.reset();
-  }, [actions]);
 
   useEffect(() => {
     if (

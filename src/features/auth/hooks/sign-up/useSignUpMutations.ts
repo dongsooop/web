@@ -1,20 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
 import {
-  checkEmailDuplicate,
   checkNicknameDuplicate,
   sendCode,
   signUp,
   verifyCode,
 } from '@/features/auth/client/auth.api';
-import type {
-  SignUpInputs,
-  SignUpStore,
-} from '@/features/auth/stores/signUpStore';
+import { checkSignUpEmail } from '@/features/auth/lib/emailCheck';
+import type { SignUpInputs, SignUpStore } from '@/features/auth/stores/signUpStore';
 import { buildSchoolEmail } from '@/features/auth/validators/authValidators';
 
 export function useSignUpMutations(actions: SignUpStore['actions']) {
   const emailCheck = useMutation({
-    mutationFn: (email: string) => checkEmailDuplicate({ email }),
+    mutationFn: (email: string) => checkSignUpEmail(email),
     onSuccess: () =>
       actions.setStatus({ isEmailChecked: true, error: null, errorContext: null }),
     onError: (error) => actions.setStatus({ error, errorContext: 'checkEmail' }),

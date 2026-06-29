@@ -75,7 +75,7 @@ export default function PasswordResetForm({ from }: PasswordResetFormProps) {
 
   const errorMessage = useMemo(() => {
     if (!status.error) return '';
-    return getErrorMessage('auth', status.error, status.errorContext ?? undefined);
+    return getErrorMessage('passwordReset', status.error, status.errorContext ?? undefined);
   }, [status.error, status.errorContext]);
 
   const handleNextStepClick = () => {

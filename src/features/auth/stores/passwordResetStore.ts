@@ -1,4 +1,8 @@
 import { createStore } from 'zustand/vanilla';
+import type {
+  PasswordResetError,
+  PasswordResetErrorContext,
+} from '@/features/auth/types/error';
 
 export type PasswordResetFormStep = 'email' | 'password';
 
@@ -15,8 +19,8 @@ export type PasswordResetStatus = {
   isCodeVerified: boolean;
   remainingSeconds: number;
   failCount: number;
-  error: unknown | null;
-  errorContext: string | null;
+  error: PasswordResetError;
+  errorContext: PasswordResetErrorContext | null;
 };
 
 type PasswordResetActions = {

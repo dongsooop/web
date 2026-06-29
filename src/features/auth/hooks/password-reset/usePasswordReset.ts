@@ -39,7 +39,10 @@ export function usePasswordReset() {
       await mutations.reset.mutateAsync();
       return true;
     } catch (error) {
-      actions.setStatus({ error, errorContext: 'reset' });
+      actions.setStatus({
+        error: error instanceof Error ? error : new Error('UNKNOWN_PASSWORD_RESET_ERROR'),
+        errorContext: 'reset',
+      });
       return false;
     }
   }, [mutations.reset, actions]);

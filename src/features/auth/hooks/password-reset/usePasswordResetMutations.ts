@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { checkPasswordResetEmail as checkEmailApi } from '@/features/auth/api/emailValidation';
+import { checkPasswordResetEmail as checkEmailApi } from '@/features/auth/lib/emailCheck';
 import {
   resetPassword,
   sendPasswordResetCode as sendCodeApi,

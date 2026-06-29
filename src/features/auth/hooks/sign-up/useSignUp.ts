@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useSignUpStore } from '@/features/auth/stores/signUpStore';
+import { useSignUpStore } from '@/features/auth/providers/SignUpProvider';
 import { useSignUpMutations } from './useSignUpMutations';
 
 export const useSignUp = () => {
