@@ -20,6 +20,7 @@ export type SignUpStatus = {
   remainingSeconds: number;
   emailCode: string;
   dialogMessage: string | null;
+  dialogType: 'success' | 'error' | null;
   agreedTerms: boolean;
   agreedPrivacy: boolean;
   failCount: number;
@@ -55,6 +56,7 @@ const initialStatus: SignUpStatus = {
   remainingSeconds: 0,
   emailCode: '',
   dialogMessage: null,
+  dialogType: null,
   agreedTerms: false,
   agreedPrivacy: false,
   failCount: 0,

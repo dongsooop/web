@@ -92,8 +92,8 @@ export default function SignUpForm() {
   const submitColor = canSubmit ? 'primary' : 'gray';
 
   const closeDialog = () => {
-    const isSuccess = status.dialogMessage === '회원가입에 성공했습니다.';
-    actions.setStatus({ dialogMessage: null });
+    const isSuccess = status.dialogType === 'success';
+    actions.setStatus({ dialogMessage: null, dialogType: null });
     if (isSuccess) router.push('/sign-in');
   };
 

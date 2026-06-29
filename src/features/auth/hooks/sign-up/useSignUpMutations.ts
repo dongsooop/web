@@ -81,7 +81,10 @@ export function useSignUpMutations(
         departmentType: inputs.departmentType,
       }),
     onSuccess: () => {
-      actions.setStatus({ dialogMessage: '회원가입에 성공했습니다.' });
+      actions.setStatus({
+        dialogMessage: '회원가입에 성공했습니다.',
+        dialogType: 'success',
+      });
     },
     onError: (error) => actions.setStatus({ error, errorContext: 'signUp' }),
   });
