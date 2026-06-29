@@ -18,24 +18,25 @@ export default function PasswordSection({
   const passwordResult = analyzePassword(pwd);
   const isPasswordEmpty = pwd.length === 0;
   const isPasswordMatched = pwd === pwdCheck;
-  const showPasswordError = !isPasswordEmpty && !passwordResult.isValid;
-  const showPasswordMismatch = pwdCheck.length > 0 && !isPasswordMatched;
-  const showPasswordWarning = showPasswordError || showPasswordMismatch;
-  const showPasswordSuccess = passwordResult.isValid && isPasswordMatched;
+  const passError = !isPasswordEmpty && !passwordResult.isValid;
+  const checkError = pwdCheck.length > 0 && !isPasswordMatched;
+  const passSuccess = passwordResult.isValid;
+  const checkSuccess =
+    pwdCheck.length > 0 && passwordResult.isValid && isPasswordMatched;
 
   const guideText = isPasswordEmpty
     ? '영문, 숫자, 특수문자 포함 8자 이상'
     : !passwordResult.isValid
       ? passwordResult.message
-      : showPasswordMismatch
+      : checkError
         ? '비밀번호가 일치하지 않아요'
-        : isPasswordMatched
+        : checkSuccess
           ? '사용 가능한 비밀번호예요'
           : '영문, 숫자, 특수문자 포함 8자 이상';
 
   const guideTone = isPasswordEmpty
     ? 'text-gray4'
-    : showPasswordError || showPasswordMismatch
+    : passError || checkError
       ? 'text-warning'
       : isPasswordMatched
         ? 'text-primary'
@@ -60,16 +61,16 @@ export default function PasswordSection({
           value={pwd}
           onChange={onPwdChange}
           placeholder="비밀번호"
-          hasError={showPasswordWarning}
-          isSuccess={showPasswordSuccess}
+          hasError={passError}
+          isSuccess={passSuccess}
         />
         <AuthInput
           type="password"
           value={pwdCheck}
           onChange={onPwdCheckChange}
           placeholder="비밀번호 확인"
-          hasError={showPasswordWarning}
-          isSuccess={showPasswordSuccess}
+          hasError={checkError}
+          isSuccess={checkSuccess}
         />
       </div>
     </fieldset>
