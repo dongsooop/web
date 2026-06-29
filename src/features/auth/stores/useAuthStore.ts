@@ -1,48 +1,73 @@
 import { create } from 'zustand';
-
 import type { User } from '../types/ui-model';
 
-type AuthStore = {
+export type AuthState = {
   user: User | null;
   isReady: boolean;
   isExpired: boolean;
+  error: unknown | null;
+  errorContext: string | null;
+};
+
+type AuthActions = {
   setUser: (user: User) => void;
   clearAuth: () => void;
   setReady: () => void;
   expireSession: () => void;
   clearExpired: () => void;
+  setError: (error: unknown | null, errorContext: string | null) => void;
 };
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export type AuthStore = AuthState & {
+  actions: AuthActions;
+};
+
+const initialState: AuthState = {
   user: null,
   isReady: false,
   isExpired: false,
-  setUser: (user) =>
-    set({
-      user,
-      isExpired: false,
-    }),
+  error: null,
+  errorContext: null,
+};
 
-  clearAuth: () =>
-    set({
-      user: null,
-      isExpired: false,
-    }),
+export const useAuthStore = create<AuthStore>((set) => ({
+  ...initialState,
+  actions: {
+    setUser: (user) =>
+      set({
+        user,
+        isExpired: false,
+      }),
 
-  setReady: () =>
-    set({
-      isReady: true,
-    }),
+    clearAuth: () =>
+      set({
+        user: null,
+        isExpired: false,
+        error: null,
+        errorContext: null,
+      }),
 
-  expireSession: () =>
-    set({
-      user: null,
-      isExpired: true,
-      isReady: true,
-    }),
+    setReady: () =>
+      set({
+        isReady: true,
+      }),
 
-  clearExpired: () =>
-    set({
-      isExpired: false,
-    }),
+    expireSession: () =>
+      set({
+        user: null,
+        isExpired: true,
+        isReady: true,
+      }),
+
+    clearExpired: () =>
+      set({
+        isExpired: false,
+      }),
+
+    setError: (error, errorContext) =>
+      set({
+        error,
+        errorContext,
+      }),
+  },
 }));

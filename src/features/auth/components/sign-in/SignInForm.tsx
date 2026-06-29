@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Script from 'next/script';
@@ -11,11 +11,9 @@ import SchoolEmailInput from '@/features/auth/components/common/SchoolEmailInput
 import AuthInput from '@/features/auth/components/common/AuthInput';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
-import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
-import { useSocialError } from '@/features/auth/hooks/useSocialError';
+import { useAuthStore } from '@/features/auth/stores/useAuthStore';
+import { useAuthSocial } from '@/features/auth/hooks/useAuthSocial';
 import { getErrorMessage } from '@/lib/errors/messages';
-import { useDialogStore } from '@/store/useDialogStore';
 
 const kakaoSdkUrl = 'https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js';
 
@@ -25,149 +23,51 @@ type SignInFormProps = {
 
 export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const router = useRouter();
-  const { signIn, signInGoogleSocial } = useAuth();
-  const showDialog = useDialogStore((state) => state.showDialog);
+
+  const error = useAuthStore((state) => state.error);
+  const errorContext = useAuthStore((state) => state.errorContext);
+  const setError = useAuthStore((state) => state.actions.setError);
+
+  const { signIn, isSubmitting } = useAuth();
+  const { socialLogin, setIsKakaoReady, kakao } = useAuthSocial({ kakaoJsKey });
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [loadingPlatform, setLoadingPlatform] = useState<'google' | 'kakao' | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isKakaoReady, setIsKakaoReady] = useState(false);
-
-  useEffect(() => {
-    const sdk = window.Kakao;
-
-    if (!sdk || !kakaoJsKey) {
-      setIsKakaoReady(false);
-      return;
-    }
-
-    try {
-      if (!sdk.isInitialized()) {
-        sdk.init(kakaoJsKey);
-      }
-
-      setIsKakaoReady(true);
-    } catch {
-      setIsKakaoReady(false);
-    }
-  }, [kakaoJsKey]);
-
-  const openSocialErrorDialog = (message: string) => {
-    setLoadingPlatform(null);
-
-    showDialog({
-      title: '소셜 로그인 오류',
-      content: message,
-      confirm: '확인',
-      isSingleAction: true,
-      color: 'danger',
-      onConfirm: () => {},
-    });
-  };
-
-  useSocialError((message) => {
-    openSocialErrorDialog(message);
-  }, '/sign-in');
-
-  const kakao = useKakaoLink({
-    jsKey: kakaoJsKey,
-    stateKey: 'kakao_signin_state',
-    stateType: 'signin',
-    onError: openSocialErrorDialog,
-    onFinish: () => {
-      setLoadingPlatform(null);
-    },
-  });
-
-  const google = useGoogleLink({
-    onToken: async (token) => {
-      await signInGoogleSocial(token);
-      router.push('/');
-    },
-    onError: openSocialErrorDialog,
-    onFinish: () => {
-      setLoadingPlatform(null);
-    },
-    context: 'login',
-    redirectPath: '/sign-in/google/callback',
-    stateKey: 'google_signin_state',
-    stateType: 'signin',
-  });
+  const errorMessage = error
+    ? getErrorMessage('auth', error, errorContext ?? undefined)
+    : null;
 
   const handleLogin = async () => {
-    if (isSigningIn) return;
-
-    setErrorMessage(null);
-
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail) {
-      setErrorMessage('학교 Gmail을 입력해 주세요.');
+      setError('INPUT_EMAIL_REQUIRED', 'signIn');
       return;
     }
-
     if (!trimmedPassword) {
-      setErrorMessage('비밀번호를 입력해 주세요.');
+      setError('INPUT_PASSWORD_REQUIRED', 'signIn');
       return;
     }
 
     try {
-      setIsSigningIn(true);
-
       await signIn({
         email: `${trimmedEmail}@dongyang.ac.kr`,
         password: trimmedPassword,
       });
-
       router.push('/');
-    } catch (error) {
-      setErrorMessage(getErrorMessage('auth', error));
-    } finally {
-      setIsSigningIn(false);
-    }
+    } catch {}
   };
 
-  const handleSignUp = () => {
-    router.push('/sign-up');
-  };
-
-  const handlePasswordReset = () => {
-    router.push('/password-reset?from=sign-in');
-  };
-
-  const handleSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']> = async (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    await handleLogin();
-  };
-
-  const socialLogin = (platform: 'kakao' | 'google') => {
-    if (isSigningIn || loadingPlatform) {
-      return;
-    }
-
-    setErrorMessage(null);
-    setLoadingPlatform(platform);
-
-    if (platform === 'google') {
-      google.start();
-      return;
-    }
-
-    if (!isKakaoReady) {
-      openSocialErrorDialog('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-
-    kakao.start();
+    void handleLogin();
   };
 
   return (
-    <div className="max-w-form mx-auto flex min-h-screen w-full flex-col items-center justify-center bg-white px-4">
-      <section className="flex w-full flex-col items-center gap-4 pt-4">
+    <div className="flex min-h-screen w-full justify-center bg-white px-4">
+      <section className="max-w-form flex w-full flex-col items-center justify-center gap-4 pt-4">
         <Script
           src={kakaoSdkUrl}
           strategy="afterInteractive"
@@ -175,13 +75,10 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
             kakao.init();
             setIsKakaoReady(true);
           }}
-          onError={() => {
-            setIsKakaoReady(false);
-          }}
+          onError={() => setIsKakaoReady(false)}
         />
 
         <div className="h-4" />
-
         <div className="flex items-center">
           <Image
             src="/img/logo.svg"
@@ -219,17 +116,17 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
             </p>
           )}
 
-          <Button fullWidth type="submit" color="primary" isLoading={isSigningIn}>
+          <Button fullWidth type="submit" color="primary" isLoading={isSubmitting}>
             로그인
           </Button>
 
-          <Button fullWidth type="button" color="outline" onClick={handleSignUp}>
+          <Button fullWidth type="button" color="outline" onClick={() => router.push('/sign-up')}>
             회원가입
           </Button>
 
           <button
             type="button"
-            onClick={handlePasswordReset}
+            onClick={() => router.push('/password-reset?from=sign-in')}
             className="text-normal text-gray4 min-h-11 cursor-pointer font-bold"
           >
             비밀번호 변경

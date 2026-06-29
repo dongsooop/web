@@ -255,10 +255,10 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       const { status } = err;
 
       if (context === 'checkEmail' && status === HttpStatusCode.CONFLICT) {
-        return '이미 사용 중인 이메일이에요.';
+        return '사용 중인 이메일이에요.';
       }
       if (context === 'checkNickname' && status === HttpStatusCode.CONFLICT) {
-        return '이미 사용 중인 닉네임이에요.';
+        return '사용 중인 닉네임이에요.';
       }
 
       if (context === 'sendCode' && status === HttpStatusCode.BAD_REQUEST) {
