@@ -16,11 +16,17 @@ import { buildSchoolEmail } from '@/features/auth/validators/authValidators';
 export function useSignUpMutations(
   actions: SignUpStore['actions'],
   status: SignUpStatus,
+  email: SignUpInputs['email'],
 ) {
   const emailCheck = useMutation({
     mutationFn: (email: string) => checkSignUpEmail(email),
-    onSuccess: () =>
-      actions.setStatus({ isEmailChecked: true, error: null, errorContext: null }),
+    onSuccess: (_, requestedEmail) => {
+      if (email !== requestedEmail) {
+        return;
+      }
+
+      actions.setStatus({ isEmailChecked: true, error: null, errorContext: null });
+    },
     onError: (error) => actions.setStatus({ error, errorContext: 'checkEmail' }),
   });
 
@@ -33,7 +39,11 @@ export function useSignUpMutations(
 
   const sendCodeMut = useMutation({
     mutationFn: (email: string) => sendCode({ userEmail: buildSchoolEmail(email) }),
-    onSuccess: () => {
+    onSuccess: (_, requestedEmail) => {
+      if (email !== requestedEmail) {
+        return;
+      }
+
       actions.setStatus({
         isCodeSent: true,
         error: null,

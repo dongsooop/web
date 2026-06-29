@@ -7,7 +7,7 @@ export const useSignUp = () => {
   const status = useSignUpStore((state) => state.status);
   const actions = useSignUpStore((state) => state.actions);
 
-  const mutations = useSignUpMutations(actions, status);
+  const mutations = useSignUpMutations(actions, status, inputs.email);
 
   const changeField = useCallback(
     <K extends keyof typeof inputs>(key: K, value: (typeof inputs)[K]) => {
