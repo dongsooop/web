@@ -9,6 +9,7 @@ import {
 } from '../client/auth.api';
 import type { SignInRequest } from '../types/request';
 import type { UserResponse } from '../types/response';
+import type { AuthErrorContext, AuthErrorKey } from '../types/error';
 
 export function useAuthMutations(
   saveSignedInUser: (user: UserResponse) => void,
@@ -16,6 +17,15 @@ export function useAuthMutations(
   initSession: () => Promise<void>,
 ) {
   const setError = useAuthStore((state) => state.actions.setError);
+  const clearError = () => setError(null, null);
+  const setAuthError = (error: unknown, context: AuthErrorContext) => {
+    if (error instanceof Error && error.message === 'NO_USER_INFO_IN_RESPONSE') {
+      setError(error.message as AuthErrorKey, context);
+      return;
+    }
+
+    setError(error instanceof Error ? error : new Error('UNKNOWN_AUTH_ERROR'), context);
+  };
 
   const signInMut = useMutation({
     mutationFn: async (payload: SignInRequest) => {
@@ -25,9 +35,9 @@ export function useAuthMutations(
     },
     onSuccess: (response) => {
       saveSignedInUser(response.user);
-      setError(null, null);
+      clearError();
     },
-    onError: (error) => setError(error, 'signIn'),
+    onError: (error) => setAuthError(error, 'signIn'),
   });
 
   const signInGoogleMut = useMutation({
@@ -38,9 +48,8 @@ export function useAuthMutations(
     },
     onSuccess: (response) => {
       saveSignedInUser(response.user);
-      setError(null, null);
+      clearError();
     },
-    onError: (error) => setError(error, 'signInGoogle'),
   });
 
   const signInKakaoMut = useMutation({
@@ -51,9 +60,8 @@ export function useAuthMutations(
     },
     onSuccess: (response) => {
       saveSignedInUser(response.user);
-      setError(null, null);
+      clearError();
     },
-    onError: (error) => setError(error, 'signInKakao'),
   });
 
   const logoutMut = useMutation({

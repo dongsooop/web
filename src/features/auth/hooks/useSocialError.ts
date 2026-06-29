@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { SocialErrorKey } from '@/features/auth/types/error';
 
-export function useSocialError(setMessage: (message: string) => void, path = '/mypage/social') {
+export function useSocialError(setErrorKey: (errorKey: SocialErrorKey) => void, path = '/mypage/social') {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -14,7 +15,7 @@ export function useSocialError(setMessage: (message: string) => void, path = '/m
       return;
     }
 
-    setMessage(error);
+    setErrorKey(error as SocialErrorKey);
     router.replace(path, { scroll: false });
-  }, [path, router, searchParams, setMessage]);
+  }, [path, router, searchParams, setErrorKey]);
 }

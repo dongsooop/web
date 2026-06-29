@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { useSocialCallback } from '@/features/auth/hooks/useSocialCallback';
 import { getGoogleCallbackResult } from '@/features/auth/lib/socialCallback';
@@ -10,13 +9,10 @@ import {
   isSocialStateValid,
 } from '@/features/auth/lib/socialState';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/stores/useAuthStore';
-import { getErrorMessage } from '@/lib/errors/messages';
 
 const googleStateKey = 'google_signin_state';
 
 export default function GoogleSignInCallbackPage() {
-  const setError = useAuthStore((state) => state.actions.setError);
   const { signInGoogleSocial } = useAuth();
 
   const message = useSocialCallback({
@@ -30,20 +26,18 @@ export default function GoogleSignInCallbackPage() {
     validateAction: ({ accessToken, state }) => {
       const savedState = getSocialState(googleStateKey);
 
-      if (!accessToken || !isSocialStateValid(state, savedState)) {
-        return getErrorMessage('social', new Error(), 'sdk');
+      if (!accessToken) {
+        return 'SOCIAL_SDK';
+      }
+
+      if (!isSocialStateValid(state, savedState)) {
+        return 'SOCIAL_STATE';
       }
 
       return null;
     },
     runAction: async ({ accessToken }) => {
-      try {
-        await signInGoogleSocial(accessToken);
-      } catch (error) {
-        const errorMsg = getErrorMessage('social', error, 'login');
-        setError(errorMsg, 'signInGoogle');
-        throw new Error(errorMsg);
-      }
+      await signInGoogleSocial(accessToken);
     },
     clearAction: () => {
       clearSocialState(googleStateKey);

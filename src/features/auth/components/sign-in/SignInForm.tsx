@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Script from 'next/script';
@@ -64,6 +64,14 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
     event.preventDefault();
     void handleLogin();
   };
+
+  useEffect(() => {
+    setError(null, null);
+
+    return () => {
+      setError(null, null);
+    };
+  }, [setError]);
 
   return (
     <div className="flex min-h-screen w-full justify-center bg-white px-4">

@@ -11,6 +11,7 @@ import { useGoogleLink } from '@/features/auth/hooks/useGoogleLink';
 import { useKakaoLink } from '@/features/auth/hooks/useKakaoLink';
 import { useSocialError } from '@/features/auth/hooks/useSocialError';
 import { buildSocialConnectItems } from '@/features/auth/social';
+import type { SocialErrorKey } from '@/features/auth/types/error';
 import type { LoginPlatform, SocialConnectItem } from '@/features/auth/types/ui-model';
 import { getErrorMessage } from '@/lib/errors/messages';
 import SocialConnectCard from './SocialConnectCard';
@@ -37,6 +38,10 @@ function getListErrorMessage(error: unknown) {
   return getErrorMessage('social', error, 'state');
 }
 
+function getActionErrorMessage(errorKey: SocialErrorKey) {
+  return getErrorMessage('social', errorKey);
+}
+
 export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }) {
   const { isReady, isRedirecting } = useAuthGuard('/mypage');
   const [items, setItems] = useState<SocialConnectItem[]>(defaultItems);
@@ -45,8 +50,8 @@ export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }
   const [loadingPlatform, setLoadingPlatform] = useState<LoginPlatform | null>(null);
   const [actionMessage, setActionMessage] = useState<ActionMessage | null>(null);
 
-  useSocialError((message) => {
-    setActionMessage({ tone: 'error', message });
+  useSocialError((errorKey) => {
+    setActionMessage({ tone: 'error', message: getActionErrorMessage(errorKey) });
   });
 
   const stopLoading = () => {
@@ -54,9 +59,10 @@ export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }
   };
 
   const kakao = useKakaoLink({
+    context: 'link',
     jsKey: kakaoJsKey,
-    onError: (message) => {
-      setActionMessage({ tone: 'error', message });
+    onError: (errorKey) => {
+      setActionMessage({ tone: 'error', message: getActionErrorMessage(errorKey) });
     },
     onFinish: stopLoading,
   });
@@ -94,8 +100,8 @@ export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }
       await linkGoogleSocial(token);
       await refreshSocialState();
     },
-    onError: (message) => {
-      setActionMessage({ tone: 'error', message });
+    onError: (errorKey) => {
+      setActionMessage({ tone: 'error', message: getActionErrorMessage(errorKey) });
     },
     onFinish: stopLoading,
     context: 'link',
@@ -109,8 +115,8 @@ export default function SocialConnectList({ kakaoJsKey }: { kakaoJsKey: string }
       applyUnlink('google');
       showActionMessage('success', '구글 계정 연결이 해제되었어요.');
     },
-    onError: (message) => {
-      setActionMessage({ tone: 'error', message });
+    onError: (errorKey) => {
+      setActionMessage({ tone: 'error', message: getActionErrorMessage(errorKey) });
     },
     onFinish: stopLoading,
     context: 'unlink',

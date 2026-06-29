@@ -1,5 +1,6 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '../api/apiError';
+import type { SocialErrorKey } from '@/features/auth/types/error';
 
 type Scope =
   | 'home'
@@ -164,6 +165,29 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
   },
 
   social: (err, context) => {
+    if (typeof err === 'string') {
+      switch (err as SocialErrorKey) {
+        case 'SOCIAL_KAKAO_RATE_LIMIT':
+          return socialMessages.rateLimit;
+        case 'SOCIAL_SDK':
+          return socialMessages.login;
+        case 'SOCIAL_STATE':
+          return socialMessages.state;
+        case 'SOCIAL_MISSING_LINK':
+          return socialMessages.missingLink;
+        case 'SOCIAL_UNAUTHORIZED_UNLINK':
+          return socialMessages.unauthorizedUnlink;
+        case 'SOCIAL_LINK':
+          return socialMessages.link;
+        case 'SOCIAL_UNLINK':
+          return socialMessages.unlink;
+        case 'SOCIAL_LOGIN':
+          return socialMessages.login;
+        default:
+          break;
+      }
+    }
+
     if (context === 'kakaoRateLimit') {
       return socialMessages.rateLimit;
     }
@@ -278,6 +302,10 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       switch (err) {
         case 'INVALID_INPUT':
           return '이메일 형식이 올바르지 않아요.';
+        case 'EMAIL_NOT_FOUND':
+          return '가입되지 않은 학교 이메일이에요.';
+        case 'UNKNOWN_ERROR':
+          return '비밀번호 재설정 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
         case 'PASSWORD_MISMATCH':
           return '비밀번호가 일치하지 않아요. 다시 확인해 주세요.';
         case 'INVALID_PASSWORD_FORMAT':

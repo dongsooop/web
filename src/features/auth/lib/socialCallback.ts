@@ -1,6 +1,6 @@
 import type { ReadonlyURLSearchParams } from 'next/navigation';
-
-import { getErrorMessage } from '@/lib/errors/messages';
+import { resolveSocialCallbackErrorKey } from '@/features/auth/lib/socialError';
+import type { SocialErrorKey } from '@/features/auth/types/error';
 
 export type SocialCallbackResult<T> = {
   payload: T | null;
@@ -26,16 +26,8 @@ function getHashParams() {
   return new URLSearchParams(window.location.hash.replace(/^#/, ''));
 }
 
-export function resolveSocialCallbackError(error: string, description: string) {
-  if (description) {
-    return description;
-  }
-
-  if (error === 'access_denied') {
-    return null;
-  }
-
-  return getErrorMessage('social', new Error(), 'sdk');
+export function resolveSocialCallbackError(error: string, description: string): SocialErrorKey | null {
+  return resolveSocialCallbackErrorKey(error, description);
 }
 
 export function getGoogleCallbackResult(): SocialCallbackResult<GoogleCallbackPayload> {

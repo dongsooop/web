@@ -11,14 +11,11 @@ import {
   isSocialStateValid,
 } from '@/features/auth/lib/socialState';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/stores/useAuthStore';
-import { getErrorMessage } from '@/lib/errors/messages';
 
 const kakaoStateKey = 'kakao_signin_state';
 
 function KakaoSignInCallbackContent() {
   const searchParams = useSearchParams();
-  const setError = useAuthStore((state) => state.actions.setError);
   const { signInKakaoSocial } = useAuth();
 
   const message = useSocialCallback({
@@ -32,20 +29,18 @@ function KakaoSignInCallbackContent() {
     validateAction: ({ code, state }) => {
       const savedState = getSocialState(kakaoStateKey);
 
-      if (!code || !isSocialStateValid(state, savedState)) {
-        return getErrorMessage('social', new Error(), 'sdk');
+      if (!code) {
+        return 'SOCIAL_SDK';
+      }
+
+      if (!isSocialStateValid(state, savedState)) {
+        return 'SOCIAL_STATE';
       }
 
       return null;
     },
     runAction: async ({ code }) => {
-      try {
-        await signInKakaoSocial(code);
-      } catch (error) {
-        const errorMsg = getErrorMessage('social', error, 'login');
-        setError(errorMsg, 'signInKakao');
-        throw new Error(errorMsg);
-      }
+      await signInKakaoSocial(code);
     },
     clearAction: () => {
       clearSocialState(kakaoStateKey);

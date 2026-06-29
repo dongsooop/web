@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import type { User } from '../types/ui-model';
+import type { AuthError, AuthErrorContext } from '../types/error';
 
 export type AuthState = {
   user: User | null;
   isReady: boolean;
   isExpired: boolean;
-  error: unknown | null;
-  errorContext: string | null;
+  error: AuthError;
+  errorContext: AuthErrorContext | null;
 };
 
 type AuthActions = {
@@ -15,7 +16,7 @@ type AuthActions = {
   setReady: () => void;
   expireSession: () => void;
   clearExpired: () => void;
-  setError: (error: unknown | null, errorContext: string | null) => void;
+  setError: (error: AuthError, errorContext: AuthErrorContext | null) => void;
 };
 
 export type AuthStore = AuthState & {
@@ -37,6 +38,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({
         user,
         isExpired: false,
+        error: null,
+        errorContext: null,
       }),
 
     clearAuth: () =>
@@ -57,6 +60,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         user: null,
         isExpired: true,
         isReady: true,
+        error: null,
+        errorContext: null,
       }),
 
     clearExpired: () =>

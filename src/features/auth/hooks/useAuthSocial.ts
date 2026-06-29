@@ -6,6 +6,8 @@ import { useGoogleLink } from './useGoogleLink';
 import { useKakaoLink } from './useKakaoLink';
 import { useSocialError } from './useSocialError';
 import { useDialogStore } from '@/store/useDialogStore';
+import { getErrorMessage } from '@/lib/errors/messages';
+import type { SocialErrorKey } from '@/features/auth/types/error';
 
 type UseAuthSocialProps = {
   kakaoJsKey: string;
@@ -33,10 +35,10 @@ export function useAuthSocial({ kakaoJsKey }: UseAuthSocialProps) {
     }
   }, [kakaoJsKey]);
 
-  const openSocialErrorDialog = (message: string) => {
+  const openSocialErrorDialog = (errorKey: SocialErrorKey) => {
     showDialog({
       title: '소셜 로그인 오류',
-      content: message,
+      content: getErrorMessage('social', errorKey),
       confirm: '확인',
       isSingleAction: true,
       color: 'danger',
@@ -44,11 +46,12 @@ export function useAuthSocial({ kakaoJsKey }: UseAuthSocialProps) {
     });
   };
 
-  useSocialError((message) => {
-    openSocialErrorDialog(message);
+  useSocialError((errorKey) => {
+    openSocialErrorDialog(errorKey);
   }, '/sign-in');
 
   const kakao = useKakaoLink({
+    context: 'login',
     jsKey: kakaoJsKey,
     stateKey: 'kakao_signin_state',
     stateType: 'signin',
@@ -78,7 +81,7 @@ export function useAuthSocial({ kakaoJsKey }: UseAuthSocialProps) {
       return;
     }
     if (!isKakaoReady) {
-      openSocialErrorDialog('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
+      openSocialErrorDialog('SOCIAL_SDK');
       return;
     }
     kakao.start();
