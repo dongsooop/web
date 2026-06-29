@@ -73,13 +73,14 @@ export function createSignUpStore() {
         set((state) => {
           const isEmailField = field === 'email';
           const isLimitError = state.status.error === 'CODE_LIMIT_EXCEEDED';
+          const nextError = isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null;
 
           return {
             inputs: { ...state.inputs, [field]: value },
             status: {
               ...state.status,
-              error: isEmailField ? null : isLimitError ? 'CODE_LIMIT_EXCEEDED' : null,
-              errorContext: isEmailField ? null : state.status.errorContext,
+              error: nextError,
+              errorContext: nextError ? state.status.errorContext : null,
               ...(isEmailField
                 ? {
                     isEmailChecked: false,
