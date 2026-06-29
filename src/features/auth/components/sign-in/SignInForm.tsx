@@ -28,8 +28,14 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const errorContext = useAuthStore((state) => state.errorContext);
   const setError = useAuthStore((state) => state.actions.setError);
 
-  const { signIn, isSubmitting } = useAuth();
-  const { socialLogin, setIsKakaoReady, kakao } = useAuthSocial({ kakaoJsKey });
+  const { signIn, signInGoogleSocial, isSubmitting, isSigningGoogle, isSigningKakao } = useAuth();
+  const { socialLogin, setIsKakaoReady, kakao } = useAuthSocial({
+    kakaoJsKey,
+    signInGoogleSocial,
+    isSubmitting,
+    isSigningGoogle,
+    isSigningKakao,
+  });
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

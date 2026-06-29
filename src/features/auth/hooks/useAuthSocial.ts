@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from './useAuth';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useGoogleLink } from './useGoogleLink';
 import { useKakaoLink } from './useKakaoLink';
@@ -11,14 +10,22 @@ import type { SocialErrorKey } from '@/features/auth/types/error';
 
 type UseAuthSocialProps = {
   kakaoJsKey: string;
+  signInGoogleSocial: (token: string) => Promise<unknown>;
+  isSubmitting: boolean;
+  isSigningGoogle: boolean;
+  isSigningKakao: boolean;
 };
 
-export function useAuthSocial({ kakaoJsKey }: UseAuthSocialProps) {
+export function useAuthSocial({
+  kakaoJsKey,
+  signInGoogleSocial,
+  isSubmitting,
+  isSigningGoogle,
+  isSigningKakao,
+}: UseAuthSocialProps) {
   const router = useRouter();
   const showDialog = useDialogStore((state) => state.showDialog);
   const setError = useAuthStore((state) => state.actions.setError);
-  const { signInGoogleSocial, isSubmitting, isSigningGoogle, isSigningKakao } = useAuth();
-  
   const [isKakaoReady, setIsKakaoReady] = useState(false);
 
   useEffect(() => {
