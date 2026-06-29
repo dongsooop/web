@@ -46,13 +46,12 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
 
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
 
     if (!trimmedEmail) {
       setError('INPUT_EMAIL_REQUIRED', 'signIn');
       return;
     }
-    if (!trimmedPassword) {
+    if (!password) {
       setError('INPUT_PASSWORD_REQUIRED', 'signIn');
       return;
     }
@@ -60,7 +59,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
     try {
       await signIn({
         email: `${trimmedEmail}@dongyang.ac.kr`,
-        password: trimmedPassword,
+        password,
       });
       router.push('/');
     } catch {}
