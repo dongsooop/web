@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { isPasswordResetErrorKey } from '@/features/auth/lib/error';
 import { usePasswordResetStore } from '@/features/auth/providers/PasswordResetProvider';
 import { usePasswordResetMutations } from './usePasswordResetMutations';
 
@@ -40,7 +41,10 @@ export function usePasswordReset() {
       return true;
     } catch (error) {
       actions.setStatus({
-        error: error instanceof Error ? error : new Error('UNKNOWN_PASSWORD_RESET_ERROR'),
+        error:
+          error instanceof Error || isPasswordResetErrorKey(error)
+            ? error
+            : new Error('UNKNOWN_PASSWORD_RESET_ERROR'),
         errorContext: 'reset',
       });
       return false;

@@ -23,7 +23,7 @@ export function usePasswordResetMutations(
       actions.setStatus({
         isEmailChecked: res.ok,
         error: res.ok ? null : res.reason,
-        errorContext: 'emailCheck',
+        errorContext: res.ok ? null : 'emailCheck',
       });
     },
     onError: (error) => actions.setStatus({ error, errorContext: 'emailCheck' }),
