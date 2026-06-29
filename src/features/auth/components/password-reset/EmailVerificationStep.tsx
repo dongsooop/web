@@ -33,13 +33,18 @@ export default function EmailVerificationStep({
   const trimmedCode = inputs.code.trim();
   const isCodeLimitExceeded = status.error === 'CODE_LIMIT_EXCEEDED';
   const isCodeTimerRunning = status.isCodeSent && status.remainingSeconds > 0;
-  const isVerifyBlocked = isCodeLimitExceeded || !status.isCodeSent;
+  const isCodeExpired = status.isCodeSent && !status.isCodeVerified && status.remainingSeconds <= 0;
+  const isVerifyBlocked = isCodeLimitExceeded || isCodeExpired || !status.isCodeSent;
 
   const canCheckEmail = !!trimmedEmail && !status.isEmailChecked;
   const canSendCode =
     status.isEmailChecked && !status.isCodeVerified && (isCodeLimitExceeded || !isCodeTimerRunning);
   const canVerifyCode =
-    status.isCodeSent && !status.isCodeVerified && !!trimmedCode && !isCodeLimitExceeded;
+    status.isCodeSent &&
+    !status.isCodeVerified &&
+    !!trimmedCode &&
+    !isCodeLimitExceeded &&
+    !isCodeExpired;
 
   const checkEmailColor = canCheckEmail ? 'primary' : 'gray';
   const sendCodeColor = canSendCode ? 'primary' : 'gray';
