@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
@@ -18,7 +18,7 @@ import { lockBody, unlockBody } from '@/lib/body-lock';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useDialogStore } from '@/store/useDialogStore';
 import { useToastStore } from '@/store/useToastStore';
-import { toDateKey } from '@/utils/date';
+import { parseMonthKey, toDateKey, toMonthKey } from '@/utils/date';
 import { useScheduleBoardData } from '../hooks/useScheduleBoardData';
 import ScheduleCalendar from './ScheduleCalendar';
 import ScheduleDetailPanel from './ScheduleDetailPanel';
@@ -51,7 +51,28 @@ function descriptionText() {
   return '학사 일정과 개인 일정을 확인하고 관리할 수 있어요.';
 }
 
-export default function ScheduleBoard() {
+function monthView(month: string | undefined, today: Date) {
+  const nextMonth = parseMonthKey(month?.trim());
+
+  if (!nextMonth) {
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }
+
+  const [year, monthNumber] = nextMonth.split('-').map(Number);
+
+  if (!year || !monthNumber) {
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }
+
+  return new Date(year, monthNumber - 1, 1);
+}
+
+type ScheduleBoardProps = {
+  month?: string;
+};
+
+export default function ScheduleBoard({ month }: ScheduleBoardProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const { isLoggedIn, isReady } = useAuth();
   const openLoginDialog = useLoginRequiredDialog();
@@ -61,10 +82,12 @@ export default function ScheduleBoard() {
     () => false,
   );
   const [today] = useState(() => new Date());
+  const targetView = useMemo(() => monthView(month, today), [month, today]);
+  const targetKey = useMemo(() => toDateKey(targetView), [targetView]);
   const [viewState, setViewState] = useState<ScheduleViewState>(() => ({
-    selected: toDateKey(today),
+    selected: targetKey,
     tab: 'MEMBER',
-    view: new Date(today.getFullYear(), today.getMonth(), 1),
+    view: targetView,
   }));
   const [overlay, setOverlay] = useState<ScheduleOverlayState>({ type: 'none' });
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -95,6 +118,15 @@ export default function ScheduleBoard() {
     view,
   });
 
+  const syncMonth = useCallback(
+    (nextView: Date) => {
+      const params = new URLSearchParams();
+      params.set('month', toMonthKey(nextView));
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router],
+  );
+
   useEffect(() => {
     if (!banner) return;
 
@@ -104,6 +136,20 @@ export default function ScheduleBoard() {
 
     return () => window.clearTimeout(timer);
   }, [banner]);
+
+  useEffect(() => {
+    setViewState((state) => {
+      if (toDateKey(state.view) === targetKey) {
+        return state;
+      }
+
+      return {
+        ...state,
+        selected: targetKey,
+        view: targetView,
+      };
+    });
+  }, [targetKey, targetView]);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)');
@@ -129,28 +175,37 @@ export default function ScheduleBoard() {
     };
   }, [detailOpen]);
 
-  const moveMonth = useCallback((delta: number) => {
-    setViewState((state) => {
-      const next = new Date(state.view.getFullYear(), state.view.getMonth() + delta, 1);
-      const lastDate = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
-      const day = Number(state.selected.slice(8, 10)) || 1;
-      const nextSelected = new Date(next.getFullYear(), next.getMonth(), Math.min(day, lastDate));
+  const moveMonth = useCallback(
+    (delta: number) => {
+      const nextView = new Date(view.getFullYear(), view.getMonth() + delta, 1);
+      const lastDate = new Date(nextView.getFullYear(), nextView.getMonth() + 1, 0).getDate();
+      const day = Number(selected.slice(8, 10)) || 1;
+      const nextSelected = new Date(
+        nextView.getFullYear(),
+        nextView.getMonth(),
+        Math.min(day, lastDate),
+      );
 
-      return {
+      syncMonth(nextView);
+      setViewState((state) => ({
         ...state,
         selected: toDateKey(nextSelected),
-        view: next,
-      };
-    });
-  }, []);
+        view: nextView,
+      }));
+    },
+    [selected, syncMonth, view],
+  );
 
   const moveToday = useCallback(() => {
+    const nextView = new Date(today.getFullYear(), today.getMonth(), 1);
+    syncMonth(nextView);
+
     setViewState((state) => ({
       ...state,
       selected: toDateKey(today),
-      view: new Date(today.getFullYear(), today.getMonth(), 1),
+      view: nextView,
     }));
-  }, [today]);
+  }, [syncMonth, today]);
 
   const selectDate = useCallback(
     (key: string) => {

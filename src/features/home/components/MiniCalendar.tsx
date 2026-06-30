@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import Card from '@/components/ui/Card';
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
@@ -15,17 +16,15 @@ import {
 import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
 
 export default function MiniCalendar() {
+  const router = useRouter();
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => toDateKey(today));
-  const [openedScheduleIndex, setOpenedScheduleIndex] = useState<number | null>(null);
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
   const monthKey = toMonthKey(view);
   const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
   const year = view.getFullYear();
-  const month = view.getMonth();
+  const monthIndex = view.getMonth();
   const cells = useMemo(() => buildCalendarCells(view), [view]);
   const monthText = formatMonthLabel(view);
   const { visibleSchedules, overflowCount } = useMemo(
@@ -33,37 +32,14 @@ export default function MiniCalendar() {
     [data, selected],
   );
 
-  useEffect(() => {
-    if (openedScheduleIndex === null) {
-      previouslyFocusedElementRef.current?.focus();
-      previouslyFocusedElementRef.current = null;
-      return;
-    }
-
-    previouslyFocusedElementRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-
-    dialogRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setOpenedScheduleIndex(null);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [openedScheduleIndex]);
-
   const handleMoveMonth = (delta: number) => {
     const nextState = shiftCalendarMonth(view, selected, delta);
     setView(nextState.view);
     setSelected(nextState.selectedDateKey);
-    setOpenedScheduleIndex(null);
+  };
+
+  const openSchedulePage = () => {
+    router.push(`/schedule?month=${monthKey}`);
   };
 
   return (
@@ -111,7 +87,7 @@ export default function MiniCalendar() {
             {cells.map((c) => {
               if (c.date == null) return <div key={c.key} />;
 
-              const dateObj = new Date(year, month, c.date);
+              const dateObj = new Date(year, monthIndex, c.date);
               const key = toDateKey(dateObj);
 
               const isToday = key === toDateKey(today);
@@ -121,12 +97,9 @@ export default function MiniCalendar() {
                 <button
                   key={c.key}
                   type="button"
-                  onClick={() => {
-                    setSelected(key);
-                    setOpenedScheduleIndex(null);
-                  }}
+                  onClick={() => setSelected(key)}
                   className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
-                  aria-label={`${month + 1}월 ${c.date}일`}
+                  aria-label={`${monthIndex + 1}월 ${c.date}일`}
                 >
                   <span
                     className={[
@@ -157,7 +130,12 @@ export default function MiniCalendar() {
           </div>
         </div>
 
-        <div className="mt-3 min-h-11 px-1">
+        <button
+          type="button"
+          onClick={openSchedulePage}
+          className="mt-3 block min-h-11 w-full cursor-pointer px-1 text-left"
+          aria-label={`${formatDateLabel(selected)} 일정 화면으로 이동`}
+        >
           {isError ? (
             <div className="text-caption text-gray5 flex min-h-11 items-center justify-center text-center">
               {displayErrorMessage}
@@ -167,10 +145,8 @@ export default function MiniCalendar() {
           ) : visibleSchedules.length > 0 ? (
             <div className="grid h-14 grid-cols-3 gap-2">
               {visibleSchedules.map((schedule, index) => (
-                <button
+                <div
                   key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
-                  type="button"
-                  onClick={() => setOpenedScheduleIndex(index)}
                   className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
                 >
                   <div className="min-w-0">
@@ -181,53 +157,16 @@ export default function MiniCalendar() {
                       {formatScheduleTimeLabel(schedule)}
                     </div>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-caption text-gray5 flex min-h-11 items-center justify-center text-center">
-              선택한 날짜에 예정된 일정이 없어요.
+            <div className="bg-gray7 flex min-h-14 items-center justify-center rounded-xl px-4 text-center">
+              <p className="text-caption text-gray5">선택한 날짜에 예정된 일정이 없어요.</p>
             </div>
           )}
-        </div>
+        </button>
       </div>
-
-      {openedScheduleIndex !== null ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4"
-          onClick={() => setOpenedScheduleIndex(null)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="일정 상세"
-            tabIndex={-1}
-            ref={dialogRef}
-            className="border-gray2 w-full max-w-[280px] rounded-2xl border bg-white p-4 shadow-xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="text-caption text-gray5">{formatDateLabel(selected)} 일정</div>
-              <button
-                type="button"
-                onClick={() => setOpenedScheduleIndex(null)}
-                className="hover:bg-gray1 inline-flex min-w-11 shrink-0 items-center justify-center rounded-full text-gray-500"
-                aria-label="일정 팝업 닫기"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="text-body mt-3 font-semibold text-black">
-              {visibleSchedules[openedScheduleIndex]?.title}
-            </div>
-            <div className="text-caption text-gray5 mt-2">
-              {visibleSchedules[openedScheduleIndex]
-                ? formatScheduleTimeLabel(visibleSchedules[openedScheduleIndex])
-                : ''}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </Card>
   );
 }
