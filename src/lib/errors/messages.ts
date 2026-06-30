@@ -14,23 +14,23 @@ type Scope =
   | 'mypage'
   | 'social';
 
-function common(err: unknown): string | null {
+function networkMessage(err: unknown): string | null {
+  if (err instanceof ApiError && err.status === HttpStatusCode.NETWORK_ERROR) {
+    return '네트워크 연결이 원활하지 않아요.';
+  }
+
+  return null;
+}
+
+function commonFallback(err: unknown): string {
   if (err instanceof ApiError) {
-    const { status } = err;
-
-    if (status === HttpStatusCode.NETWORK_ERROR) {
-      return '네트워크 연결이 원활하지 않아요.';
-    }
-
-    if (status >= HttpStatusCode.INTERNAL_SERVER_ERROR) {
+    if (err.status >= HttpStatusCode.INTERNAL_SERVER_ERROR) {
       return '서버 오류가 발생했어요.';
     }
 
-    if (status === HttpStatusCode.BAD_REQUEST) {
+    if (err.status === HttpStatusCode.BAD_REQUEST) {
       return '잘못된 접근이에요.';
     }
-
-    return null;
   }
 
   if (err instanceof Error) {
@@ -40,12 +40,8 @@ function common(err: unknown): string | null {
   return '알 수 없는 오류가 발생했어요.';
 }
 
-function commonExceptBadRequest(err: unknown): string | null {
-  if (err instanceof ApiError && err.status === HttpStatusCode.BAD_REQUEST) {
-    return null;
-  }
-
-  return common(err);
+function scopedMessage(err: unknown, message: string): string {
+  return networkMessage(err) ?? (err instanceof ApiError ? message : commonFallback(err));
 }
 
 const socialMessages = {
@@ -61,15 +57,16 @@ const socialMessages = {
 
 const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> = {
   home: (err) => {
-    return (
-      common(err) ?? '홈 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    return scopedMessage(
+      err,
+      '홈 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
   },
 
   cafeteria: (err) => {
-    return (
-      common(err) ??
-      '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    return scopedMessage(
+      err,
+      '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
   },
 
@@ -79,7 +76,10 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
     }
 
     if (context === 'search') {
-      return common(err) ?? '가게를 검색하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '가게를 검색하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
     if (context === 'create') {
@@ -87,81 +87,100 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
         return '맛집 정보를 다시 확인해 주세요.';
       }
 
-      return common(err) ?? '맛집을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '맛집을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
     if (context === 'duplicate') {
-      return (
-        common(err) ?? '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      return scopedMessage(
+        err,
+        '맛집 중복 여부를 확인하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
       );
     }
 
     if (context === 'like') {
-      return common(err) ?? '좋아요를 처리하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '좋아요를 처리하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
-    return (
-      common(err) ??
-      '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    return scopedMessage(
+      err,
+      '맛집 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
   },
 
   schedule: (err, context) => {
     if (context === 'create') {
-      return common(err) ?? '일정을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '일정을 등록하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
     if (context === 'update') {
-      return common(err) ?? '일정을 수정하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '일정을 수정하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
     if (context === 'delete') {
-      return common(err) ?? '일정을 삭제하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+      return scopedMessage(
+        err,
+        '일정을 삭제하는 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
+      );
     }
 
-    return (
-      common(err) ??
-      '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    return scopedMessage(
+      err,
+      '일정 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
   },
 
   timetable: (err, context) => {
     if (context === 'create') {
-      return (
-        commonExceptBadRequest(err) ??
-        '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      return scopedMessage(
+        err,
+        '시간표를 등록하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
       );
     }
 
     if (context === 'update') {
-      return (
-        commonExceptBadRequest(err) ??
-        '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      return scopedMessage(
+        err,
+        '시간표를 수정하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
       );
     }
 
     if (context === 'delete') {
-      return (
-        commonExceptBadRequest(err) ??
-        '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      return scopedMessage(
+        err,
+        '시간표를 삭제하던 중 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
       );
     }
 
     if (context === 'fetch') {
-      return (
-        commonExceptBadRequest(err) ??
-        '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+      return scopedMessage(
+        err,
+        '시간표 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
       );
     }
 
-    return (
-      common(err) ??
-      '시간표 데이터를 처리하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.'
+    return scopedMessage(
+      err,
+      '시간표 데이터를 처리하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
   },
 
   mypage: (err) => {
-    return common(err) ?? '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+    return scopedMessage(
+      err,
+      '마이페이지를 불러오는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.',
+    );
   },
 
   social: (err, context) => {
@@ -222,7 +241,7 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       return socialMessages.unlink;
     }
 
-    return common(err) ?? socialMessages.login;
+    return scopedMessage(err, socialMessages.login);
   },
 
   auth: (err, context) => {
@@ -241,7 +260,7 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
 
     if (err instanceof ApiError) {
       if (context === 'deleteAccount') {
-        return common(err) ?? '회원 탈퇴 중 오류가 발생했어요.';
+        return scopedMessage(err, '회원 탈퇴 중 오류가 발생했어요.');
       }
 
       if (err.status === HttpStatusCode.BAD_REQUEST) {
@@ -257,7 +276,7 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       }
     }
 
-    return common(err) ?? '로그인 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+    return scopedMessage(err, '로그인 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
   },
   signup: (err, context) => {
     if (typeof err === 'string') {
@@ -294,7 +313,7 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       }
     }
 
-    return common(err) ?? '회원가입 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+    return scopedMessage(err, '회원가입 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
   },
 
   passwordReset: (err, context) => {
@@ -335,7 +354,7 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       }
     }
 
-    return common(err) ?? '비밀번호 재설정 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+    return scopedMessage(err, '비밀번호 재설정 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
   },
 };
 
