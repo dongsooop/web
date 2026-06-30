@@ -51,6 +51,22 @@ function descriptionText() {
   return '학사 일정과 개인 일정을 확인하고 관리할 수 있어요.';
 }
 
+function monthView(month: string | undefined, today: Date) {
+  const nextMonth = parseMonthKey(month?.trim());
+
+  if (!nextMonth) {
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }
+
+  const [year, monthNumber] = nextMonth.split('-').map(Number);
+
+  if (!year || !monthNumber) {
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }
+
+  return new Date(year, monthNumber - 1, 1);
+}
+
 type ScheduleBoardProps = {
   month?: string;
 };
@@ -66,25 +82,12 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
     () => false,
   );
   const [today] = useState(() => new Date());
-  const initialViewDate = useMemo(() => {
-    const nextMonth = parseMonthKey(month?.trim());
-
-    if (!nextMonth) {
-      return today;
-    }
-
-    const [year, monthNumber] = nextMonth.split('-').map(Number);
-
-    if (!year || !monthNumber) {
-      return today;
-    }
-
-    return new Date(year, monthNumber - 1, 1);
-  }, [month, today]);
+  const targetView = useMemo(() => monthView(month, today), [month, today]);
+  const targetKey = useMemo(() => toDateKey(targetView), [targetView]);
   const [viewState, setViewState] = useState<ScheduleViewState>(() => ({
-    selected: toDateKey(initialViewDate),
+    selected: targetKey,
     tab: 'MEMBER',
-    view: new Date(initialViewDate.getFullYear(), initialViewDate.getMonth(), 1),
+    view: targetView,
   }));
   const [overlay, setOverlay] = useState<ScheduleOverlayState>({ type: 'none' });
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -135,33 +138,18 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
   }, [banner]);
 
   useEffect(() => {
-    const nextMonth = parseMonthKey(month?.trim());
-
-    if (!nextMonth) {
-      return;
-    }
-
-    const [year, monthNumber] = nextMonth.split('-').map(Number);
-
-    if (!year || !monthNumber) {
-      return;
-    }
-
-    const nextView = new Date(year, monthNumber - 1, 1);
-    const nextKey = toDateKey(nextView);
-
     setViewState((state) => {
-      if (toDateKey(state.view) === nextKey) {
+      if (toDateKey(state.view) === targetKey) {
         return state;
       }
 
       return {
         ...state,
-        selected: nextKey,
-        view: nextView,
+        selected: targetKey,
+        view: targetView,
       };
     });
-  }, [month]);
+  }, [targetKey, targetView]);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)');
