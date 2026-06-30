@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import CafeteriaSkeleton from './CafeteriaSkeleton';
@@ -18,12 +18,12 @@ export default function CafeteriaCard({
   isLoading = false,
   errorMessage = null,
 }: CafeteriaCardProps) {
+  const getTodayIndex = () => (new Date().getDay() + 6) % 7;
+  const todayIndex = getTodayIndex();
   if (isLoading) {
     return <CafeteriaSkeleton />;
   }
-
-  const todayIndex = useMemo(() => (new Date().getDay() + 6) % 7, []);
-  const [index, setIndex] = useState(() => todayIndex);
+  const [index, setIndex] = useState(getTodayIndex);
 
   const handlePrev = () => setIndex((p) => (p === 0 ? 6 : p - 1));
   const handleNext = () => setIndex((p) => (p === 6 ? 0 : p + 1));
