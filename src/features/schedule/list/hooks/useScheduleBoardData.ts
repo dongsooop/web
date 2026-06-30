@@ -9,7 +9,7 @@ import {
   sortSchedules,
 } from '@/features/schedule/lib/calendar';
 import { formatDateWithDayLabel, formatMonthLabel, toMonthKey } from '@/utils/date';
-import type { TabId } from '../_components/ScheduleTabs';
+import type { TabId } from '../components/ScheduleTabs';
 
 type UseScheduleBoardDataOptions = {
   mounted: boolean;

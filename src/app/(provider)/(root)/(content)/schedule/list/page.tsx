@@ -1,4 +1,4 @@
-import ScheduleBoard from './list/_components/ScheduleBoard';
+import ScheduleBoard from '@/features/schedule/list/components/ScheduleBoard';
 
 type SchedulePageProps = {
   searchParams?: Promise<{

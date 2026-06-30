@@ -5,8 +5,8 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
-import { ScheduleCreateProvider } from '../../_components/ScheduleCreateContext';
-import ScheduleCreatePanel from '../../_components/ScheduleCreatePanel';
+import { ScheduleCreateProvider } from '@/features/schedule/write/components/ScheduleCreateContext';
+import ScheduleCreatePanel from '@/features/schedule/write/components/ScheduleCreatePanel';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
@@ -375,11 +375,7 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
     return (
       <div className="max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4">
         <div className="px-1">
-          <PageHeader
-            title="일정"
-            showBackButton
-            description={descriptionText()}
-          />
+          <PageHeader title="일정" showBackButton description={descriptionText()} />
         </div>
 
         <ScheduleSkeleton />
@@ -396,11 +392,7 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
         ].join(' ')}
       >
         <div className="px-1">
-          <PageHeader
-            title="일정"
-            showBackButton
-            description={descriptionText()}
-          />
+          <PageHeader title="일정" showBackButton description={descriptionText()} />
         </div>
 
         <section

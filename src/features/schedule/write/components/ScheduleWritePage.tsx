@@ -2,9 +2,8 @@
 
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-
-import { ScheduleCreateProvider } from '../../_components/ScheduleCreateContext';
-import ScheduleCreateForm from '../../_components/ScheduleCreateForm';
+import { ScheduleCreateProvider } from './ScheduleCreateContext';
+import ScheduleCreateForm from './ScheduleCreateForm';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
