@@ -40,10 +40,8 @@ export const useHomeData = () => {
     isHomeLoading: homeQuery.isLoading,
     isHomeError: homeQuery.isError,
     homeErrorMessage: homeQuery.error ? getErrorMessage('home', homeQuery.error) : null,
-    refetchHome: homeQuery.refetch,
     isCafeteriaLoading: cafeteriaQuery.isLoading,
     isCafeteriaError: cafeteriaQuery.isError,
     cafeteriaErrorMessage: cafeteriaQuery.displayErrorMessage,
-    refetchCafeteria: cafeteriaQuery.refetch,
   };
 };

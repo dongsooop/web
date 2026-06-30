@@ -20,10 +20,11 @@ export default function CafeteriaCard({
 }: CafeteriaCardProps) {
   const getTodayIndex = () => (new Date().getDay() + 6) % 7;
   const todayIndex = getTodayIndex();
+  const [index, setIndex] = useState(getTodayIndex);
+
   if (isLoading) {
     return <CafeteriaSkeleton />;
   }
-  const [index, setIndex] = useState(getTodayIndex);
 
   const handlePrev = () => setIndex((p) => (p === 0 ? 6 : p - 1));
   const handleNext = () => setIndex((p) => (p === 6 ? 0 : p + 1));
