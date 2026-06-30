@@ -7,21 +7,31 @@ import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
 import StudyRoomBanner from './StudyRoomBanner';
-import { useHomePageDataQuery } from '@/features/home/hooks/useHomePageDataQuery';
+import { useHomeData } from '@/features/home/hooks/useHomeData';
 import HomePageSkeleton from './HomePageSkeleton';
 
 export default function HomePageContent() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomePageDataQuery();
+  const {
+    home,
+    cafeteria,
+    isInitialLoading,
+    isHomeLoading,
+    isHomeError,
+    homeErrorMessage,
+    isCafeteriaLoading,
+    isCafeteriaError,
+    cafeteriaErrorMessage,
+  } = useHomeData();
 
-  if (isError) {
+  if (isHomeError) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center px-4 text-center">
-        <p className="text-body text-gray5">{displayErrorMessage}</p>
+      <div className="flex h-full min-h-[60vh] items-center justify-center px-4 text-center">
+        <p className="text-body text-gray5">{homeErrorMessage}</p>
       </div>
     );
   }
 
-  if (isLoading || !data) {
+  if (isInitialLoading || isHomeLoading || !home) {
     return <HomePageSkeleton />;
   }
 
@@ -32,11 +42,15 @@ export default function HomePageContent() {
 
         <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
           <div className="h-full lg:row-span-2">
-            <Timetable timetable={data.home.timetable} />
+            <Timetable timetable={home.timetable} />
           </div>
 
           <div className="h-full">
-            <CafeteriaCard menus={data.cafeteria} />
+            <CafeteriaCard
+              menus={cafeteria ?? []}
+              isLoading={isCafeteriaLoading}
+              errorMessage={isCafeteriaError ? cafeteriaErrorMessage : null}
+            />
           </div>
 
           <div className="h-full lg:row-span-3">
@@ -54,7 +68,7 @@ export default function HomePageContent() {
 
         <div className="grid grid-cols-1 gap-4">
           <div className="min-w-0">
-            <NewNotices notices={data.home.notices} />
+            <NewNotices notices={home.notices} />
           </div>
           <div className="min-w-0">{/* Eclass 들어갈 위치 */}</div>
         </div>

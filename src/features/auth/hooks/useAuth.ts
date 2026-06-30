@@ -9,6 +9,10 @@ import type { UserResponse } from '../types/response';
 
 const AUTH_INIT_MIN_DELAY_MS = 300;
 
+function hasDepartment(user: UserResponse) {
+  return user.departmentType.trim().length > 0;
+}
+
 export function useAuth() {
   const initInFlightRef = useRef(false);
 
@@ -24,10 +28,16 @@ export function useAuth() {
 
   const saveSignedInUser = useCallback(
     (userResponse: UserResponse) => {
+      if (!hasDepartment(userResponse)) {
+        expireSession();
+        return false;
+      }
+
       setUser(toUserModel(userResponse));
       clearExpired();
+      return true;
     },
-    [clearExpired, setUser],
+    [clearExpired, expireSession, setUser],
   );
 
   const initSession = useCallback(async () => {
