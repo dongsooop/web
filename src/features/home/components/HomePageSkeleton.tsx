@@ -1,9 +1,6 @@
-import {
-  Skeleton,
-  SkeletonButton,
-  SkeletonText,
-} from '@/components/ui/Skeleton';
+import { Skeleton, SkeletonButton, SkeletonText } from '@/components/ui/Skeleton';
 import HomeHeader from './HomeHeader';
+import CafeteriaSkeleton from './CafeteriaSkeleton';
 
 function HomeSectionCard({
   className,
@@ -33,23 +30,9 @@ function TimetableSkeleton() {
               <SkeletonText className="w-12" />
               <SkeletonText className="w-12" />
             </div>
-            <Skeleton className="h-[50px] rounded-xl" />
+            <Skeleton className="h-13 rounded-xl" />
           </div>
         ))}
-      </div>
-    </HomeSectionCard>
-  );
-}
-
-function CafeteriaSkeleton() {
-  return (
-    <HomeSectionCard className="space-y-7">
-      <div className="flex items-center">
-        <SkeletonText className="h-8 w-full" />
-      </div>
-      <div className="space-y-2">
-        <SkeletonText className="h-5 w-full" />
-        <SkeletonText className="h-5 w-full" />
       </div>
     </HomeSectionCard>
   );

@@ -8,6 +8,7 @@ import { getWeekKey } from '@/utils/date';
 
 import { fetchCafeteria } from '../client/cafeteria.api';
 import { mapCafeteriaResponseToUi } from '../mapper';
+import type { CafeteriaResponse } from '../types';
 
 type UseCafeteriaQueryOptions = {
   enabled?: boolean;
@@ -19,8 +20,8 @@ export const useCafeteriaQuery = ({ enabled = true }: UseCafeteriaQueryOptions =
 
   const query = useQuery({
     queryKey: ['cafeteria-data', weekKey],
-    queryFn: fetchCafeteria,
-    select: (data) => mapCafeteriaResponseToUi(data),
+    queryFn: () => fetchCafeteria(),
+    select: (data: CafeteriaResponse) => mapCafeteriaResponseToUi(data),
     staleTime: 1000 * 60 * 5,
     enabled: isInitialized && enabled,
   });

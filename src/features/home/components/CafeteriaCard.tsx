@@ -3,14 +3,25 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import CafeteriaSkeleton from './CafeteriaSkeleton';
 
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
 
 type CafeteriaCardProps = {
   menus: string[];
+  isLoading?: boolean;
+  errorMessage?: string | null;
 };
 
-export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
+export default function CafeteriaCard({
+  menus,
+  isLoading = false,
+  errorMessage = null,
+}: CafeteriaCardProps) {
+  if (isLoading) {
+    return <CafeteriaSkeleton />;
+  }
+
   const todayIndex = useMemo(() => (new Date().getDay() + 6) % 7, []);
   const [index, setIndex] = useState(() => todayIndex);
 
@@ -43,7 +54,15 @@ export default function CafeteriaCard({ menus }: CafeteriaCardProps) {
       </div>
 
       <div className="min-h-20">
-        <p className="text-body line-clamp-3 leading-relaxed break-words text-black">{bodyText}</p>
+        {errorMessage ? (
+          <div className="flex min-h-20 items-center justify-center text-center">
+            <p className="text-body whitespace-pre-line text-black">{errorMessage}</p>
+          </div>
+        ) : (
+          <p className="text-body line-clamp-3 leading-relaxed break-words text-black">
+            {bodyText}
+          </p>
+        )}
       </div>
     </Card>
   );
