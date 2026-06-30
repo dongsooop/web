@@ -20,8 +20,8 @@ export default function MiniCalendar() {
   const today = useMemo(() => new Date(), []);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => toDateKey(today));
-  const month = toMonthKey(view);
-  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(month);
+  const monthKey = toMonthKey(view);
+  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
 
   const year = view.getFullYear();
   const monthIndex = view.getMonth();
@@ -39,7 +39,7 @@ export default function MiniCalendar() {
   };
 
   const openSchedulePage = () => {
-    router.push(`/schedule?month=${month}`);
+    router.push(`/schedule?month=${monthKey}`);
   };
 
   return (
@@ -99,7 +99,7 @@ export default function MiniCalendar() {
                   type="button"
                   onClick={() => setSelected(key)}
                   className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
-                  aria-label={`${month + 1}월 ${c.date}일`}
+                  aria-label={`${monthIndex + 1}월 ${c.date}일`}
                 >
                   <span
                     className={[
