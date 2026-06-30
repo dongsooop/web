@@ -23,16 +23,6 @@ function networkMessage(err: unknown): string | null {
 }
 
 function commonFallback(err: unknown): string {
-  if (err instanceof ApiError) {
-    if (err.status >= HttpStatusCode.INTERNAL_SERVER_ERROR) {
-      return '서버 오류가 발생했어요.';
-    }
-
-    if (err.status === HttpStatusCode.BAD_REQUEST) {
-      return '잘못된 접근이에요.';
-    }
-  }
-
   if (err instanceof Error) {
     return '일시적인 오류가 발생했어요. 다시 시도해주세요.';
   }
