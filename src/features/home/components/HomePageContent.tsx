@@ -7,11 +7,11 @@ import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
 import StudyRoomBanner from './StudyRoomBanner';
-import { useHomePageDataQuery } from '@/features/home/hooks/useHomePageDataQuery';
+import { useHomeData } from '@/features/home/hooks/useHomeData';
 import HomePageSkeleton from './HomePageSkeleton';
 
 export default function HomePageContent() {
-  const { data, isLoading, isError, displayErrorMessage } = useHomePageDataQuery();
+  const { data, isLoading, isError, displayErrorMessage } = useHomeData();
 
   if (isError) {
     return (
