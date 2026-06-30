@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
@@ -18,7 +18,7 @@ import { lockBody, unlockBody } from '@/lib/body-lock';
 import { getErrorMessage } from '@/lib/errors/messages';
 import { useDialogStore } from '@/store/useDialogStore';
 import { useToastStore } from '@/store/useToastStore';
-import { toDateKey } from '@/utils/date';
+import { parseMonthKey, toDateKey, toMonthKey } from '@/utils/date';
 import { useScheduleBoardData } from '../hooks/useScheduleBoardData';
 import ScheduleCalendar from './ScheduleCalendar';
 import ScheduleDetailPanel from './ScheduleDetailPanel';
@@ -52,7 +52,9 @@ function descriptionText() {
 }
 
 export default function ScheduleBoard() {
+  const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isLoggedIn, isReady } = useAuth();
   const openLoginDialog = useLoginRequiredDialog();
   const mounted = useSyncExternalStore(
@@ -61,10 +63,25 @@ export default function ScheduleBoard() {
     () => false,
   );
   const [today] = useState(() => new Date());
+  const initialViewDate = useMemo(() => {
+    const month = parseMonthKey(searchParams.get('month')?.trim());
+
+    if (!month) {
+      return today;
+    }
+
+    const [year, monthNumber] = month.split('-').map(Number);
+
+    if (!year || !monthNumber) {
+      return today;
+    }
+
+    return new Date(year, monthNumber - 1, 1);
+  }, [searchParams, today]);
   const [viewState, setViewState] = useState<ScheduleViewState>(() => ({
-    selected: toDateKey(today),
+    selected: toDateKey(initialViewDate),
     tab: 'MEMBER',
-    view: new Date(today.getFullYear(), today.getMonth(), 1),
+    view: new Date(initialViewDate.getFullYear(), initialViewDate.getMonth(), 1),
   }));
   const [overlay, setOverlay] = useState<ScheduleOverlayState>({ type: 'none' });
   const [banner, setBanner] = useState<Banner | null>(null);
@@ -95,6 +112,15 @@ export default function ScheduleBoard() {
     view,
   });
 
+  const syncMonth = useCallback(
+    (nextView: Date) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('month', toMonthKey(nextView));
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
   useEffect(() => {
     if (!banner) return;
 
@@ -104,6 +130,35 @@ export default function ScheduleBoard() {
 
     return () => window.clearTimeout(timer);
   }, [banner]);
+
+  useEffect(() => {
+    const nextMonth = parseMonthKey(searchParams.get('month')?.trim());
+
+    if (!nextMonth) {
+      return;
+    }
+
+    const [year, monthNumber] = nextMonth.split('-').map(Number);
+
+    if (!year || !monthNumber) {
+      return;
+    }
+
+    const nextView = new Date(year, monthNumber - 1, 1);
+    const nextKey = toDateKey(nextView);
+
+    setViewState((state) => {
+      if (toDateKey(state.view) === nextKey) {
+        return state;
+      }
+
+      return {
+        ...state,
+        selected: nextKey,
+        view: nextView,
+      };
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)');
@@ -129,28 +184,37 @@ export default function ScheduleBoard() {
     };
   }, [detailOpen]);
 
-  const moveMonth = useCallback((delta: number) => {
-    setViewState((state) => {
-      const next = new Date(state.view.getFullYear(), state.view.getMonth() + delta, 1);
-      const lastDate = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
-      const day = Number(state.selected.slice(8, 10)) || 1;
-      const nextSelected = new Date(next.getFullYear(), next.getMonth(), Math.min(day, lastDate));
+  const moveMonth = useCallback(
+    (delta: number) => {
+      const nextView = new Date(view.getFullYear(), view.getMonth() + delta, 1);
+      const lastDate = new Date(nextView.getFullYear(), nextView.getMonth() + 1, 0).getDate();
+      const day = Number(selected.slice(8, 10)) || 1;
+      const nextSelected = new Date(
+        nextView.getFullYear(),
+        nextView.getMonth(),
+        Math.min(day, lastDate),
+      );
 
-      return {
+      syncMonth(nextView);
+      setViewState((state) => ({
         ...state,
         selected: toDateKey(nextSelected),
-        view: next,
-      };
-    });
-  }, []);
+        view: nextView,
+      }));
+    },
+    [selected, syncMonth, view],
+  );
 
   const moveToday = useCallback(() => {
+    const nextView = new Date(today.getFullYear(), today.getMonth(), 1);
+    syncMonth(nextView);
+
     setViewState((state) => ({
       ...state,
       selected: toDateKey(today),
-      view: new Date(today.getFullYear(), today.getMonth(), 1),
+      view: nextView,
     }));
-  }, [today]);
+  }, [syncMonth, today]);
 
   const selectDate = useCallback(
     (key: string) => {
