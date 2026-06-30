@@ -1,5 +1,3 @@
-'use client';
-
 import { SkeletonText } from '@/components/ui/Skeleton';
 
 export default function CafeteriaSkeleton() {
