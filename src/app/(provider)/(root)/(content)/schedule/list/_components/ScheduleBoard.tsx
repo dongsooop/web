@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
@@ -51,10 +51,13 @@ function descriptionText() {
   return '학사 일정과 개인 일정을 확인하고 관리할 수 있어요.';
 }
 
-export default function ScheduleBoard() {
+type ScheduleBoardProps = {
+  month?: string;
+};
+
+export default function ScheduleBoard({ month }: ScheduleBoardProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isLoggedIn, isReady } = useAuth();
   const openLoginDialog = useLoginRequiredDialog();
   const mounted = useSyncExternalStore(
@@ -64,20 +67,20 @@ export default function ScheduleBoard() {
   );
   const [today] = useState(() => new Date());
   const initialViewDate = useMemo(() => {
-    const month = parseMonthKey(searchParams.get('month')?.trim());
+    const nextMonth = parseMonthKey(month?.trim());
 
-    if (!month) {
+    if (!nextMonth) {
       return today;
     }
 
-    const [year, monthNumber] = month.split('-').map(Number);
+    const [year, monthNumber] = nextMonth.split('-').map(Number);
 
     if (!year || !monthNumber) {
       return today;
     }
 
     return new Date(year, monthNumber - 1, 1);
-  }, [searchParams, today]);
+  }, [month, today]);
   const [viewState, setViewState] = useState<ScheduleViewState>(() => ({
     selected: toDateKey(initialViewDate),
     tab: 'MEMBER',
@@ -114,11 +117,11 @@ export default function ScheduleBoard() {
 
   const syncMonth = useCallback(
     (nextView: Date) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams();
       params.set('month', toMonthKey(nextView));
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [pathname, router, searchParams],
+    [pathname, router],
   );
 
   useEffect(() => {
@@ -132,7 +135,7 @@ export default function ScheduleBoard() {
   }, [banner]);
 
   useEffect(() => {
-    const nextMonth = parseMonthKey(searchParams.get('month')?.trim());
+    const nextMonth = parseMonthKey(month?.trim());
 
     if (!nextMonth) {
       return;
@@ -158,7 +161,7 @@ export default function ScheduleBoard() {
         view: nextView,
       };
     });
-  }, [searchParams]);
+  }, [month]);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)');
