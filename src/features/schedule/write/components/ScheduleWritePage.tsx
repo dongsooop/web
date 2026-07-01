@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ScheduleCreateProvider } from './ScheduleCreateContext';
+import { ScheduleCreateProvider } from '../providers/ScheduleCreateProvider';
 import ScheduleCreateForm from './ScheduleCreateForm';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';

@@ -1,5 +1,3 @@
-'use client';
-
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import ScheduleCreateForm from './ScheduleCreateForm';
 

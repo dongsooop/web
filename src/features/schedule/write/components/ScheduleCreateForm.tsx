@@ -1,5 +1,3 @@
-'use client';
-
 import { Check, ChevronDown, MapPin, Trash2 } from 'lucide-react';
 
 import Button from '@/components/ui/Button';
@@ -10,7 +8,7 @@ import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTim
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import type { ScheduleColorToken } from '@/features/schedule/types/form';
 import type { Schedule } from '@/features/schedule/types/ui-model';
-import { useScheduleCreate } from './ScheduleCreateContext';
+import { useScheduleCreate } from '../providers/ScheduleCreateProvider';
 
 type ScheduleCreateFormProps = {
   initialDate?: Date;

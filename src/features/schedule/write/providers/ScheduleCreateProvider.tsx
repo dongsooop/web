@@ -1,10 +1,8 @@
-'use client';
-
 import { createContext, useContext } from 'react';
 
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 
-type ScheduleCreateContextValue = {
+export type ScheduleCreateContextValue = {
   closeCreate: () => void;
   saveCreate: (payload: ScheduleCreateRequest) => Promise<void>;
 };
