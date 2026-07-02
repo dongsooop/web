@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ScheduleCreateProvider } from '../providers/ScheduleCreateProvider';
 import ScheduleCreateForm from './ScheduleCreateForm';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
@@ -122,14 +121,6 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
     });
   }, [deleteEdit, scheduleId, showDialog]);
 
-  const createValue = useMemo(
-    () => ({
-      closeCreate: closeWrite,
-      saveCreate: isEdit ? saveEdit : saveCreate,
-    }),
-    [closeWrite, isEdit, saveCreate, saveEdit],
-  );
-
   if (isEdit && !schedule && (!isQueryReady || isLoading)) {
     return (
       <div className="max-w-calendar mx-auto w-full py-4 sm:px-4">
@@ -161,22 +152,20 @@ export default function ScheduleWritePage({ date, id, month }: ScheduleWritePage
   }
 
   return (
-    <ScheduleCreateProvider value={createValue}>
-      <div className="max-w-calendar mx-auto w-full py-4 sm:px-4">
-        <div className="sm:border-gray2 overflow-hidden rounded-2xl bg-white sm:border">
-          <ScheduleCreateForm
-            isDeleting={remove.isPending}
-            isSaving={isEdit ? update.isPending : create.isPending}
-            key={schedule?.id ? `edit-${schedule.id}` : `create-${date ?? 'default'}`}
-            mode="page"
-            initialDate={initialDate}
-            onCloseAction={closeWrite}
-            onDeleteAction={isEdit ? openDeleteDialog : undefined}
-            onSaveAction={isEdit ? saveEdit : saveCreate}
-            schedule={schedule}
-          />
-        </div>
+    <div className="max-w-calendar mx-auto w-full py-4 sm:px-4">
+      <div className="sm:border-gray2 overflow-hidden rounded-2xl bg-white sm:border">
+        <ScheduleCreateForm
+          isDeleting={remove.isPending}
+          isSaving={isEdit ? update.isPending : create.isPending}
+          key={schedule?.id ? `edit-${schedule.id}` : `create-${date ?? 'default'}`}
+          mode="page"
+          initialDate={initialDate}
+          onCloseAction={closeWrite}
+          onDeleteAction={isEdit ? openDeleteDialog : undefined}
+          onSaveAction={isEdit ? saveEdit : saveCreate}
+          schedule={schedule}
+        />
       </div>
-    </ScheduleCreateProvider>
+    </div>
   );
 }

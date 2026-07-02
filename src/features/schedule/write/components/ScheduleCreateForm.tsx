@@ -8,16 +8,15 @@ import ScheduleDateTimePicker from '@/components/common/date-time-picker/DateTim
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import type { ScheduleColorToken } from '@/features/schedule/types/form';
 import type { Schedule } from '@/features/schedule/types/ui-model';
-import { useScheduleCreate } from '../providers/ScheduleCreateProvider';
 
 type ScheduleCreateFormProps = {
   initialDate?: Date;
   isDeleting?: boolean;
   isSaving?: boolean;
   mode: 'page' | 'panel';
-  onCloseAction?: () => void;
+  onCloseAction: () => void;
   onDeleteAction?: () => void | Promise<void>;
-  onSaveAction?: (payload: ScheduleCreateRequest) => Promise<void>;
+  onSaveAction: (payload: ScheduleCreateRequest) => Promise<void>;
   schedule?: Schedule;
 };
 
@@ -95,9 +94,6 @@ export default function ScheduleCreateForm({
   schedule,
 }: ScheduleCreateFormProps) {
   const bodyClass = mode === 'panel' ? 'overflow-visible px-4' : 'flex-1 overflow-y-auto px-4 py-5';
-  const context = useScheduleCreate();
-  const closeCreate = onCloseAction ?? context?.closeCreate;
-  const saveCreate = onSaveAction ?? context?.saveCreate;
   const formTitle = schedule ? '일정 편집' : '일정 추가';
   const showSaving = isSaving;
   const showDeleting = isDeleting;
@@ -111,7 +107,7 @@ export default function ScheduleCreateForm({
   } = useScheduleForm({
     initialDate,
     schedule,
-    onSaveAction: saveCreate ?? (async () => {}),
+    onSaveAction,
   });
 
   return (
@@ -270,7 +266,7 @@ export default function ScheduleCreateForm({
         <div className="my-3 grid shrink-0 grid-cols-2 gap-3 bg-white p-4">
           <Button
             type="button"
-            onClick={closeCreate}
+            onClick={onCloseAction}
             disabled={isPending}
             color="outline"
             className="text-bodySm min-h-11 rounded-xl"

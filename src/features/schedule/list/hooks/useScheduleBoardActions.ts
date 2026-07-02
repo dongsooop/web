@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCreateSchedule } from '@/features/schedule/hooks/useCreateSchedule';
 import { useDeleteSchedule } from '@/features/schedule/hooks/useDeleteSchedule';
 import { useUpdateSchedule } from '@/features/schedule/hooks/useUpdateSchedule';
-import type { ScheduleCreateContextValue } from '@/features/schedule/write/providers/ScheduleCreateProvider';
 import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -105,12 +104,9 @@ export function useScheduleBoardActions({
     });
   }, [deleteEdit, editSchedule, showDialog]);
 
-  const createValue = useMemo<ScheduleCreateContextValue>(
-    () => ({
-      closeCreate,
-      saveCreate: editSchedule ? saveEdit : saveCreate,
-    }),
-    [closeCreate, editSchedule, saveCreate, saveEdit],
+  const saveAction = useMemo(
+    () => (editSchedule ? saveEdit : saveCreate),
+    [editSchedule, saveCreate, saveEdit],
   );
 
   const closeBanner = useCallback(() => {
@@ -120,9 +116,9 @@ export function useScheduleBoardActions({
   return {
     banner,
     closeBanner,
-    createValue,
     isDeleting: remove.isPending,
     isSaving: editSchedule ? update.isPending : create.isPending,
     openDeleteDialog,
+    saveAction,
   };
 }

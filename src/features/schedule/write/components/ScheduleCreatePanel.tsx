@@ -1,17 +1,22 @@
 import type { Schedule } from '@/features/schedule/types/ui-model';
+import type { ScheduleCreateRequest } from '@/features/schedule/types/request';
 import ScheduleCreateForm from './ScheduleCreateForm';
 
 type ScheduleCreatePanelProps = {
   isDeleting?: boolean;
   isSaving?: boolean;
+  onCloseAction: () => void;
   onDeleteAction?: () => void | Promise<void>;
+  onSaveAction: (payload: ScheduleCreateRequest) => Promise<void>;
   schedule?: Schedule;
 };
 
 export default function ScheduleCreatePanel({
   isDeleting = false,
   isSaving = false,
+  onCloseAction,
   onDeleteAction,
+  onSaveAction,
   schedule,
 }: ScheduleCreatePanelProps) {
   return (
@@ -25,7 +30,9 @@ export default function ScheduleCreatePanel({
           isSaving={isSaving}
           key={schedule?.id ? `edit-${schedule.id}` : 'create'}
           mode="panel"
+          onCloseAction={onCloseAction}
           onDeleteAction={onDeleteAction}
+          onSaveAction={onSaveAction}
           schedule={schedule}
         />
       </div>

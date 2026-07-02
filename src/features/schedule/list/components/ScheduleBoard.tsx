@@ -4,7 +4,6 @@ import { useSyncExternalStore } from 'react';
 
 import PageHeader from '@/components/ui/PageHeader';
 import ToastView from '@/components/ui/ToastView';
-import { ScheduleCreateProvider } from '@/features/schedule/write/providers/ScheduleCreateProvider';
 import ScheduleCreatePanel from '@/features/schedule/write/components/ScheduleCreatePanel';
 import { useScheduleBoardActions } from '../hooks/useScheduleBoardActions';
 import { useScheduleBoardData } from '../hooks/useScheduleBoardData';
@@ -67,7 +66,7 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
     tab,
     view,
   });
-  const { banner, closeBanner, createValue, isDeleting, isSaving, openDeleteDialog } =
+  const { banner, closeBanner, isDeleting, isSaving, openDeleteDialog, saveAction } =
     useScheduleBoardActions({
       closeCreate,
       editSchedule,
@@ -86,104 +85,104 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
   }
 
   return (
-    <ScheduleCreateProvider value={createValue}>
-      <div
-        className={[
-          'max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4',
-          createOpen ? '' : 'sm:pb-0',
-        ].join(' ')}
+    <div
+      className={[
+        'max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4',
+        createOpen ? '' : 'sm:pb-0',
+      ].join(' ')}
+    >
+      <div className="px-1">
+        <PageHeader title="일정" showBackButton description={descriptionText()} />
+      </div>
+
+      <section
+        className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border"
+        aria-label="일정 캘린더"
       >
-        <div className="px-1">
-          <PageHeader title="일정" showBackButton description={descriptionText()} />
-        </div>
+        <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
-        <section
-          className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border"
-          aria-label="일정 캘린더"
-        >
-          <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
+        <div className="md:grid-cols-schedule grid gap-0">
+          <ScheduleCalendar
+            cells={cells}
+            currentMonth={currentMonth}
+            onCreateAction={openCreate}
+            onMoveMonthAction={moveMonth}
+            onSelectAction={selectDate}
+            onTodayAction={moveToday}
+            scheduleMap={scheduleMap}
+            schedules={schedules}
+            selected={selected}
+            tab={tab}
+            today={today}
+          />
 
-          <div className="md:grid-cols-schedule grid gap-0">
-            <ScheduleCalendar
-              cells={cells}
-              currentMonth={currentMonth}
-              onCreateAction={openCreate}
-              onMoveMonthAction={moveMonth}
-              onSelectAction={selectDate}
-              onTodayAction={moveToday}
-              scheduleMap={scheduleMap}
-              schedules={schedules}
-              selected={selected}
-              tab={tab}
-              today={today}
-            />
-
-            <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
-              {banner ? (
-                <ToastView
-                  toast={{
-                    className:
-                      banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
-                    id: banner.id,
-                    message: banner.message,
-                    tone: 'success',
-                  }}
-                  onHideAction={closeBanner}
-                  containerClassName="mx-6 mt-6 hidden md:flex"
-                  toastClassName="animate-in fade-in slide-in-from-top-2 duration-200"
-                />
-              ) : null}
-              {createOpen ? (
-                <ScheduleCreatePanel
-                  isDeleting={isDeleting}
-                  isSaving={isSaving}
-                  onDeleteAction={editSchedule ? openDeleteDialog : undefined}
-                  schedule={editSchedule ?? undefined}
-                />
-              ) : (
-                <ScheduleDetailPanel
-                  displayErrorMessage={displayErrorMessage}
-                  isError={isError}
-                  onCreateAction={openCreate}
-                  onSelectScheduleAction={openEdit}
-                  selectedDay={selectedDay}
-                  selectedList={selectedList}
-                  tab={tab}
-                />
-              )}
-            </div>
-          </div>
-        </section>
-
-        {!createOpen && detailOpen ? (
-          <div
-            className="fixed inset-0 z-40 md:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="일정 상세"
-          >
-            <button
-              type="button"
-              className="absolute inset-0 bg-black/40"
-              aria-label="상세 일정 닫기"
-              onClick={closeDetail}
-            />
-
-            <div className="absolute inset-x-0 bottom-0 z-10">
-              <ScheduleDetailSheet
+          <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
+            {banner ? (
+              <ToastView
+                toast={{
+                  className:
+                    banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
+                  id: banner.id,
+                  message: banner.message,
+                  tone: 'success',
+                }}
+                onHideAction={closeBanner}
+                containerClassName="mx-6 mt-6 hidden md:flex"
+                toastClassName="animate-in fade-in slide-in-from-top-2 duration-200"
+              />
+            ) : null}
+            {createOpen ? (
+              <ScheduleCreatePanel
+                isDeleting={isDeleting}
+                isSaving={isSaving}
+                onCloseAction={closeCreate}
+                onDeleteAction={editSchedule ? openDeleteDialog : undefined}
+                onSaveAction={saveAction}
+                schedule={editSchedule ?? undefined}
+              />
+            ) : (
+              <ScheduleDetailPanel
                 displayErrorMessage={displayErrorMessage}
                 isError={isError}
-                onCloseAction={closeDetail}
                 onCreateAction={openCreate}
                 onSelectScheduleAction={openEdit}
                 selectedDay={selectedDay}
                 selectedList={selectedList}
                 tab={tab}
               />
-            </div>
+            )}
           </div>
-        ) : null}
-      </div>
-    </ScheduleCreateProvider>
+        </div>
+      </section>
+
+      {!createOpen && detailOpen ? (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="일정 상세"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="상세 일정 닫기"
+            onClick={closeDetail}
+          />
+
+          <div className="absolute inset-x-0 bottom-0 z-10">
+            <ScheduleDetailSheet
+              displayErrorMessage={displayErrorMessage}
+              isError={isError}
+              onCloseAction={closeDetail}
+              onCreateAction={openCreate}
+              onSelectScheduleAction={openEdit}
+              selectedDay={selectedDay}
+              selectedList={selectedList}
+              tab={tab}
+            />
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
