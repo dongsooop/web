@@ -13,7 +13,14 @@ import {
   officialScheduleTone,
   weekColorClass,
 } from '@/features/schedule/lib/color';
-import { WEEK_LABELS, type MonthlyCalendarCell } from '@/features/schedule/lib/calendar';
+import {
+  WEEK_LABELS,
+  buildLaneOffsetMap,
+  buildScheduleSegments,
+  formatCalendarDateLabel,
+  getScheduleCountText,
+  type MonthlyCalendarCell,
+} from '@/features/schedule/lib/calendar';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import { toDateKey } from '@/utils/date';
 import type { TabId } from './ScheduleTabs';
@@ -32,118 +39,6 @@ type ScheduleCalendarProps = {
   today: Date;
 };
 
-function rangeText(schedule: Schedule) {
-  const [startYear, startMonth, startDay] = schedule.startDateKey.split('-').map(Number);
-  const [endYear, endMonth, endDay] = schedule.endDateKey.split('-').map(Number);
-  const startDate = new Date(startYear, startMonth - 1, startDay);
-  const endDate = new Date(endYear, endMonth - 1, endDay);
-  const startWeek = WEEK_LABELS[startDate.getDay()];
-  const endWeek = WEEK_LABELS[endDate.getDay()];
-
-  if (schedule.startDateKey === schedule.endDateKey) {
-    return '';
-  }
-
-  return `${startMonth}.${startDay} (${startWeek}) - ${endMonth}.${endDay} (${endWeek})`;
-}
-
-function buildWeekRangeSegments(
-  cells: MonthlyCalendarCell[],
-  schedules: Schedule[],
-  styleOf: (schedule: Schedule) => string,
-) {
-  const indexMap = new Map(cells.map((cell, index) => [cell.key, index]));
-  const firstKey = cells[0]?.key;
-  const lastKey = cells[cells.length - 1]?.key;
-
-  if (!firstKey || !lastKey) {
-    return [];
-  }
-
-  const laneMap = new Map<number, number[]>();
-
-  return schedules.flatMap((schedule) => {
-    if (schedule.endDateKey < firstKey || schedule.startDateKey > lastKey) {
-      return [];
-    }
-
-    const visibleStart = schedule.startDateKey < firstKey ? firstKey : schedule.startDateKey;
-    const visibleEnd = schedule.endDateKey > lastKey ? lastKey : schedule.endDateKey;
-    const startIndex = indexMap.get(visibleStart);
-    const endIndex = indexMap.get(visibleEnd);
-
-    if (startIndex == null || endIndex == null) {
-      return [];
-    }
-
-    const row = Math.floor(startIndex / 7);
-    const rowEnd = row * 7 + 6;
-    const segmentEnd = Math.min(endIndex, rowEnd);
-    const startCol = startIndex % 7;
-    const endCol = segmentEnd % 7;
-    const lanes = laneMap.get(row) ?? [];
-    let lane = lanes.findIndex((lastEndCol) => startCol > lastEndCol);
-
-    if (lane === -1) {
-      lane = lanes.length;
-      lanes.push(endCol);
-    } else {
-      lanes[lane] = endCol;
-    }
-
-    laneMap.set(row, lanes);
-
-    return [
-      {
-        row,
-        lane,
-        startCol,
-        endCol,
-        label: schedule.title,
-        range: rangeText(schedule),
-        showText: true,
-        style: styleOf(schedule),
-      },
-    ];
-  });
-}
-
-function buildOfficialSegments(cells: MonthlyCalendarCell[], schedules: Schedule[]) {
-  return buildWeekRangeSegments(cells, schedules, officialScheduleTone);
-}
-
-function buildLaneOffsetMap(
-  cells: MonthlyCalendarCell[],
-  segments: Array<{ endCol: number; lane: number; row: number; startCol: number }>,
-) {
-  const map: Record<string, number> = {};
-
-  segments.forEach((segment) => {
-    for (let col = segment.startCol; col <= segment.endCol; col++) {
-      const cell = cells[segment.row * 7 + col];
-
-      if (!cell) continue;
-
-      const count = segment.lane + 1;
-      map[cell.key] = Math.max(map[cell.key] ?? 0, count);
-    }
-  });
-
-  return map;
-}
-
-function getDateLabel(date: Date) {
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-}
-
-function getScheduleCountText(count: number) {
-  if (count === 0) {
-    return '일정 없음';
-  }
-
-  return `일정 ${count}개`;
-}
-
 export default function ScheduleCalendar({
   cells,
   currentMonth,
@@ -159,14 +54,15 @@ export default function ScheduleCalendar({
 }: ScheduleCalendarProps) {
   const officialSegments =
     tab === 'OFFICIAL'
-      ? buildOfficialSegments(
+      ? buildScheduleSegments(
           cells,
           schedules.filter((schedule) => schedule.startDateKey !== schedule.endDateKey),
+          officialScheduleTone,
         )
       : [];
   const memberRangeSegments =
     tab === 'MEMBER'
-      ? buildWeekRangeSegments(
+      ? buildScheduleSegments(
           cells,
           schedules.filter((schedule) => schedule.startDateKey !== schedule.endDateKey),
           memberScheduleTone,
@@ -314,7 +210,7 @@ export default function ScheduleCalendar({
             const isToday = key === toDateKey(today);
             const textColor = dateColorClass(cell.date, cell.inMonth);
             const scheduleCount = (scheduleMap[key] ?? []).length;
-            const dateLabel = getDateLabel(cell.date);
+            const dateLabel = formatCalendarDateLabel(cell.date);
 
             return (
               <button
