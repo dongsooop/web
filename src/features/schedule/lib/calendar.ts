@@ -140,6 +140,32 @@ export function formatScheduleTimeLabel(schedule: Schedule) {
   return `${schedule.startAt} - ${schedule.endAt}`;
 }
 
+export function formatShortScheduleDate(dateKey: string) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const week = WEEK_LABELS[new Date(year, month - 1, day).getDay()];
+  return `${month}.${day} (${week})`;
+}
+
+export function formatScheduleDateText(schedule: Schedule) {
+  if (schedule.startDateKey !== schedule.endDateKey) {
+    return `${formatShortScheduleDate(schedule.startDateKey)} - ${formatShortScheduleDate(schedule.endDateKey)}`;
+  }
+
+  return formatShortScheduleDate(schedule.startDateKey);
+}
+
+export function formatScheduleTimeText(schedule: Schedule) {
+  if (schedule.type === 'OFFICIAL') {
+    return '';
+  }
+
+  if (schedule.startAt === '00:00' && schedule.endAt === '23:59') {
+    return '종일';
+  }
+
+  return `${schedule.startAt} - ${schedule.endAt}`;
+}
+
 export function formatScheduleRange(schedule: Schedule) {
   if (schedule.startDateKey === schedule.endDateKey) {
     return '';
