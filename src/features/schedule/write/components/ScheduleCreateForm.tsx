@@ -62,7 +62,7 @@ function DateTimeField({
       type="button"
       onClick={onClickAction}
       disabled={disabled}
-      aria-expanded={open}
+      aria-haspopup="dialog"
       aria-label={`${label} 일시 선택: ${valueText}`}
       className={[
         'border-gray2 flex min-h-11 w-full items-center justify-between rounded-xl border bg-white px-4 text-left',
@@ -232,20 +232,32 @@ export default function ScheduleCreateForm({
             <fieldset>
               <FieldLegend>일정 색상</FieldLegend>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div
+                className="flex flex-wrap items-center gap-3"
+                role="radiogroup"
+                aria-label="일정 색상"
+              >
                 {colors.map((item) => {
                   const selected = color === item.id;
 
                   return (
-                    <button
+                    <label
                       key={item.id}
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => setColor(item.id)}
-                      className="inline-flex h-11 w-7 cursor-pointer items-center justify-center rounded-full transition disabled:cursor-default disabled:opacity-60"
-                      aria-pressed={selected}
+                      className={[
+                        'inline-flex h-11 w-7 items-center justify-center rounded-full transition',
+                        isPending ? 'cursor-default opacity-60' : 'cursor-pointer',
+                      ].join(' ')}
                       aria-label={`${item.label} 일정 색상`}
                     >
+                      <input
+                        type="radio"
+                        name="schedule-color"
+                        value={item.id}
+                        checked={selected}
+                        disabled={isPending}
+                        onChange={() => setColor(item.id)}
+                        className="sr-only"
+                      />
                       <span
                         className={[
                           item.bg,
@@ -255,7 +267,7 @@ export default function ScheduleCreateForm({
                       >
                         {selected ? <Check className="h-4 w-4 text-white" strokeWidth={3} /> : null}
                       </span>
-                    </button>
+                    </label>
                   );
                 })}
               </div>
