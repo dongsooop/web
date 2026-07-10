@@ -120,8 +120,7 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
             {banner ? (
               <ToastView
                 toast={{
-                  className:
-                    banner.message === '일정이 수정되었어요!' ? 'shadow-none' : undefined,
+                  className: 'shadow-none',
                   id: banner.id,
                   message: banner.message,
                   tone: 'success',
