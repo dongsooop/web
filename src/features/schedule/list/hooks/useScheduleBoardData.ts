@@ -1,5 +1,3 @@
-'use client';
-
 import { useMemo } from 'react';
 
 import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
@@ -9,7 +7,7 @@ import {
   sortSchedules,
 } from '@/features/schedule/lib/calendar';
 import { formatDateWithDayLabel, formatMonthLabel, toMonthKey } from '@/utils/date';
-import type { TabId } from '../_components/ScheduleTabs';
+import type { TabId } from '../components/ScheduleTabs';
 
 type UseScheduleBoardDataOptions = {
   mounted: boolean;
@@ -27,19 +25,15 @@ export function useScheduleBoardData({
   const monthKey = toMonthKey(view);
   const { data, isLoading, isError, isQueryReady, displayErrorMessage } =
     useScheduleQuery(monthKey);
-  const source = useMemo(() => data ?? [], [data]);
   const schedules = useMemo(
-    () => sortSchedules(source.filter((schedule) => schedule.type === tab)),
-    [source, tab],
+    () => sortSchedules((data ?? []).filter((schedule) => schedule.type === tab)),
+    [data, tab],
   );
   const scheduleMap = useMemo(() => groupSchedulesByDate(schedules), [schedules]);
   const cells = useMemo(() => buildMonthlyCalendarCells(view), [view]);
   const selectedList = useMemo(() => scheduleMap[selected] ?? [], [scheduleMap, selected]);
-  const selectedDay = useMemo(() => formatDateWithDayLabel(selected), [selected]);
-  const currentMonth = useMemo(
-    () => `${view.getFullYear()}년 ${formatMonthLabel(view)}`,
-    [view],
-  );
+  const selectedDay = formatDateWithDayLabel(selected);
+  const currentMonth = `${view.getFullYear()}년 ${formatMonthLabel(view)}`;
   const showSkeleton = !mounted || (!data && (!isQueryReady || isLoading));
 
   return {

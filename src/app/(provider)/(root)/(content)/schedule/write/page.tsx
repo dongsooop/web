@@ -1,4 +1,4 @@
-import ScheduleWritePage from './_components/ScheduleWritePage';
+import ScheduleWritePage from '@/features/schedule/write/components/ScheduleWritePage';
 
 type ScheduleWriteRouteProps = {
   searchParams?: Promise<{ date?: string; id?: string; month?: string }>;
