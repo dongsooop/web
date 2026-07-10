@@ -63,6 +63,7 @@ function DateTimeField({
       onClick={onClickAction}
       disabled={disabled}
       aria-haspopup="dialog"
+      aria-expanded={open}
       aria-label={`${label} 일시 선택: ${valueText}`}
       className={[
         'border-gray2 flex min-h-11 w-full items-center justify-between rounded-xl border bg-white px-4 text-left',
