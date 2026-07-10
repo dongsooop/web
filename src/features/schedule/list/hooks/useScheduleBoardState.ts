@@ -47,10 +47,6 @@ function initialSelectedKey(view: Date, today: Date) {
   return toDateKey(isCurrentMonth ? today : view);
 }
 
-function isMobileDetail() {
-  return !window.matchMedia('(min-width: 640px)').matches;
-}
-
 function isDesktopPanel() {
   return window.matchMedia('(min-width: 768px)').matches;
 }
@@ -144,7 +140,7 @@ export function useScheduleBoardState({ month }: UseScheduleBoardStateOptions) {
   const selectDate = useCallback(
     (key: string) => {
       if (key === selected) {
-        if (isMobileDetail()) {
+        if (!isDesktopPanel()) {
           setOverlay((state) => (state.type === 'none' ? { type: 'detail' } : state));
         }
 
@@ -164,7 +160,7 @@ export function useScheduleBoardState({ month }: UseScheduleBoardStateOptions) {
         return state;
       });
 
-      if (!isMobileDetail()) {
+      if (isDesktopPanel()) {
         return;
       }
 
