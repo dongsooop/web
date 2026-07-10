@@ -36,19 +36,22 @@ export function useScheduleEditorActions({
   const create = useCreateSchedule();
   const remove = useDeleteSchedule();
   const update = useUpdateSchedule();
+  const createSchedule = create.mutateAsync;
+  const deleteSchedule = remove.mutateAsync;
+  const updateSchedule = update.mutateAsync;
   const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
 
   const saveCreate = useCallback(
     async (payload: ScheduleCreateRequest) => {
       try {
-        await create.mutateAsync(payload);
+        await createSchedule(payload);
         onSuccess('create');
       } catch (error) {
         showToast(getErrorMessage('schedule', error, 'create'), 'error');
       }
     },
-    [create, onSuccess, showToast],
+    [createSchedule, onSuccess, showToast],
   );
 
   const saveEdit = useCallback(
@@ -58,7 +61,7 @@ export function useScheduleEditorActions({
       }
 
       try {
-        await update.mutateAsync({
+        await updateSchedule({
           id: scheduleId,
           payload,
         });
@@ -67,7 +70,7 @@ export function useScheduleEditorActions({
         showToast(getErrorMessage('schedule', error, 'update'), 'error');
       }
     },
-    [onSuccess, scheduleId, showToast, update],
+    [onSuccess, scheduleId, showToast, updateSchedule],
   );
 
   const deleteEdit = useCallback(async () => {
@@ -76,12 +79,12 @@ export function useScheduleEditorActions({
     }
 
     try {
-      await remove.mutateAsync(scheduleId);
+      await deleteSchedule(scheduleId);
       onSuccess('delete');
     } catch (error) {
       showToast(getErrorMessage('schedule', error, 'delete'), 'error');
     }
-  }, [onSuccess, remove, scheduleId, showToast]);
+  }, [deleteSchedule, onSuccess, scheduleId, showToast]);
 
   const openDeleteDialog = useCallback(() => {
     if (!scheduleId) {

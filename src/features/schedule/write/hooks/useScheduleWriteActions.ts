@@ -30,13 +30,18 @@ export function useScheduleWriteActions({
     router.replace('/schedule');
   }, [router]);
 
-  const { isDeleting, isSaving, openDeleteDialog, saveAction } = useScheduleEditorActions({
-    isEdit,
-    scheduleId,
-    onSuccess: (action) => {
+  const onSuccess = useCallback(
+    (action: 'create' | 'update' | 'delete') => {
       showToast(getScheduleSuccessMessage(action), 'success', 'shadow-none');
       router.push('/schedule');
     },
+    [router, showToast],
+  );
+
+  const { isDeleting, isSaving, openDeleteDialog, saveAction } = useScheduleEditorActions({
+    isEdit,
+    scheduleId,
+    onSuccess,
   });
 
   return {
