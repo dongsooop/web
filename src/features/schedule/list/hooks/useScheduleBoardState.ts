@@ -40,6 +40,13 @@ function monthView(month: string | undefined, today: Date) {
   return new Date(year, monthNumber - 1, 1);
 }
 
+function initialSelectedKey(view: Date, today: Date) {
+  const isCurrentMonth =
+    view.getFullYear() === today.getFullYear() && view.getMonth() === today.getMonth();
+
+  return toDateKey(isCurrentMonth ? today : view);
+}
+
 function isMobileDetail() {
   return !window.matchMedia('(min-width: 640px)').matches;
 }
@@ -55,7 +62,7 @@ export function useScheduleBoardState({ month }: UseScheduleBoardStateOptions) {
   const openLoginDialog = useLoginRequiredDialog();
   const [today] = useState(() => new Date());
   const targetView = useMemo(() => monthView(month, today), [month, today]);
-  const targetKey = useMemo(() => toDateKey(targetView), [targetView]);
+  const targetKey = useMemo(() => initialSelectedKey(targetView, today), [targetView, today]);
   const [viewState, setViewState] = useState<ScheduleViewState>(() => ({
     selected: targetKey,
     tab: 'MEMBER',
