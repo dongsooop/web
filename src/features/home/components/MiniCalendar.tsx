@@ -10,7 +10,7 @@ import {
   buildCalendarCells,
   formatScheduleTimeLabel,
   getVisibleSchedules,
-  shiftCalendarMonth,
+  moveMonthState,
   WEEK_LABELS,
 } from '@/features/schedule/lib/calendar';
 import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
@@ -33,7 +33,7 @@ export default function MiniCalendar() {
   );
 
   const handleMoveMonth = (delta: number) => {
-    const nextState = shiftCalendarMonth(view, selected, delta);
+    const nextState = moveMonthState(view, selected, delta);
     setView(nextState.view);
     setSelected(nextState.selectedDateKey);
   };

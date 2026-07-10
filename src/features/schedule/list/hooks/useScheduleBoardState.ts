@@ -3,6 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
+import { moveMonthState } from '@/features/schedule/lib/calendar';
 import type { Schedule } from '@/features/schedule/types/ui-model';
 import { lockBody, unlockBody } from '@/lib/body-lock';
 import { parseMonthKey, toDateKey, toMonthKey } from '@/utils/date';
@@ -102,20 +103,13 @@ export function useScheduleBoardState({ month }: UseScheduleBoardStateOptions) {
 
   const moveMonth = useCallback(
     (delta: number) => {
-      const nextView = new Date(view.getFullYear(), view.getMonth() + delta, 1);
-      const lastDate = new Date(nextView.getFullYear(), nextView.getMonth() + 1, 0).getDate();
-      const day = Number(selected.slice(8, 10)) || 1;
-      const nextSelected = new Date(
-        nextView.getFullYear(),
-        nextView.getMonth(),
-        Math.min(day, lastDate),
-      );
+      const nextState = moveMonthState(view, selected, delta);
 
-      syncMonth(nextView);
+      syncMonth(nextState.view);
       setViewState((state) => ({
         ...state,
-        selected: toDateKey(nextSelected),
-        view: nextView,
+        selected: nextState.selectedDateKey,
+        view: nextState.view,
       }));
     },
     [selected, syncMonth, view],

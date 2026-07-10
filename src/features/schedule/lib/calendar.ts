@@ -68,7 +68,7 @@ export function buildMonthlyCalendarCells(view: Date): MonthlyCalendarCell[] {
   });
 }
 
-export function shiftCalendarMonth(view: Date, selectedDateKey: string, delta: number) {
+export function moveMonthState(view: Date, selectedDateKey: string, delta: number) {
   const nextView = new Date(view.getFullYear(), view.getMonth() + delta, 1);
   const selectedDay = Number(selectedDateKey.slice(8, 10)) || 1;
   const nextLastDate = new Date(nextView.getFullYear(), nextView.getMonth() + 1, 0).getDate();
