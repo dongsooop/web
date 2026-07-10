@@ -9,6 +9,7 @@ import NewNotices from './NewNotices';
 import StudyRoomBanner from './StudyRoomBanner';
 import { useHomeData } from '@/features/home/hooks/useHomeData';
 import HomePageSkeleton from './HomePageSkeleton';
+import ChatbotButton from '@/features/chatbot/components/ChatbotButton';
 
 export default function HomePageContent() {
   const {
@@ -73,6 +74,8 @@ export default function HomePageContent() {
           <div className="min-w-0">{/* Eclass 들어갈 위치 */}</div>
         </div>
       </div>
+
+      <ChatbotButton />
     </div>
   );
 }

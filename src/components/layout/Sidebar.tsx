@@ -31,6 +31,7 @@ export function isNavActive(pathname: string, href: string) {
     return (
       pathname === href ||
       pathname.startsWith('/home') ||
+      pathname.startsWith('/chatbot') ||
       pathname.startsWith('/notices') ||
       pathname.startsWith('/restaurants')
     );
