@@ -18,10 +18,7 @@ export default function ScheduleDetailItem({
   schedule,
   selectable,
 }: ScheduleDetailItemProps) {
-  const cardClassName = [
-    'border-gray2 shadow-schedule-card min-h-11 rounded-2xl border bg-white',
-    selectable ? 'cursor-pointer' : '',
-  ].join(' ');
+  const cardClassName = 'border-gray2 shadow-schedule-card min-h-11 rounded-2xl border bg-white';
   const timeText = formatScheduleTimeText(schedule);
   const content = (
     <>
@@ -56,7 +53,7 @@ export default function ScheduleDetailItem({
       <button
         type="button"
         onClick={() => onSelectAction?.(schedule)}
-        className="flex min-h-11 w-full gap-3.5 p-3 text-left"
+        className="flex min-h-11 w-full cursor-pointer gap-3.5 p-3 text-left"
       >
         {content}
       </button>
