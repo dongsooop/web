@@ -18,5 +18,5 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   const params = searchParams ? await searchParams : undefined;
   const month = normalizeMonth(params?.month);
 
-  return <ScheduleBoard key={month ?? 'current'} month={month} />;
+  return <ScheduleBoard month={month} />;
 }
