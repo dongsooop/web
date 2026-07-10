@@ -34,13 +34,18 @@ export function useScheduleBoardActions({
     return () => window.clearTimeout(timer);
   }, [banner]);
 
-  const { isDeleting, isSaving, openDeleteDialog, saveAction } = useScheduleEditorActions({
-    isEdit: editSchedule !== null,
-    scheduleId: editSchedule?.id ?? null,
-    onSuccess: (action) => {
+  const onSuccess = useCallback(
+    (action: 'create' | 'update' | 'delete') => {
       closeCreate();
       setBanner({ id: Date.now(), message: getScheduleSuccessMessage(action) });
     },
+    [closeCreate],
+  );
+
+  const { isDeleting, isSaving, openDeleteDialog, saveAction } = useScheduleEditorActions({
+    isEdit: editSchedule !== null,
+    scheduleId: editSchedule?.id ?? null,
+    onSuccess,
   });
 
   const closeBanner = useCallback(() => {
