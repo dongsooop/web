@@ -4,34 +4,32 @@ import { SendHorizontal } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import PageHeader from '@/components/ui/PageHeader';
-import ChatBubble, { type ChatMessage } from './ChatBubble';
+import { ApiError } from '@/lib/api/apiError';
+import { getErrorMessage } from '@/lib/errors/messages';
+import { useAppCheckStore } from '@/store/useAppCheckStore';
+import { requestChatbot } from '../client/chatbot.api';
+import type { ChatMessage } from '../types';
+import ChatBubble from './ChatBubble';
 
 const MAX_MESSAGE_LENGTH = 64;
 const MAX_INPUT_HEIGHT = 68;
 
-const previewMessages: ChatMessage[] = [
+const initialMessages: ChatMessage[] = [
   {
     id: 1,
     sender: 'bot',
-    text: '안녕하세요! DongSoop의 챗봇 동냥이에요.\n궁금한 학교 생활이나 정보를 편하게 물어보세요.',
-  },
-  {
-    id: 2,
-    sender: 'user',
-    text: '수강신청 일정은 어디에서 확인할 수 있어?',
-  },
-  {
-    id: 3,
-    sender: 'bot',
-    text: '일정 화면에서 학사 일정을 확인할 수 있어요. 홈의 미니 캘린더나 일정 카드로도 바로 이동할 수 있어요.',
-    url: 'https://www.dongyang.ac.kr',
+    text: '안녕하세요! DongSoop의 챗봇 동냥이에요.\n궁금한 학교 생활에 대해 편하게 물어보세요.',
   },
 ];
 
 export default function ChatbotPage() {
+  const appCheckReady = useAppCheckStore((state) => state.isInitialized && !!state.token);
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const canSend = message.trim().length > 0;
+  const nextIdRef = useRef(initialMessages.length + 1);
+  const canSend = message.trim().length > 0 && !isSending && appCheckReady;
 
   useEffect(() => {
     const input = inputRef.current;
@@ -44,8 +42,62 @@ export default function ChatbotPage() {
     input.style.height = `${Math.min(input.scrollHeight, MAX_INPUT_HEIGHT)}px`;
   }, [message]);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const createMessage = (payload: Omit<ChatMessage, 'id'>): ChatMessage => {
+    const next = nextIdRef.current;
+    nextIdRef.current += 1;
+
+    return {
+      id: next,
+      ...payload,
+    };
+  };
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const trimmed = message.trim();
+
+    if (!trimmed || isSending || !appCheckReady) {
+      return;
+    }
+
+    const userMessage = createMessage({
+      sender: 'user',
+      text: trimmed,
+    });
+
+    setMessages((prev) => [...prev, userMessage]);
+    setMessage('');
+    setIsSending(true);
+
+    try {
+      const response = await requestChatbot({ text: trimmed });
+      const botMessage = createMessage({
+        sender: 'bot',
+        text: response.text,
+        url: response.url,
+      });
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        console.error('[chatbot] request failed', {
+          status: error.status,
+          message: error.message,
+        });
+      } else {
+        console.error('[chatbot] request failed', error);
+      }
+
+      const botMessage = createMessage({
+        sender: 'bot',
+        text: getErrorMessage('chatbot', error),
+      });
+
+      setMessages((prev) => [...prev, botMessage]);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -62,7 +114,7 @@ export default function ChatbotPage() {
         </div>
 
         <ul className="mt-3">
-          {previewMessages.map((chat) => (
+          {messages.map((chat) => (
             <li key={chat.id}>
               <ChatBubble message={chat} />
             </li>
@@ -79,7 +131,9 @@ export default function ChatbotPage() {
                 ref={inputRef}
                 value={message}
                 onChange={(event) => setMessage(event.target.value.slice(0, MAX_MESSAGE_LENGTH))}
-                placeholder="최대 64글자까지 입력 가능해요"
+                placeholder={
+                  appCheckReady ? '최대 64글자까지 입력 가능해요' : '챗봇을 준비하는 중이에요'
+                }
                 rows={1}
                 className="text-body placeholder:text-gray4 min-h-11 w-full resize-none overflow-y-auto bg-transparent py-2.5 leading-6 text-black outline-none"
               />

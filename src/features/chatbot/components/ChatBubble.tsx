@@ -1,12 +1,7 @@
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 
-export type ChatMessage = {
-  id: number;
-  sender: 'bot' | 'user';
-  text: string;
-  url?: string;
-};
+import type { ChatMessage } from '../types';
 
 type ChatBubbleProps = {
   message: ChatMessage;
