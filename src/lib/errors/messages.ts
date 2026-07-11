@@ -5,6 +5,7 @@ import type { SocialErrorKey } from '@/features/auth/types/error';
 type Scope =
   | 'home'
   | 'cafeteria'
+  | 'chatbot'
   | 'restaurant'
   | 'auth'
   | 'signup'
@@ -58,6 +59,10 @@ const scopeMessages: Record<Scope, (err: unknown, context?: string) => string> =
       err,
       '학식 데이터를 조회하는 과정에서 문제가 발생했어요.\n잠시 후 다시 시도해주세요.',
     );
+  },
+
+  chatbot: (err) => {
+    return scopedMessage(err, '응답에 실패했습니다. 잠시 후에 다시 시도해 주세요.');
   },
 
   restaurant: (err, context) => {

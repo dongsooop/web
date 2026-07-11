@@ -7,13 +7,15 @@ import { ApiError } from '@/lib/api/apiError';
 export interface ServerFetchOptions extends RequestInit {
   appCheckToken?: string;
   acceptRedirect?: boolean;
+  baseUrl?: string;
 }
 
 export async function serverFetch(
   url: string,
   options: ServerFetchOptions = {},
 ): Promise<Response> {
-  const baseURL = process.env.BASE_URL;
+  const { appCheckToken, acceptRedirect = false, baseUrl, ...requestInit } = options;
+  const baseURL = baseUrl ?? process.env.BASE_URL;
 
   if (!baseURL) {
     throw new ApiError(
@@ -21,8 +23,6 @@ export async function serverFetch(
       'SERVER_CONFIG_ERROR: BASE_URL is missing',
     );
   }
-
-  const { appCheckToken, acceptRedirect = false, ...requestInit } = options;
 
   const headers = new Headers(requestInit.headers);
 
@@ -50,6 +50,13 @@ export async function serverFetch(
 
     if (!response.ok && !isAcceptedRedirect) {
       const text = await response.text();
+
+      console.error('[serverFetch] backend error response', {
+        url: fullUrl,
+        status: response.status,
+        statusText: response.statusText,
+        body: text || null,
+      });
 
       let message = 'BACKEND_API_ERROR';
 
