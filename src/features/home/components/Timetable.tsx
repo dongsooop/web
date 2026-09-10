@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import LoginRequiredGuard from '@/components/ui/LoginRequiredGuard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import type { HomeUiModel } from '@/features/home/types/ui-model';
 
@@ -52,24 +53,11 @@ export default function Timetable({ timetable }: TimetableProps) {
         )}
       </div>
 
-      <div className="bg-primary/5 relative mt-4 flex-1 rounded-xl p-4">
-        {!isLoggedIn ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl">
-            <div className="absolute inset-0 rounded-xl bg-white/35" aria-hidden="true" />
-            <div
-              className="text-caption text-gray6 relative rounded-full bg-white/90 px-4 py-2 font-semibold shadow-sm backdrop-blur-sm"
-              role="note"
-              aria-live="polite"
-            >
-              로그인이 필요한 서비스예요!
-            </div>
-          </div>
-        ) : null}
-
-        <div
-          className={`${!isLoggedIn ? 'pointer-events-none blur-[3px] select-none' : ''}`}
-          aria-hidden={!isLoggedIn}
-        >
+      <LoginRequiredGuard
+        isLoggedIn={isLoggedIn}
+        className="bg-primary/5 mt-4 flex-1 rounded-xl p-4"
+      >
+        <div>
           {slots.length > 0 ? (
             <div className="flex flex-col gap-2">
               {slots.map((slot, index) => (
@@ -108,7 +96,7 @@ export default function Timetable({ timetable }: TimetableProps) {
             </div>
           )}
         </div>
-      </div>
+      </LoginRequiredGuard>
     </Card>
   );
 }

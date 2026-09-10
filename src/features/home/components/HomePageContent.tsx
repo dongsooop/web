@@ -6,6 +6,7 @@ import MiniCalendar from './MiniCalendar';
 import CafeteriaCard from './CafeteriaCard';
 import RestaurantBanner from './RestaurantBanner';
 import NewNotices from './NewNotices';
+import HomeEclassCard from './HomeEclassCard';
 import StudyRoomBanner from './StudyRoomBanner';
 import { useHomeData } from '@/features/home/hooks/useHomeData';
 import HomePageSkeleton from './HomePageSkeleton';
@@ -46,11 +47,7 @@ export default function HomePageContent() {
           </div>
 
           <div className="h-full">
-            <CafeteriaCard
-              menus={cafeteria ?? []}
-              isLoading={isCafeteriaLoading}
-              errorMessage={isCafeteriaError ? cafeteriaErrorMessage : null}
-            />
+            <HomeEclassCard eclass={home.eclass} />
           </div>
 
           <div className="h-full lg:row-span-3">
@@ -61,16 +58,21 @@ export default function HomePageContent() {
             <StudyRoomBanner />
           </div>
 
-          <div className="h-full lg:col-span-2">
+          <div className="h-full">
             <RestaurantBanner />
+          </div>
+
+          <div className="h-full">
+            <CafeteriaCard
+              menus={cafeteria ?? []}
+              isLoading={isCafeteriaLoading}
+              errorMessage={isCafeteriaError ? cafeteriaErrorMessage : null}
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          <div className="min-w-0">
-            <NewNotices notices={home.notices} />
-          </div>
-          <div className="min-w-0">{/* Eclass 들어갈 위치 */}</div>
+        <div className="min-w-0">
+          <NewNotices notices={home.notices} />
         </div>
       </div>
     </div>

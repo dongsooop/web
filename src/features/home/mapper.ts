@@ -1,5 +1,7 @@
-import type { HomeResponse } from './types/response';
-import type { HomeUiModel } from './types/ui-model';
+import { DAY_LABELS } from '@/utils/date';
+
+import type { HomeEclassSummary, HomeResponse } from './types/response';
+import type { HomeUiEclass, HomeUiModel } from './types/ui-model';
 
 const SCHEDULE_LABELS = {
   MEMBER: '멤버',
@@ -19,6 +21,48 @@ const NOTICE_LABELS = {
 
 function formatHomeTime(value: string) {
   return value.slice(0, 5);
+}
+
+function formatDueLabel(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return `${date.getMonth() + 1}/${date.getDate()} (${DAY_LABELS[date.getDay()]}) ${formatHomeTime(value.slice(11))}`;
+}
+
+function formatDDayLabel(dDay: number) {
+  if (dDay === 0) {
+    return 'D-Day';
+  }
+
+  return dDay > 0 ? `D-${dDay}` : `D+${-dDay}`;
+}
+
+function mapEclassSummary(dto?: HomeEclassSummary | null): HomeUiEclass {
+  if (!dto) {
+    return { linked: false, status: null, upcomingCount: 0, nearest: null };
+  }
+
+  const hasNearest =
+    dto.nearestTitle !== null && dto.nearestDueAt !== null && dto.nearestDDay !== null;
+
+  return {
+    linked: dto.linked,
+    status: dto.status,
+    upcomingCount: dto.upcomingCount,
+    nearest: hasNearest
+      ? {
+          courseName: dto.nearestCourseName ?? '',
+          title: dto.nearestTitle ?? '',
+          dueLabel: formatDueLabel(dto.nearestDueAt ?? ''),
+          dDayLabel: formatDDayLabel(dto.nearestDDay ?? 0),
+          isUrgent: (dto.nearestDDay ?? 0) <= 1,
+        }
+      : null,
+  };
 }
 
 export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
@@ -45,5 +89,7 @@ export function mapHomeResponseToUi(dto: HomeResponse): HomeUiModel {
         ],
       };
     }),
+
+    eclass: mapEclassSummary(dto.eclass_assignment),
   };
 }
