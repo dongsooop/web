@@ -38,6 +38,23 @@ function TimetableSkeleton() {
   );
 }
 
+function EclassSkeleton() {
+  return (
+    <HomeSectionCard className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-2">
+          <SkeletonText className="h-5 w-24" />
+          <SkeletonText className="w-32" />
+        </div>
+        <SkeletonButton />
+      </div>
+
+      <Skeleton className="h-20 w-full rounded-xl" />
+      <SkeletonText className="w-24" />
+    </HomeSectionCard>
+  );
+}
+
 function CalendarSkeleton() {
   return (
     <HomeSectionCard className="flex flex-col gap-7 lg:row-span-3">
@@ -115,12 +132,11 @@ export default function HomePageSkeleton() {
         <HomeHeader />
         <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
           <TimetableSkeleton />
-          <CafeteriaSkeleton />
+          <EclassSkeleton />
           <CalendarSkeleton />
           <StudyRoomSkeleton />
-          <div className="lg:col-span-2">
-            <RestaurantBannerSkeleton />
-          </div>
+          <RestaurantBannerSkeleton />
+          <CafeteriaSkeleton />
         </div>
 
         <div className="grid grid-cols-1 gap-4">
