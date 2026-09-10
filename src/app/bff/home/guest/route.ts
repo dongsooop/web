@@ -1,6 +1,6 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchGuestHome } from '../service';
 
@@ -17,7 +17,7 @@ function normalizeNoticeLinks(data: any, schoolUrl: string) {
   return data;
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const schoolUrl = process.env.SCHOOL_URL!;
   const appCheckToken = request.headers.get('X-Firebase-AppCheck') || '';
 
@@ -31,6 +31,7 @@ export async function GET(request: Request) {
   try {
     const result = await fetchGuestHome({
       appCheckToken,
+      deviceToken: request.cookies.get('device_token')?.value,
     });
 
     const data = normalizeNoticeLinks(await result.json(), schoolUrl);

@@ -21,7 +21,8 @@ function normalizeNoticeLinks(data: any, schoolUrl: string) {
 
 export async function GET(request: NextRequest) {
   const schoolUrl = process.env.SCHOOL_URL!;
-  const { accessToken, refreshToken, appCheckToken, departmentType } = extractAuthContext(request);
+  const { accessToken, refreshToken, appCheckToken, departmentType, deviceToken } =
+    extractAuthContext(request);
 
   if (!appCheckToken) {
     return NextResponse.json(
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
       refreshToken,
       appCheckToken,
       departmentType,
+      deviceToken,
     });
 
     if (result.response.status === HttpStatusCode.UNAUTHORIZED) {
