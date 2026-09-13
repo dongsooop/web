@@ -1,4 +1,3 @@
-import AdsenseScript from '@/components/layout/AdsenseScript';
 import ScheduleBoard from '@/features/schedule/list/components/ScheduleBoard';
 
 type SchedulePageProps = {
@@ -19,10 +18,5 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   const params = searchParams ? await searchParams : undefined;
   const month = normalizeMonth(params?.month);
 
-  return (
-    <>
-      <AdsenseScript />
-      <ScheduleBoard month={month} />
-    </>
-  );
+  return <ScheduleBoard month={month} />;
 }
