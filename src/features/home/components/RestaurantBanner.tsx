@@ -11,7 +11,7 @@ export default function RestaurantBanner() {
         src="/img/restaurant_banner.png"
         alt="오늘 뭐먹지 배너"
         fill
-        sizes="100vw"
+        sizes="(min-width: 1024px) 33vw, 100vw"
         className="object-contain object-bottom"
         priority
       />

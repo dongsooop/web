@@ -21,11 +21,16 @@ function toDepartmentTypeSegment(departmentType?: string) {
   return encodeURIComponent(normalized);
 }
 
+function buildDeviceHeaders(deviceToken?: string) {
+  return deviceToken ? { 'X-Device-Token': deviceToken } : undefined;
+}
+
 export async function fetchHome(options: {
   accessToken?: string;
   refreshToken?: string;
   appCheckToken?: string;
   departmentType?: string;
+  deviceToken?: string;
 }) {
   const endpoint = getRequiredHomeEndpoint();
   const departmentTypeSegment = toDepartmentTypeSegment(options.departmentType);
@@ -35,16 +40,16 @@ export async function fetchHome(options: {
     accessToken: options.accessToken,
     refreshToken: options.refreshToken,
     appCheckToken: options.appCheckToken,
+    headers: buildDeviceHeaders(options.deviceToken),
   });
 }
 
-export async function fetchGuestHome(options: {
-  appCheckToken?: string;
-}) {
+export async function fetchGuestHome(options: { appCheckToken?: string; deviceToken?: string }) {
   const endpoint = getRequiredHomeEndpoint();
 
   return serverFetch(endpoint, {
     method: 'GET',
     appCheckToken: options.appCheckToken,
+    headers: buildDeviceHeaders(options.deviceToken),
   });
 }
