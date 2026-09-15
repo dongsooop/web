@@ -33,10 +33,32 @@ export type HomePopularRecruitmentItem = {
   type: HomeRecruitmentType;
 };
 
+export type HomeEclassStatus = 'ACTIVE' | 'EXPIRED';
+
+export type HomeEclassItem = {
+  courseName: string;
+  title: string;
+  dueAt: string;
+  dDay: number;
+  submitted: boolean;
+};
+
+export type HomeEclassSummary = {
+  linked: boolean;
+  status: HomeEclassStatus | null;
+  upcomingCount: number;
+  nearestCourseName: string | null;
+  nearestTitle: string | null;
+  nearestDueAt: string | null;
+  nearestDDay: number | null;
+  upcoming?: HomeEclassItem[] | null;
+};
+
 export type HomeResponse = {
   date: string;
   timetable: HomeTimetableItem[];
   schedules: HomeScheduleItem[];
   notices: HomeNoticeItem[];
   popular_recruitments: HomePopularRecruitmentItem[];
+  eclass_assignment?: HomeEclassSummary | null;
 };
