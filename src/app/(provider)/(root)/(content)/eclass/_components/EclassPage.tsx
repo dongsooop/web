@@ -15,6 +15,7 @@ import {
   syncEclass,
   unlinkEclass,
 } from '@/features/eclass/client/eclass.api';
+import { issueEclassToken } from '@/features/eclass/client/eclass.token';
 import type { EclassAssignment } from '@/features/eclass/types';
 import { useAppCheckStore } from '@/store/useAppCheckStore';
 import { useDialogStore } from '@/store/useDialogStore';
@@ -84,7 +85,11 @@ export default function EclassPage() {
   };
 
   const linkMutation = useMutation({
-    mutationFn: linkEclass,
+    mutationFn: async ({ username, password }: { username: string; password: string }) => {
+      const token = await issueEclassToken(username, password);
+
+      return linkEclass({ token });
+    },
     onSuccess: () => {
       setPassword('');
       showToast('이클래스 연동이 완료됐어요.', 'success');

@@ -14,7 +14,7 @@ const ERROR_MESSAGES: Record<number, string> = {
   429: '잠시 후 다시 시도해 주세요.',
 };
 
-function getRequiredEnv(name: 'ECLASS_ENDPOINT' | 'ECLASS_TOKEN_URL') {
+function getRequiredEnv(name: 'ECLASS_ENDPOINT') {
   const value = process.env[name]?.trim();
 
   if (!value) {
@@ -22,24 +22,6 @@ function getRequiredEnv(name: 'ECLASS_ENDPOINT' | 'ECLASS_TOKEN_URL') {
   }
 
   return value;
-}
-
-/** 이클래스(Moodle) 토큰 발급. 비밀번호는 여기서만 쓰고 저장하지 않는다. */
-export async function issueMoodleToken(username: string, password: string) {
-  const body = new URLSearchParams({ username, password, service: 'moodle_mobile_app' });
-  const response = await fetch(getRequiredEnv('ECLASS_TOKEN_URL'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-    cache: 'no-store',
-  });
-  const data = (await response.json()) as { token?: string; error?: string };
-
-  if (!data.token) {
-    throw new ApiError(HttpStatusCode.BAD_REQUEST, data.error || '이클래스 로그인에 실패했어요.');
-  }
-
-  return data.token;
 }
 
 /**

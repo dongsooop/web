@@ -26,6 +26,5 @@ export type EclassAssignmentListResponse = {
 };
 
 export type EclassLinkRequest = {
-  username: string;
-  password: string;
+  token: string;
 };
