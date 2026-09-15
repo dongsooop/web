@@ -14,7 +14,7 @@ export type HomeUiModel = {
   eclass: HomeUiEclass;
 };
 
-export type HomeUiEclassNearest = {
+export type HomeUiEclassItem = {
   courseName: string;
   title: string;
   dueLabel: string;
@@ -26,7 +26,7 @@ export type HomeUiEclass = {
   linked: boolean;
   status: HomeEclassStatus | null;
   upcomingCount: number;
-  nearest: HomeUiEclassNearest | null;
+  items: HomeUiEclassItem[];
 };
 
 export type HomeUiTimetableItem = {

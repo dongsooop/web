@@ -35,6 +35,14 @@ export type HomePopularRecruitmentItem = {
 
 export type HomeEclassStatus = 'ACTIVE' | 'EXPIRED';
 
+export type HomeEclassItem = {
+  courseName: string;
+  title: string;
+  dueAt: string;
+  dDay: number;
+  submitted: boolean;
+};
+
 export type HomeEclassSummary = {
   linked: boolean;
   status: HomeEclassStatus | null;
@@ -43,6 +51,7 @@ export type HomeEclassSummary = {
   nearestTitle: string | null;
   nearestDueAt: string | null;
   nearestDDay: number | null;
+  upcoming?: HomeEclassItem[] | null;
 };
 
 export type HomeResponse = {

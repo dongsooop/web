@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import LoginRequiredGuard from '@/components/ui/LoginRequiredGuard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import type { HomeUiModel } from '@/features/home/types/ui-model';
+import type { HomeUiEclassItem, HomeUiModel } from '@/features/home/types/ui-model';
 
 type HomeEclassCardProps = {
   eclass: HomeUiModel['eclass'];
@@ -44,7 +44,7 @@ function EclassCardBody({ eclass }: HomeEclassCardProps) {
     );
   }
 
-  if (!eclass.nearest) {
+  if (eclass.items.length === 0) {
     return (
       <div className="bg-primary/5 flex flex-1 items-center justify-center rounded-xl p-4">
         <p className="text-caption text-gray6">마감이 남은 과제가 없어요.</p>
@@ -53,27 +53,34 @@ function EclassCardBody({ eclass }: HomeEclassCardProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-3">
-      <div className="bg-primary/5 flex items-center gap-3 rounded-xl p-3">
-        <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl font-bold ${
-            eclass.nearest.isUrgent ? 'bg-warning text-white' : 'text-primary bg-white'
-          }`}
-        >
-          {eclass.nearest.dDayLabel}
-        </div>
+    <div className="flex flex-1 flex-col gap-2">
+      {eclass.items.map((item, index) => (
+        <EclassRow key={`${index}-${item.title}`} item={item} />
+      ))}
 
-        <div className="min-w-0">
-          <div className="text-caption text-primary font-semibold">{eclass.nearest.courseName}</div>
-          <div className="text-body line-clamp-2 font-semibold text-black">
-            {eclass.nearest.title}
-          </div>
-          <div className="text-caption text-gray5">마감 {eclass.nearest.dueLabel}</div>
-        </div>
+      <div className="text-caption text-gray6 mt-auto pt-1">
+        남은 과제 <span className="font-semibold text-black">{eclass.upcomingCount}개</span>
+      </div>
+    </div>
+  );
+}
+
+function EclassRow({ item }: { item: HomeUiEclassItem }) {
+  return (
+    <div className="bg-primary/5 flex items-center gap-3 rounded-xl px-3 py-2">
+      <div
+        className={`text-caption flex h-8 w-12 shrink-0 items-center justify-center rounded-lg font-bold ${
+          item.isUrgent ? 'bg-warning text-white' : 'text-primary bg-white'
+        }`}
+      >
+        {item.dDayLabel}
       </div>
 
-      <div className="text-caption text-gray6">
-        남은 과제 <span className="font-semibold text-black">{eclass.upcomingCount}개</span>
+      <div className="min-w-0 flex-1">
+        <div className="text-caption truncate font-semibold text-black">{item.title}</div>
+        <div className="text-caption text-gray5 truncate">
+          {item.courseName} · {item.dueLabel}
+        </div>
       </div>
     </div>
   );
