@@ -49,7 +49,8 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   const handleOpenDialog = () => {
     showDialog({
       title: '동숲 회원 탈퇴',
-      content: '탈퇴한 이메일로는 재가입 할 수 없어요.\n정말로 탈퇴하시겠어요?',
+      content:
+        '탈퇴한 이메일로는 재가입 할 수 없어요.\n탈퇴하면 이클래스 연동 정보도 함께 삭제돼요.\n정말로 탈퇴하시겠어요?',
       cancel: '취소',
       confirm: '확인',
       variant: 'danger',

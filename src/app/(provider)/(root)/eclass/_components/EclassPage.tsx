@@ -3,10 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import Button from '@/components/ui/Button';
 import CommonTag from '@/components/ui/CommonTag';
 import LoginRequiredGuard from '@/components/ui/LoginRequiredGuard';
 import PageHeader from '@/components/ui/PageHeader';
+import { PRIVACY_URL, TERMS_URL } from '@/constants/policy';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import {
   fetchEclassAssignments,
@@ -22,6 +25,7 @@ import { useDialogStore } from '@/store/useDialogStore';
 import { useToastStore } from '@/store/useToastStore';
 
 const LINK_KEY = ['eclass-link'];
+const DISCLAIMER = '참고용 정보예요. 마감·제출 여부는 이클래스에서 최종 확인해 주세요.';
 const ASSIGNMENTS_KEY = ['eclass-assignments'];
 
 function errorMessage(error: unknown) {
@@ -62,6 +66,58 @@ function AssignmentRow({ assignment }: { assignment: EclassAssignment }) {
   );
 }
 
+function LinkNotice() {
+  return (
+    <p className="text-caption text-gray6 bg-gray1 rounded-xl p-3 leading-relaxed">
+      동숲은 학교 공식 서비스가 아닌 재학생 프로젝트예요. 이클래스 비밀번호는 동숲 서버를 거치지
+      않고, 이클래스가 발급한 접근 토큰만 암호화해 보관해요. 이 토큰으로는 과제 목록과 제출 여부만
+      가져와요. 과제 정보는 하루 3회 갱신되는 참고용이라, 정확한 마감과 제출은 반드시 이클래스에서
+      직접 확인해 주세요.
+    </p>
+  );
+}
+
+function PolicyLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary font-semibold hover:underline"
+    >
+      {label}
+    </Link>
+  );
+}
+
+function ConsentCheckbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start gap-1">
+      <label className="flex cursor-pointer items-start">
+        <div className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            className="accent-primary h-4 w-4 cursor-pointer"
+          />
+        </div>
+        <span className="text-caption py-3 leading-relaxed text-black">
+          이클래스 과제 정보 수집·이용에 동의하며, 과제 마감 확인의 책임이 본인에게 있음을
+          이해했습니다. <PolicyLink href={PRIVACY_URL} label="개인정보 처리방침" />{' '}
+          <PolicyLink href={TERMS_URL} label="이용약관" />
+        </span>
+      </label>
+    </div>
+  );
+}
+
 export default function EclassPage() {
   const queryClient = useQueryClient();
   const { isLoggedIn, isReady } = useAuth();
@@ -70,6 +126,7 @@ export default function EclassPage() {
   const showDialog = useDialogStore((state) => state.showDialog);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [agreed, setAgreed] = useState(false);
 
   const enabled = isInitialized && isReady && isLoggedIn;
   const link = useQuery({ queryKey: LINK_KEY, queryFn: fetchEclassLink, enabled });
@@ -92,6 +149,7 @@ export default function EclassPage() {
     },
     onSuccess: () => {
       setPassword('');
+      setAgreed(false);
       showToast('이클래스 연동이 완료됐어요.', 'success');
       invalidate();
     },
@@ -153,28 +211,40 @@ export default function EclassPage() {
 
             {showForm && (
               <form
-                className="flex flex-col gap-2 sm:flex-row"
+                className="flex flex-col gap-3"
                 onSubmit={(event) => {
                   event.preventDefault();
                   linkMutation.mutate({ username, password });
                 }}
               >
-                <input
-                  className="border-gray2 h-11 flex-1 rounded-lg border px-3"
-                  placeholder="이클래스 아이디"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value)}
-                />
-                <input
-                  className="border-gray2 h-11 flex-1 rounded-lg border px-3"
-                  placeholder="비밀번호 (저장되지 않아요)"
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-                <Button type="submit" isLoading={linkMutation.isPending}>
+                <LinkNotice />
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    className="border-gray2 h-11 flex-1 rounded-lg border px-3"
+                    placeholder="이클래스 아이디"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                  />
+                  <input
+                    className="border-gray2 h-11 flex-1 rounded-lg border px-3"
+                    placeholder="비밀번호 (저장되지 않아요)"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                </div>
+
+                <ConsentCheckbox checked={agreed} onChange={setAgreed} />
+
+                <Button
+                  type="submit"
+                  className="sm:w-fit"
+                  disabled={!agreed}
+                  isLoading={linkMutation.isPending}
+                >
                   {status === 'EXPIRED' ? '다시 연동' : '연동하기'}
                 </Button>
               </form>
@@ -227,6 +297,8 @@ export default function EclassPage() {
           ) : (
             <p className="text-body text-gray5">마감이 남은 과제가 없어요.</p>
           )}
+
+          <p className="text-caption text-gray5">{DISCLAIMER}</p>
         </section>
       )}
     </div>
