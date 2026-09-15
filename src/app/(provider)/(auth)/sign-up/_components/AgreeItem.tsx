@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { PRIVACY_URL, TERMS_URL } from '@/constants/policy';
+
 interface AgreementItemProps {
   label: string;
   link: string;
@@ -41,11 +43,6 @@ interface AgreementSectionProps {
   onTermsChange: (val: boolean) => void;
   onPrivacyChange: (val: boolean) => void;
 }
-
-const TERMS_URL =
-  'https://zircon-football-529.notion.site/Dongsoop-2333ee6f2561800cb85fdc87fbe9b4c2';
-const PRIVACY_URL =
-  'https://zircon-football-529.notion.site/Dongsoop-2333ee6f256180a0821fdbf087345a1d';
 
 export default function AgreementSection({
   agreedTerms,
