@@ -184,7 +184,7 @@ export default function EclassPage() {
               <div className="flex gap-2">
                 {status === 'ACTIVE' && (
                   <Button
-                    color="outline"
+                    color="primary"
                     isLoading={syncMutation.isPending}
                     onClick={() => syncMutation.mutate()}
                   >
@@ -192,7 +192,7 @@ export default function EclassPage() {
                   </Button>
                 )}
                 <Button
-                  color="gray"
+                  color="danger"
                   isLoading={unlinkMutation.isPending}
                   onClick={() =>
                     showDialog({
