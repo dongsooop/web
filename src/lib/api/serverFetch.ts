@@ -3,7 +3,9 @@ import 'server-only';
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
 
-{/* Next -> Spring */}
+{
+  /* Next -> Spring */
+}
 export interface ServerFetchOptions extends RequestInit {
   appCheckToken?: string;
   acceptRedirect?: boolean;
@@ -55,13 +57,16 @@ export async function serverFetch(
 
       try {
         const json = JSON.parse(text);
-        if (
-          json &&
-          typeof json === 'object' &&
-          'message' in json &&
-          typeof (json as { message?: unknown }).message === 'string'
-        ) {
-          message = (json as { message: string }).message;
+
+        if (json && typeof json === 'object') {
+          // ProblemDetail 형식은 사용자에게 보여 줄 문구를 detail 에 담는다
+          const body = json as { message?: unknown; detail?: unknown };
+
+          if (typeof body.message === 'string') {
+            message = body.message;
+          } else if (typeof body.detail === 'string') {
+            message = body.detail;
+          }
         }
       } catch {}
 
