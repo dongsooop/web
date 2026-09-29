@@ -66,7 +66,7 @@ export default function MiniCalendar() {
   };
 
   return (
-    <section className="border-gray2 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-white p-4">
+    <section className="border-gray2 flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border bg-white p-3 sm:p-4">
       <div className="flex items-center justify-between">
         <div className="text-body font-semibold text-black">일정</div>
 
@@ -94,7 +94,7 @@ export default function MiniCalendar() {
         <div className="flex items-center gap-2">
           <div className="text-caption w-6 font-semibold text-black">{monthText}</div>
 
-          <div className="text-gray5 text-caption grid flex-1 grid-cols-7 text-center font-semibold">
+          <div className="text-gray5 text-caption grid min-w-0 flex-1 grid-cols-7 text-center font-semibold">
             {WEEK_LABELS.map((w) => (
               <div key={w} className="py-1">
                 {w}
@@ -106,7 +106,7 @@ export default function MiniCalendar() {
         <div className="mt-1 flex items-start gap-2">
           <div className="w-6" />
 
-          <div className="grid flex-1 grid-cols-7 gap-y-1 text-center">
+          <div className="grid min-w-0 flex-1 grid-cols-7 gap-y-1 text-center">
             {cells.map((c) => {
               if (c.date == null) return <div key={c.key} />;
 
@@ -124,12 +124,12 @@ export default function MiniCalendar() {
                     setSelected(key);
                     setOpenedScheduleIndex(null);
                   }}
-                  className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
+                  className="mx-auto inline-flex h-11 w-full min-w-0 cursor-pointer items-center justify-center rounded-full"
                   aria-label={`${month + 1}월 ${c.date}일`}
                 >
                   <span
                     className={[
-                      'inline-flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold',
+                      'inline-flex h-8 w-8 max-w-full items-center justify-center rounded-full text-[12px] font-semibold',
                       isSelected ? 'bg-primary text-white' : 'text-black',
                       !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
                     ].join(' ')}
@@ -164,13 +164,13 @@ export default function MiniCalendar() {
           ) : isLoading ? (
             <div className="min-h-11" aria-hidden="true" />
           ) : visibleSchedules.length > 0 ? (
-            <div className="grid h-14 grid-cols-3 gap-2">
+            <div className="grid gap-2 sm:grid-cols-3">
               {visibleSchedules.map((schedule, index) => (
                 <button
                   key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
                   type="button"
                   onClick={() => setOpenedScheduleIndex(index)}
-                  className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
+                  className="border-gray2 flex min-h-14 min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
                 >
                   <div className="min-w-0">
                     <div className="text-caption truncate font-semibold text-black">
