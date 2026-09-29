@@ -27,12 +27,6 @@ body {
   scrollbar-gutter: stable;
 }
 
-@media (max-width: 639px) {
-  body {
-    scrollbar-gutter: auto;
-  }
-}
-
 @keyframes skeleton-shimmer {
   0% {
     background-position: 200% 0;

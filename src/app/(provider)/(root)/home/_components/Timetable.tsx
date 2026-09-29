@@ -90,7 +90,7 @@ export default function Timetable({ timetable }: TimetableProps) {
               ))}
             </div>
           ) : (
-            <div className="text-caption text-gray5 flex min-h-32 items-center justify-center sm:min-h-[220px]">
+            <div className="text-caption text-gray5 flex min-h-[220px] items-center justify-center">
               오늘 예정된 수업이 없어요.
             </div>
           )}

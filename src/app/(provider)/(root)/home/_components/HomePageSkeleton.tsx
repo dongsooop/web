@@ -1,4 +1,8 @@
-import { Skeleton, SkeletonButton, SkeletonText } from '@/components/ui/Skeleton';
+import {
+  Skeleton,
+  SkeletonButton,
+  SkeletonText,
+} from '@/components/ui/Skeleton';
 import HomeHeader from './HomeHeader';
 
 function HomeSectionCard({
@@ -13,7 +17,7 @@ function HomeSectionCard({
 
 function TimetableSkeleton() {
   return (
-    <HomeSectionCard className="flex h-full flex-col gap-4">
+    <HomeSectionCard className="flex flex-col gap-4 lg:row-span-2">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2">
           <SkeletonText className="h-5 w-24" />
@@ -70,7 +74,7 @@ function EclassSkeleton() {
 
 function CalendarSkeleton() {
   return (
-    <HomeSectionCard className="flex h-full flex-col gap-7">
+    <HomeSectionCard className="flex flex-col gap-7 lg:row-span-3">
       <div className="flex items-center justify-between">
         <SkeletonText className="h-8 w-16" />
         <div className="flex gap-1">
@@ -141,27 +145,15 @@ function NoticesSkeleton() {
 export default function HomePageSkeleton() {
   return (
     <div className="w-full">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 sm:gap-4 lg:px-4">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4">
         <HomeHeader />
         <div className="grid grid-cols-1 gap-4 lg:min-h-[420px] lg:grid-cols-3 lg:grid-rows-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-stretch">
-          <div className="order-1 min-w-0 lg:order-none lg:row-span-2">
-            <TimetableSkeleton />
-          </div>
-          <div className="order-3 min-w-0 lg:order-none">
-            <EclassSkeleton />
-          </div>
-          <div className="order-2 min-w-0 lg:order-none lg:row-span-3">
-            <CalendarSkeleton />
-          </div>
-          <div className="order-5 min-w-0 lg:order-none">
-            <StudyRoomSkeleton />
-          </div>
-          <div className="order-6 min-w-0 lg:order-none">
-            <RestaurantBannerSkeleton />
-          </div>
-          <div className="order-4 min-w-0 lg:order-none">
-            <CafeteriaSkeleton />
-          </div>
+          <TimetableSkeleton />
+          <EclassSkeleton />
+          <CalendarSkeleton />
+          <StudyRoomSkeleton />
+          <RestaurantBannerSkeleton />
+          <CafeteriaSkeleton />
         </div>
 
         <div className="grid grid-cols-1 gap-4">
