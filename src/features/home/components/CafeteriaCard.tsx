@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Card from '@/components/ui/Card';
 import CafeteriaSkeleton from './CafeteriaSkeleton';
 
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -33,38 +32,38 @@ export default function CafeteriaCard({
   const bodyText = menus[index] || '식단 정보가 없습니다.';
 
   return (
-    <Card className="min-h-11 gap-4 lg:h-full">
+    <section aria-labelledby="cafeteria-title">
       <div className="flex items-center justify-between">
         <button
           onClick={handlePrev}
-          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
+          className="hover:bg-surface-soft focus-visible:ring-primary flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           aria-label="이전 식단"
         >
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
 
-        <h2 className="text-body font-bold text-black">{title}</h2>
+        <h2 id="cafeteria-title" className="text-2xl font-bold tracking-[-0.025em] text-black">
+          {title}
+        </h2>
 
         <button
           onClick={handleNext}
-          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 active:scale-90"
+          className="hover:bg-surface-soft focus-visible:ring-primary flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           aria-label="이후 식단"
         >
           <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
 
-      <div className="min-h-20">
+      <div className="border-surface-border mt-5 min-h-48 border-l-4 py-2 pl-5 sm:pl-7">
         {errorMessage ? (
           <div className="flex min-h-20 items-center justify-center text-center">
-            <p className="text-body whitespace-pre-line text-black">{errorMessage}</p>
+            <p className="text-body text-surface-muted whitespace-pre-line">{errorMessage}</p>
           </div>
         ) : (
-          <p className="text-body line-clamp-3 leading-relaxed break-words text-black">
-            {bodyText}
-          </p>
+          <p className="text-base leading-8 font-semibold break-words text-black">{bodyText}</p>
         )}
       </div>
-    </Card>
+    </section>
   );
 }
