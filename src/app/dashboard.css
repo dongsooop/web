@@ -154,6 +154,7 @@
 .home-intro h1 {
   margin-top: 13px;
   @apply text-title;
+  @apply text-black;
   line-height: 1.25;
   letter-spacing: -0.055em;
   font-weight: 700;
