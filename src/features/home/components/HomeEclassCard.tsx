@@ -90,11 +90,11 @@ export default function HomeEclassCard({ eclass }: HomeEclassCardProps) {
   const { isLoggedIn } = useAuth();
 
   return (
-    <Card>
+    <Card className="border-surface-border rounded-[28px] p-5 sm:p-7">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="text-body font-semibold text-black">이클래스 과제</h2>
-          <p className="text-caption text-gray5 mt-1">마감이 다가오는 과제를 확인하세요</p>
+          <h2 className="text-xl font-bold tracking-[-0.02em] text-black">이클래스 과제</h2>
+          <p className="text-surface-muted mt-1 text-sm">마감이 다가오는 과제를 확인하세요</p>
         </div>
 
         {isLoggedIn ? (
