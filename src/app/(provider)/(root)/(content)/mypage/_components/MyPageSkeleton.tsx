@@ -1,36 +1,21 @@
-import { Fragment } from 'react';
-import {
-  SkeletonButton,
-  SkeletonCircle,
-  SkeletonIconBox,
-  SkeletonText,
-} from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 
-function SkeletonRow({ descriptionWidth }: { descriptionWidth: string }) {
+function MenuSkeleton({ rows }: { rows: number }) {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <SkeletonIconBox />
-        <div className="space-y-2">
-          <SkeletonText className="h-6 w-22" />
-          <SkeletonText className={`hidden ${descriptionWidth} sm:block`} />
-        </div>
+    <section className="home-card" aria-hidden="true">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-9 w-9 rounded-lg" />
+        <Skeleton className="h-5 w-24 rounded" />
       </div>
-      <SkeletonButton />
-    </div>
-  );
-}
-
-function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] }) {
-  return (
-    <section className="space-y-3">
-      <div className="rounded-xl bg-white p-4">
-        <SkeletonText className="mb-4 h-5 w-20 px-1" />
-        {descriptionWidths.map((descriptionWidth, index) => (
-          <Fragment key={index}>
-            {index > 0 ? <div className="bg-gray2 m-3 h-px" /> : null}
-            <SkeletonRow descriptionWidth={descriptionWidth} />
-          </Fragment>
+      <div className="border-surface-border mt-5 space-y-4 border-t pt-4">
+        {Array.from({ length: rows }, (_, index) => (
+          <div key={index} className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-28 rounded" />
+              <Skeleton className="h-3 w-3/4 rounded" />
+            </div>
+          </div>
         ))}
       </div>
     </section>
@@ -39,21 +24,24 @@ function SkeletonSection({ descriptionWidths }: { descriptionWidths: string[] })
 
 export default function MyPageSkeleton() {
   return (
-    <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-xl bg-white p-4 py-5">
-        <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 items-center justify-center">
-            <SkeletonCircle className="h-14 w-14" />
-          </div>
-          <div className="flex-1 space-y-2">
-            <SkeletonText className="h-6 w-20" />
-            <SkeletonText className="h-5 w-34 rounded-full" />
+    <div className="flex flex-col gap-5" aria-label="마이페이지를 불러오는 중" aria-busy="true">
+      <section className="home-card" aria-hidden="true">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-9 rounded-lg" />
+          <Skeleton className="h-5 w-20 rounded" />
+        </div>
+        <div className="border-surface-border mt-5 flex items-center gap-4 border-t pt-5">
+          <Skeleton className="h-16 w-16 shrink-0 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24 rounded" />
+            <Skeleton className="h-5 w-32 rounded" />
           </div>
         </div>
+      </section>
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+        <MenuSkeleton rows={2} />
+        <MenuSkeleton rows={3} />
       </div>
-
-      <SkeletonSection descriptionWidths={['w-52', 'w-52']} />
-      <SkeletonSection descriptionWidths={['w-52', 'w-52', 'w-52']} />
     </div>
   );
 }

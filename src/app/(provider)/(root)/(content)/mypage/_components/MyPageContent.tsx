@@ -1,6 +1,5 @@
 'use client';
 
-import PageHeader from '@/components/ui/PageHeader';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import LoggedInCard from './LoggedInCard';
@@ -11,21 +10,25 @@ export default function MyPageContent() {
   const { isLoggedIn, isReady, user } = useAuth();
 
   return (
-    <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-      <PageHeader
-        title="마이페이지"
-        description="내 정보와 서비스 이용 내역을 한곳에서 관리할 수 있어요."
-      />
+    <div className="home-dashboard">
+      <header className="home-intro">
+        <div>
+          <p className="home-date">MY DONGSOOP</p>
+          <h1>
+            나의 동숲, 한곳에. <span aria-hidden="true">✳</span>
+          </h1>
+          <p className="home-subtitle">내 정보와 학업·계정 설정을 편하게 관리해요.</p>
+        </div>
+        <span className="home-semester">마이페이지</span>
+      </header>
 
-      <div className="mx-auto w-full">
-        {!isReady ? (
-          <MyPageSkeleton />
-        ) : isLoggedIn && user ? (
-          <LoggedInCard user={user} />
-        ) : (
-          <LoggedOutCard />
-        )}
-      </div>
+      {!isReady ? (
+        <MyPageSkeleton />
+      ) : isLoggedIn && user ? (
+        <LoggedInCard user={user} />
+      ) : (
+        <LoggedOutCard />
+      )}
     </div>
   );
 }
