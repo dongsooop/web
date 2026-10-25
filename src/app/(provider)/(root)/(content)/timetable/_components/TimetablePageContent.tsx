@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { Plus, Table2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useCreateTimetable } from '@/features/timetable/hooks/useCreateTimetable';
@@ -14,7 +14,7 @@ import type {
   TimetableCreateRequest,
   TimetableUpdateRequest,
 } from '@/features/timetable/types/request';
-import PageHeader from '@/components/ui/PageHeader';
+import AcademicNav from '@/components/layout/AcademicNav';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useToastStore } from '@/store/useToastStore';
 import { getErrorMessage } from '@/lib/errors/messages';
@@ -150,47 +150,67 @@ export default function TimetablePageContent() {
   }
 
   return (
-    <div className="w-full">
-      <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-        <PageHeader
-          title="시간표 관리"
-          showBackButton
-          description="수강 중인 과목과 시간표를 확인하고 관리할 수 있어요."
-        />
+    <div className="home-dashboard">
+      <header className="home-intro">
+        <div>
+          <p className="home-date">MY ACADEMICS</p>
+          <h1>
+            이번 학기도, 한눈에. <span aria-hidden="true">✳</span>
+          </h1>
+          <p className="home-subtitle">수업 시간과 강의 정보를 한곳에서 관리해요.</p>
+        </div>
+        <span className="home-semester">
+          {year}년 {semesterLabel}
+        </span>
+      </header>
 
-        <section
-          className="border-gray2 shadow-schedule-panel lg:grid-cols-schedule grid gap-0 overflow-hidden rounded-xl border bg-white lg:min-h-[44rem]"
-          aria-label="시간표 관리"
-        >
-          <div className="flex min-w-0 flex-col p-5 sm:p-6 lg:min-h-[44rem]">
-            <header className="mb-5 flex items-center justify-between gap-4">
-              <h2 className="flex min-h-11 items-center text-[22px] leading-tight font-bold text-black">
-                {year}년 {semesterLabel}
-              </h2>
+      <AcademicNav active="timetable" />
 
-              <Link
-                href="/timetable/write"
-                className="text-primary border-primary/10 bg-primary/5 hover:bg-primary/10 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border shadow-sm transition sm:hidden"
-                aria-label="강의 추가"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-              </Link>
+      <section
+        className="border-surface-border overflow-hidden rounded-xl border bg-white"
+        aria-labelledby="timetable-title"
+      >
+        <div className="home-card-head border-surface-border border-b px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <span
+              className="bg-surface-blue flex h-9 w-9 items-center justify-center rounded-lg text-sky-700"
+              aria-hidden="true"
+            >
+              <Table2 className="h-5 w-5" />
+            </span>
+            <h2 id="timetable-title">
+              {year}년 {semesterLabel} 시간표
+            </h2>
+          </div>
 
-              <button
-                type="button"
-                onClick={() => setPanel({ type: 'create' })}
-                className="text-primary border-primary/10 bg-primary/5 text-bodySm hover:bg-primary/10 hidden min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 font-semibold shadow-sm transition sm:inline-flex"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>강의 추가</span>
-              </button>
-            </header>
+          <Link
+            href="/timetable/write"
+            className="text-primary hover:bg-surface-blue focus-visible:ring-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none sm:hidden"
+            aria-label="강의 추가"
+          >
+            <Plus className="h-5 w-5" aria-hidden="true" />
+          </Link>
 
+          <button
+            type="button"
+            onClick={() => setPanel({ type: 'create' })}
+            className="text-primary border-surface-border hover:bg-surface-blue focus-visible:ring-primary hidden min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none sm:inline-flex"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            <span>강의 추가</span>
+          </button>
+        </div>
+
+        <div className="lg:grid-cols-schedule grid gap-0">
+          <div className="flex min-w-0 flex-col p-4 sm:p-6 lg:min-h-[44rem]">
             <div className="w-full lg:min-h-[44rem]">
               {!isQueryReady || (isLoading && lectures.length === 0) ? (
-                <Skeleton className="min-h-[36rem] w-full rounded-2xl lg:min-h-[44rem]" />
+                <Skeleton className="min-h-[36rem] w-full rounded-xl lg:min-h-[44rem]" />
               ) : isError ? (
-                <p className="text-body text-gray5 flex min-h-[240px] items-center justify-center text-center whitespace-pre-line">
+                <p
+                  className="text-body text-surface-muted flex min-h-[240px] items-center justify-center text-center whitespace-pre-line"
+                  role="alert"
+                >
                   {displayErrorMessage}
                 </p>
               ) : (
@@ -207,7 +227,7 @@ export default function TimetablePageContent() {
             </div>
           </div>
 
-          <div className="border-gray2 hidden lg:block lg:border-l">
+          <div className="border-surface-border hidden lg:block lg:border-l">
             {panel.type === 'create' ? (
               <TimetableCreatePanel
                 key="create"
@@ -250,36 +270,36 @@ export default function TimetablePageContent() {
               <TimetablePanelEmpty />
             )}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {mobileLecture ? (
-          <div
-            className="fixed inset-0 z-40 lg:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="강의 정보"
-          >
-            <button
-              type="button"
-              className="absolute inset-0 cursor-pointer bg-black/40"
-              aria-label="강의 정보 닫기"
-              onClick={() => setMobileDetailId(null)}
+      {mobileLecture ? (
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="강의 정보"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 cursor-pointer bg-black/40"
+            aria-label="강의 정보 닫기"
+            onClick={() => setMobileDetailId(null)}
+          />
+
+          <div className="absolute inset-x-0 bottom-0 z-10">
+            <TimetableDetailPanel
+              isDeleting={remove.isPending}
+              isEditing={isEditingDetail}
+              lecture={mobileLecture}
+              mode="sheet"
+              onCloseAction={() => setMobileDetailId(null)}
+              onDeleteAction={() => deleteLecture(mobileLecture.id)}
+              onEditAction={() => moveToEditPage(mobileLecture.id)}
             />
-
-            <div className="absolute inset-x-0 bottom-0 z-10">
-              <TimetableDetailPanel
-                isDeleting={remove.isPending}
-                isEditing={isEditingDetail}
-                lecture={mobileLecture}
-                mode="sheet"
-                onCloseAction={() => setMobileDetailId(null)}
-                onDeleteAction={() => deleteLecture(mobileLecture.id)}
-                onEditAction={() => moveToEditPage(mobileLecture.id)}
-              />
-            </div>
           </div>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }
