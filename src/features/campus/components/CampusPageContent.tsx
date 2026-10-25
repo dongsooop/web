@@ -2,55 +2,28 @@
 
 import Link from 'next/link';
 import {
+  ArrowUpRight,
   BookOpen,
   CalendarDays,
   ChevronRight,
-  Map,
+  ExternalLink,
   MapPin,
   Megaphone,
   Search,
-  UtensilsCrossed,
 } from 'lucide-react';
 
+import { Skeleton } from '@/components/ui/Skeleton';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useCafeteriaQuery } from '@/features/cafeteria/hooks/useCafeteriaQuery';
 import CafeteriaCard from '@/features/home/components/CafeteriaCard';
 import { categoryIcon } from '@/features/restaurant/category';
 import { useRestaurantQuery } from '@/features/restaurant/hooks/useRestaurantQuery';
 
-const CAMPUS_LINKS = [
-  {
-    title: '캠퍼스 맛집',
-    description: '학생들이 추천한 학교 주변 맛집',
-    href: '/restaurants',
-    icon: UtensilsCrossed,
-    tone: 'bg-surface-blue',
-    external: false,
-  },
-  {
-    title: '도서관',
-    description: '열람실과 스터디룸 확인하기',
-    href: 'https://lib.dongyang.ac.kr/',
-    icon: BookOpen,
-    tone: 'bg-surface-cream',
-    external: true,
-  },
-  {
-    title: '학사일정',
-    description: '이번 학기 주요 일정 확인하기',
-    href: '/schedule',
-    icon: CalendarDays,
-    tone: 'bg-surface-mint',
-    external: false,
-  },
-  {
-    title: '학교 공지',
-    description: '새로운 학교와 학과 소식 보기',
-    href: '/notices',
-    icon: Megaphone,
-    tone: 'bg-surface-soft',
-    external: false,
-  },
+const links = [
+  { label: '맛집 찾아보기', href: '/restaurants', icon: Search, external: false },
+  { label: '도서관', href: 'https://lib.dongyang.ac.kr/', icon: BookOpen, external: true },
+  { label: '학사 일정', href: '/schedule', icon: CalendarDays, external: false },
+  { label: '학교 소식', href: '/notices', icon: Megaphone, external: false },
 ] as const;
 
 export default function CampusPageContent() {
@@ -60,128 +33,108 @@ export default function CampusPageContent() {
   const picks = restaurants.items.slice(0, 4);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 lg:gap-20">
-      <header>
-        <p className="text-primary text-sm font-semibold">Campus</p>
-        <h1 className="mt-2 text-[2rem] leading-tight font-bold tracking-[-0.035em] text-black sm:text-4xl lg:text-[2.75rem]">
-          캠퍼스
-        </h1>
-        <Link
-          href="/restaurants"
-          className="bg-surface-soft text-surface-muted hover:bg-gray1 focus-visible:ring-primary mt-8 flex min-h-14 w-full items-center gap-3 rounded-2xl px-5 text-base font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none sm:max-w-2xl"
-          aria-label="맛집 검색 화면으로 이동"
-        >
-          <Search className="h-5 w-5" aria-hidden="true" />
-          맛집 찾아보기
-        </Link>
+    <div className="home-dashboard">
+      <header className="home-intro">
+        <div>
+          <p className="home-date">CAMPUS LIFE</p>
+          <h1>
+            캠퍼스 생활, 더 가깝게. <span aria-hidden="true">✳</span>
+          </h1>
+          <p className="home-subtitle">한 끼부터 공부할 공간까지, 캠퍼스의 오늘을 둘러보세요.</p>
+        </div>
+        <span className="home-semester">동양미래대학교</span>
       </header>
 
-      <section aria-labelledby="restaurant-picks-title">
-        <div className="flex items-center justify-between gap-4">
-          <h2
-            id="restaurant-picks-title"
-            className="text-2xl font-bold tracking-[-0.025em] text-black sm:text-3xl"
-          >
-            학생들이 추천한 맛집
-          </h2>
+      <nav className="home-quick-links" aria-label="캠퍼스 빠른 메뉴">
+        {links.map(({ label, href, icon: Icon, external }) => (
           <Link
-            href="/restaurants/write"
-            className="text-primary hover:bg-surface-blue focus-visible:ring-primary hidden min-h-11 items-center gap-1 rounded-full px-3 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none sm:inline-flex"
+            key={label}
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
           >
-            추천하러 가기
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            <span className="home-quick-icon">
+              <Icon size={21} strokeWidth={1.7} aria-hidden="true" />
+            </span>
+            <strong>{label}</strong>
+            {external ? (
+              <ExternalLink size={15} aria-hidden="true" />
+            ) : (
+              <ChevronRight size={16} aria-hidden="true" />
+            )}
           </Link>
-        </div>
+        ))}
+      </nav>
 
-        {restaurants.isInitialLoading ? (
-          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4" aria-hidden="true">
-            {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="space-y-3">
-                <div className="skeleton-base aspect-[4/3] rounded-3xl" />
-                <div className="skeleton-base h-5 w-2/3 rounded-full" />
-              </div>
-            ))}
+      <div className="home-main-grid">
+        <section className="home-card" aria-labelledby="restaurant-picks-title">
+          <div className="home-card-head">
+            <h2 id="restaurant-picks-title">학생들이 추천한 맛집</h2>
+            <Link href="/restaurants" className="home-more">
+              전체 맛집 <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
           </div>
-        ) : picks.length > 0 ? (
-          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-7 lg:grid-cols-4">
-            {picks.map((restaurant, index) => (
-              <Link
-                key={restaurant.id}
-                href="/restaurants"
-                className="group focus-visible:ring-primary min-w-0 rounded-3xl focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-none"
-              >
-                <span
-                  className={`flex aspect-[4/3] items-center justify-center rounded-3xl ${index % 2 === 0 ? 'bg-surface-cream' : 'bg-surface-blue'}`}
+
+          {restaurants.isInitialLoading ? (
+            <div className="mt-5 grid grid-cols-2 gap-3" aria-hidden="true">
+              {Array.from({ length: 4 }, (_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton className="h-28 rounded-xl" />
+                  <Skeleton className="h-4 w-3/4 rounded" />
+                  <Skeleton className="h-3 w-1/2 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : picks.length > 0 ? (
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              {picks.map((restaurant, index) => (
+                <Link
+                  key={restaurant.id}
+                  href="/restaurants"
+                  className="group border-surface-border focus-visible:ring-primary hover:border-primary/30 min-w-0 overflow-hidden rounded-xl border bg-white transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   <span
-                    className="text-primary flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 [&>svg]:h-7 [&>svg]:w-7"
-                    aria-hidden="true"
+                    className={`flex h-28 items-center justify-center ${index % 2 === 0 ? 'bg-surface-cream' : 'bg-surface-blue'}`}
                   >
-                    {categoryIcon[restaurant.category]}
+                    <span
+                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/80 text-sky-700 [&>svg]:h-6 [&>svg]:w-6"
+                      aria-hidden="true"
+                    >
+                      {categoryIcon[restaurant.category]}
+                    </span>
                   </span>
-                </span>
-                <span className="group-hover:text-primary mt-3 block truncate text-base font-bold text-black sm:text-lg">
-                  {restaurant.name}
-                </span>
-                <span className="text-surface-muted mt-1 flex items-center gap-1 text-sm">
-                  <MapPin className="h-4 w-4" aria-hidden="true" />
-                  {restaurant.category} · {Math.round(restaurant.distance)}m
-                </span>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-surface-soft text-surface-muted mt-6 flex min-h-44 items-center justify-center rounded-3xl px-6 text-center">
-            {restaurants.displayErrorMessage ?? '아직 등록된 맛집이 없어요.'}
-          </div>
-        )}
-      </section>
+                  <span className="block min-w-0 p-3">
+                    <strong className="text-bodySm group-hover:text-primary block truncate font-semibold text-black transition-colors">
+                      {restaurant.name}
+                    </strong>
+                    <span className="text-caption text-surface-muted mt-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span className="truncate">
+                        {restaurant.category} · {Math.round(restaurant.distance)}m
+                      </span>
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="home-empty">
+              {restaurants.displayErrorMessage ?? '아직 등록된 맛집이 없어요.'}
+            </div>
+          )}
 
-      <div className="grid gap-12 lg:grid-cols-[minmax(280px,0.75fr)_minmax(0,1.25fr)] lg:items-start">
+          <div className="border-surface-border mt-5 border-t pt-4">
+            <Link href="/restaurants/write" className="home-text-link mt-0">
+              내가 아는 맛집 추천하기 <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+
         <CafeteriaCard
           menus={cafeteria.data ?? []}
           isLoading={cafeteria.isLoading}
           errorMessage={cafeteria.isError ? cafeteria.displayErrorMessage : null}
         />
-
-        <section aria-labelledby="campus-life-title">
-          <div className="flex items-center gap-3">
-            <Map className="text-primary h-6 w-6" aria-hidden="true" />
-            <h2
-              id="campus-life-title"
-              className="text-2xl font-bold tracking-[-0.025em] text-black"
-            >
-              캠퍼스 생활
-            </h2>
-          </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {CAMPUS_LINKS.map(({ title, description, href, icon: Icon, tone, external }) => (
-              <Link
-                key={title}
-                href={href}
-                target={external ? '_blank' : undefined}
-                rel={external ? 'noopener noreferrer' : undefined}
-                className={`${tone} group focus-visible:ring-primary flex min-h-36 items-center gap-4 rounded-3xl p-5 transition-shadow hover:shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none`}
-              >
-                <span className="text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80">
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="group-hover:text-primary block text-lg font-bold text-black">
-                    {title}
-                  </span>
-                  <span className="text-surface-muted mt-1 block text-sm leading-6">
-                    {description}
-                  </span>
-                </span>
-                <ChevronRight
-                  className="text-surface-muted ml-auto h-5 w-5 shrink-0"
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );
