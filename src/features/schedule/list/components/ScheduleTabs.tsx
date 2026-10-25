@@ -8,8 +8,8 @@ type ScheduleTabsProps = {
 
 export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps) {
   return (
-    <div className="border-gray2 border-b">
-      <div className="flex" role="group" aria-label="일정 분류 필터">
+    <div className="border-surface-border mx-5 mt-3 border-b sm:mx-6">
+      <div className="flex gap-5" role="group" aria-label="일정 분류 필터">
         {items.map((item) => {
           const isActive = item.id === tab;
 
@@ -20,13 +20,13 @@ export default function ScheduleTabs({ tab, items, onChange }: ScheduleTabsProps
               onClick={() => onChange(item.id)}
               aria-pressed={isActive}
               className={[
-                'text-bodySm flex h-12 flex-1 cursor-pointer items-center justify-center border-b-2 px-0 py-0 font-semibold transition sm:h-14 sm:min-w-28 sm:flex-none',
+                'text-bodySm focus-visible:ring-primary flex min-h-12 cursor-pointer items-center justify-center border-b-2 px-1 font-semibold transition-colors focus-visible:rounded-md focus-visible:ring-2 focus-visible:outline-none',
                 isActive
                   ? 'border-primary text-primary'
-                  : 'text-gray5 border-transparent hover:text-black',
+                  : 'text-surface-muted border-transparent hover:text-black',
               ].join(' ')}
             >
-              <span className="block px-4">{item.label}</span>
+              {item.label}
             </button>
           );
         })}

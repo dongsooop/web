@@ -76,13 +76,13 @@ export default function ScheduleCalendar({
   const memberLaneOffsetMap = buildLaneOffsetMap(cells, memberRangeSegments);
 
   return (
-    <section className="py-2 sm:px-7 sm:py-6" aria-label={`${currentMonth} 일정 달력`}>
-      <div className="border-gray2 md:hidden">
+    <section className="px-3 py-4 sm:px-6 sm:py-6" aria-label={`${currentMonth} 일정 달력`}>
+      <div className="md:hidden">
         <div className="flex items-center justify-center gap-2">
           <button
             type="button"
             onClick={() => onMoveMonthAction(-1)}
-            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            className="hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="이전 달"
           >
             <ChevronsLeft className="h-5 w-5" aria-hidden="true" />
@@ -93,7 +93,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={() => onMoveMonthAction(1)}
-            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition"
+            className="hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="다음 달"
           >
             <ChevronsRight className="h-5 w-5" aria-hidden="true" />
@@ -101,12 +101,12 @@ export default function ScheduleCalendar({
         </div>
       </div>
 
-      <div className="border-gray2 hidden flex-col gap-3 pb-4 md:flex lg:flex-row lg:items-center lg:justify-between">
+      <div className="hidden flex-col gap-3 pb-4 md:flex lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center justify-center gap-4 lg:w-auto">
           <button
             type="button"
             onClick={() => onMoveMonthAction(-1)}
-            className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="이전 달"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -117,7 +117,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={() => onMoveMonthAction(1)}
-            className="sm:border-gray2 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-black transition sm:border"
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
             aria-label="다음 달"
           >
             <ChevronRight className="h-5 w-5" aria-hidden="true" />
@@ -129,7 +129,7 @@ export default function ScheduleCalendar({
             <button
               type="button"
               onClick={onCreateAction}
-              className="border-primary/20 bg-primary/5 text-primary-foreground text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold"
+              className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg border bg-white px-4 font-semibold text-sky-700 transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               일정 추가
@@ -138,7 +138,7 @@ export default function ScheduleCalendar({
           <button
             type="button"
             onClick={onTodayAction}
-            className="border-gray2 text-gray6 text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border px-4 font-semibold transition"
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary text-bodySm text-surface-muted inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg border bg-white px-4 font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             <CalendarDays className="h-4 w-4" aria-hidden="true" />
             오늘 날짜로 이동
@@ -158,7 +158,7 @@ export default function ScheduleCalendar({
           ))}
         </div>
 
-        <div className="sm:border-gray2 auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-lg bg-white [--bar-gap:0.25rem] [--bar-step:1.25rem] sm:rounded-2xl sm:border sm:[--bar-gap:0.375rem] sm:[--bar-step:1.625rem]">
+        <div className="border-surface-border auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-xl border bg-white [--bar-gap:0.25rem] [--bar-step:1.25rem] sm:[--bar-gap:0.375rem] sm:[--bar-step:1.625rem]">
           {tab === 'OFFICIAL' || memberRangeSegments.length > 0 ? (
             <div className="pointer-events-none absolute inset-0 z-10 grid grid-cols-7 grid-rows-6">
               {(tab === 'OFFICIAL' ? officialSegments : memberRangeSegments).map(
@@ -218,10 +218,10 @@ export default function ScheduleCalendar({
                 type="button"
                 onClick={() => onSelectAction(key)}
                 className={[
-                  'sm:border-gray2 relative z-0 h-28 cursor-pointer text-left transition sm:h-35 sm:border-r sm:border-b',
-                  index % 7 === 6 ? 'sm:border-r-0' : '',
-                  index >= 35 ? 'sm:border-b-0' : '',
-                  isSelected ? 'bg-primary/5' : '',
+                  'border-surface-border hover:bg-surface-soft focus-visible:ring-primary relative z-0 h-28 cursor-pointer border-r border-b text-left transition-colors focus-visible:z-20 focus-visible:ring-2 focus-visible:outline-none sm:h-35',
+                  index % 7 === 6 ? 'border-r-0' : '',
+                  index >= 35 ? 'border-b-0' : '',
+                  isSelected ? 'bg-surface-blue' : '',
                 ].join(' ')}
                 aria-label={`${isSelected ? '선택됨, ' : ''}${dateLabel}, ${getScheduleCountText(scheduleCount)}`}
                 aria-current={isToday ? 'date' : undefined}

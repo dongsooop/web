@@ -77,14 +77,14 @@ export default function ScheduleDetailContent({
               })}
             </ul>
           ) : (
-            <div className="bg-gray7 flex min-h-45 flex-col items-center justify-center rounded-xl px-6 text-center sm:min-h-60">
-              <div className="shadow-schedule-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white sm:h-16 sm:w-16">
-                <CalendarDays className="text-gray5 h-7 w-7 sm:h-8 sm:w-8" aria-hidden="true" />
+            <div className="bg-surface-soft flex min-h-45 flex-col items-center justify-center rounded-xl px-6 text-center sm:min-h-60">
+              <div className="bg-surface-blue flex h-14 w-14 items-center justify-center rounded-xl text-sky-700 sm:h-16 sm:w-16">
+                <CalendarDays className="h-7 w-7 sm:h-8 sm:w-8" aria-hidden="true" />
               </div>
               <p className="sm:text-body text-bodySm mt-4 font-semibold text-black sm:mt-5">
                 {emptyText(tab)}
               </p>
-              <p className="text-caption text-gray5 mt-2 leading-5 sm:leading-6">
+              <p className="text-caption text-surface-muted mt-2 leading-5 sm:leading-6">
                 다른 날짜를 선택해서 일정을 확인해보세요.
               </p>
             </div>
