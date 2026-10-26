@@ -7,6 +7,7 @@ import {
   GraduationCap,
   KeyRound,
   Link2,
+  LogOut,
   Settings2,
   Table2,
   UserRound,
@@ -29,7 +30,7 @@ type LoggedInCardProps = {
 export default function LoggedInCard({ user }: LoggedInCardProps) {
   const router = useRouter();
   const departmentLabel = getDepartmentDisplayName(user.departmentType);
-  const { deleteAccount } = useAuth();
+  const { deleteAccount, logout, isLoggingOut } = useAuth();
   const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
 
@@ -40,6 +41,15 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
       router.replace('/');
     } catch (error) {
       showToast(getErrorMessage('auth', error, 'deleteAccount'), 'error');
+    }
+  };
+
+  const logoutAccount = async () => {
+    try {
+      await logout();
+      router.refresh();
+    } catch {
+      showToast('로그아웃 중 오류가 발생했어요. 다시 시도해 주세요.', 'error');
     }
   };
 
@@ -153,6 +163,15 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
                 icon={KeyRound}
                 title="비밀번호 변경"
                 description="새 비밀번호로 계정을 안전하게 관리할 수 있어요."
+              />
+            </li>
+            <li className="border-surface-border hidden border-b max-[700px]:block">
+              <ManagementLinkCard
+                icon={LogOut}
+                title={isLoggingOut ? '로그아웃 중...' : '로그아웃'}
+                description="현재 계정에서 로그아웃해요."
+                onClick={logoutAccount}
+                disabled={isLoggingOut}
               />
             </li>
             <li className="border-surface-border border-b last:border-b-0">

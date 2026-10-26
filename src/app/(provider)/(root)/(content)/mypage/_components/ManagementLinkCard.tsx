@@ -8,6 +8,7 @@ type ManagementLinkCardProps = {
   title: string;
   description: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export default function ManagementLinkCard({
@@ -16,6 +17,7 @@ export default function ManagementLinkCard({
   title,
   description,
   onClick,
+  disabled = false,
 }: ManagementLinkCardProps) {
   const content = (
     <>
@@ -56,7 +58,8 @@ export default function ManagementLinkCard({
     <button
       type="button"
       onClick={onClick}
-      className={`${className} appearance-none bg-transparent`}
+      disabled={disabled}
+      className={`${className} appearance-none bg-transparent disabled:cursor-wait disabled:opacity-60`}
     >
       {content}
     </button>
