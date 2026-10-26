@@ -78,8 +78,8 @@
   gap: 18px;
 }
 .site-search {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   @apply text-sky-700;
@@ -426,8 +426,8 @@
 .home-lunch-controls button {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 7px;
   @apply text-gray5;
   cursor: pointer;
@@ -728,9 +728,6 @@
 }
 @media (max-width: 390px) {
   .home-semester {
-    display: none;
-  }
-  .site-search {
     display: none;
   }
   .home-campus-strip > div {
