@@ -426,7 +426,7 @@
 }
 .home-lunch-controls {
   display: flex;
-  gap: 2px;
+  gap: 8px;
 }
 .home-lunch-controls button {
   display: grid;
