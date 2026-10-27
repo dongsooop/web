@@ -24,6 +24,7 @@
   align-items: center;
   gap: 7px;
   flex: none;
+  min-height: 44px;
   @apply text-black;
 }
 .site-brand strong {
@@ -114,6 +115,9 @@
   @apply text-caption;
 }
 .site-logout {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   @apply text-gray5;
   @apply text-caption;
   cursor: pointer;
@@ -271,7 +275,7 @@
   align-items: center;
   gap: 3px;
   flex: none;
-  min-height: 32px;
+  min-height: 44px;
   @apply text-gray5;
   @apply text-caption;
   font-weight: 600;
@@ -374,6 +378,7 @@
 .home-empty a {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   @apply text-primary;
   font-weight: 700;
 }
@@ -495,6 +500,7 @@
 .home-text-link {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 4px;
   margin-top: 18px;
   @apply text-sky-700;
@@ -623,6 +629,7 @@
   display: inline-flex;
   gap: 4px;
   align-items: center;
+  min-height: 44px;
   margin-left: auto;
   @apply text-gray5;
   @apply text-caption;
@@ -777,6 +784,9 @@
   gap: 13px;
 }
 .site-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   @apply text-gray5;
   @apply text-caption;
 }

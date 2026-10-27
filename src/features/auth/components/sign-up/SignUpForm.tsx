@@ -125,7 +125,7 @@ export default function SignUpForm() {
             href={CREATE_EMAIL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-caption font-bold text-black underline underline-offset-2"
+            className="text-caption inline-flex min-h-11 items-center font-bold text-black underline underline-offset-2"
           >
             학교 이메일 발급하러 가기
           </Link>

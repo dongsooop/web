@@ -82,7 +82,7 @@ export default function TodayCampusCard({ timetable, schedules }: TodayCampusCar
           </p>
           <Link
             href="/sign-in"
-            className="text-primary font-bold underline-offset-4 hover:underline"
+            className="text-primary inline-flex min-h-11 items-center font-bold underline-offset-4 hover:underline"
           >
             로그인
           </Link>
