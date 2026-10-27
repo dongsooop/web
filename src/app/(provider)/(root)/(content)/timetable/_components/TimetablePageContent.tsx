@@ -185,7 +185,7 @@ export default function TimetablePageContent() {
 
           <Link
             href="/timetable/write"
-            className="text-primary hover:bg-surface-blue focus-visible:ring-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none sm:hidden"
+            className="text-primary hover:bg-surface-blue focus-visible:ring-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none lg:hidden"
             aria-label="강의 추가"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
@@ -194,7 +194,7 @@ export default function TimetablePageContent() {
           <button
             type="button"
             onClick={() => setPanel({ type: 'create' })}
-            className="text-primary border-surface-border hover:bg-surface-blue focus-visible:ring-primary hidden min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none sm:inline-flex"
+            className="text-primary border-surface-border hover:bg-surface-blue focus-visible:ring-primary hidden min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none lg:inline-flex"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span>강의 추가</span>
