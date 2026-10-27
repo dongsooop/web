@@ -231,7 +231,8 @@ export default function EclassPage() {
         </div>
 
         {!isReady || !isInitialized || link.isLoading ? (
-          <div className="mt-6 space-y-3" aria-label="연동 상태를 확인하는 중" aria-busy="true">
+          <div className="mt-6 space-y-3" role="status" aria-busy="true">
+            <span className="sr-only">연동 상태를 확인하는 중</span>
             <Skeleton className="h-5 w-44 rounded" />
             <Skeleton className="h-16 w-full rounded-xl" />
           </div>
@@ -370,7 +371,8 @@ export default function EclassPage() {
 
           <div className="mt-5">
             {assignments.isLoading ? (
-              <div className="space-y-5" aria-label="과제를 불러오는 중" aria-busy="true">
+              <div className="space-y-5" role="status" aria-busy="true">
+                <span className="sr-only">과제를 불러오는 중</span>
                 {Array.from({ length: 3 }, (_, index) => (
                   <div key={index} className="border-surface-border flex gap-4 border-b pb-5">
                     <Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
