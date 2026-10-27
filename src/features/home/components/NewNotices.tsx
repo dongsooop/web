@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import ListItem from '@/components/ui/ListItem';
 import type { HomeUiModel } from '@/features/home/types/ui-model';
 
 type NewNoticesProps = {
@@ -12,31 +10,42 @@ type NewNoticesProps = {
 
 export default function NewNotices({ notices }: NewNoticesProps) {
   return (
-    <Card>
-      <div className="flex items-center justify-between gap-4 px-2">
-        <h2 className="text-body font-semibold text-black">새로운 공지</h2>
+    <section aria-labelledby="notice-title">
+      <div className="flex items-center justify-between gap-4">
+        <h2 id="notice-title" className="text-2xl font-bold tracking-[-0.025em] text-black">
+          새로운 공지
+        </h2>
         <Link
           href="/notices"
-          className="text-body text-gray5 inline-flex min-h-11 items-center gap-2 px-2 font-semibold hover:text-black"
+          className="text-surface-muted hover:bg-surface-soft focus-visible:ring-primary inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-semibold transition-colors hover:text-black focus-visible:ring-2 focus-visible:outline-none"
         >
           더보기
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>
 
-      <div className="border-gray2 bg-white px-2">
+      <ul className="mt-3">
         {notices.map((it, idx) => (
-          <div key={it.link} className={idx === 0 ? '' : 'border-gray2 border-t'}>
-            <ListItem
+          <li key={it.link} className={idx === 0 ? '' : 'border-surface-border border-t'}>
+            <a
               href={it.link}
-              title={it.title}
-              tags={it.tags}
               target="_blank"
               rel="noopener noreferrer"
-            />
-          </div>
+              className="group focus-visible:ring-primary grid min-h-24 grid-cols-[8px_minmax(0,1fr)] gap-4 rounded-xl px-2 py-5 focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <span className="bg-primary mt-2 h-2 w-2 rounded-full" aria-hidden="true" />
+              <span className="min-w-0">
+                <span className="group-hover:text-primary block text-base leading-6 font-bold text-black sm:text-lg">
+                  {it.title}
+                </span>
+                <span className="text-surface-muted mt-2 block text-sm font-medium">
+                  {it.typeLabel}
+                </span>
+              </span>
+            </a>
+          </li>
         ))}
-      </div>
-    </Card>
+      </ul>
+    </section>
   );
 }

@@ -14,7 +14,7 @@ type ScheduleDetailPanelProps = {
 
 export default function ScheduleDetailPanel(props: ScheduleDetailPanelProps) {
   return (
-    <aside className="border-gray2 border-t bg-white p-4 sm:px-6 lg:border-t-0">
+    <aside className="border-surface-border border-t bg-white p-4 sm:px-6 md:border-t-0">
       <ScheduleDetailContent {...props} listClassName="sm:pt-6" />
     </aside>
   );

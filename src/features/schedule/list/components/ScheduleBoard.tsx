@@ -1,8 +1,9 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { CalendarDays } from 'lucide-react';
 
-import PageHeader from '@/components/ui/PageHeader';
+import AcademicNav from '@/components/layout/AcademicNav';
 import ToastView from '@/components/ui/ToastView';
 import ScheduleCreatePanel from '@/features/schedule/write/components/ScheduleCreatePanel';
 import { useScheduleBoardActions } from '../hooks/useScheduleBoardActions';
@@ -23,8 +24,22 @@ type ScheduleBoardProps = {
   month?: string;
 };
 
-function descriptionText() {
-  return '학사 일정과 개인 일정을 확인하고 관리할 수 있어요.';
+function ScheduleIntro() {
+  return (
+    <>
+      <header className="home-intro">
+        <div>
+          <p className="home-date">ACADEMIC CALENDAR</p>
+          <h1>
+            중요한 일정, 놓치지 않게. <span aria-hidden="true">✳</span>
+          </h1>
+          <p className="home-subtitle">학사 일정과 나의 계획을 달력에서 함께 확인해요.</p>
+        </div>
+        <span className="home-semester">학사 · 개인 일정</span>
+      </header>
+      <AcademicNav active="schedule" />
+    </>
+  );
 }
 
 export default function ScheduleBoard({ month }: ScheduleBoardProps) {
@@ -74,31 +89,35 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
 
   if (showSkeleton) {
     return (
-      <div className="max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4">
-        <div className="px-1">
-          <PageHeader title="일정" showBackButton description={descriptionText()} />
-        </div>
-
+      <div className="home-dashboard">
+        <ScheduleIntro />
         <ScheduleSkeleton />
       </div>
     );
   }
 
   return (
-    <div
-      className={[
-        'max-w-calendar mx-auto flex w-full flex-col gap-4 sm:px-4',
-        createOpen ? '' : 'sm:pb-0',
-      ].join(' ')}
-    >
-      <div className="px-1">
-        <PageHeader title="일정" showBackButton description={descriptionText()} />
-      </div>
+    <div className="home-dashboard">
+      <ScheduleIntro />
 
       <section
-        className="sm:border-gray2 sm:shadow-schedule-panel overflow-hidden rounded-xl bg-white sm:border"
-        aria-label="일정 캘린더"
+        className="border-surface-border overflow-hidden rounded-xl border bg-white"
+        aria-labelledby="schedule-title"
       >
+        <div className="home-card-head px-5 pt-5 sm:px-6 sm:pt-6">
+          <div className="flex items-center gap-2">
+            <span
+              className="bg-surface-blue flex h-9 w-9 items-center justify-center rounded-lg text-sky-700"
+              aria-hidden="true"
+            >
+              <CalendarDays className="h-5 w-5" />
+            </span>
+            <h2 id="schedule-title">월간 일정</h2>
+          </div>
+          <span className="text-caption text-surface-muted font-semibold">
+            날짜를 눌러 상세 보기
+          </span>
+        </div>
         <ScheduleTabs tab={tab} items={tabs} onChange={changeTab} />
 
         <div className="md:grid-cols-schedule grid gap-0">
@@ -116,7 +135,7 @@ export default function ScheduleBoard({ month }: ScheduleBoardProps) {
             today={today}
           />
 
-          <div className="md:border-l-gray2 hidden bg-white md:flex md:flex-col md:border-l">
+          <div className="md:border-l-surface-border hidden bg-white md:flex md:flex-col md:border-l">
             {banner ? (
               <ToastView
                 toast={{

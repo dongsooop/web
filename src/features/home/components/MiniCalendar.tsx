@@ -43,15 +43,15 @@ export default function MiniCalendar() {
   };
 
   return (
-    <Card className="min-h-0 overflow-hidden">
+    <Card className="border-surface-border min-h-0 overflow-hidden rounded-[28px] p-5 sm:p-7">
       <div className="flex items-center justify-between">
-        <h2 className="text-body font-semibold text-black">일정</h2>
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-black">일정</h2>
 
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => handleMoveMonth(-1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
+            className="hover:bg-surface-soft focus-visible:ring-primary inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
             aria-label="이전 달"
           >
             <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -59,7 +59,7 @@ export default function MiniCalendar() {
           <button
             type="button"
             onClick={() => handleMoveMonth(1)}
-            className="hover:bg-gray1 inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full"
+            className="hover:bg-surface-soft focus-visible:ring-primary inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
             aria-label="다음 달"
           >
             <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
@@ -98,7 +98,7 @@ export default function MiniCalendar() {
                   key={c.key}
                   type="button"
                   onClick={() => setSelected(key)}
-                  className="mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full"
+                  className="focus-visible:ring-primary mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
                   aria-label={`${monthIndex + 1}월 ${c.date}일`}
                 >
                   <span
@@ -161,8 +161,8 @@ export default function MiniCalendar() {
               ))}
             </div>
           ) : (
-            <div className="bg-gray7 flex min-h-14 items-center justify-center rounded-xl px-4 text-center">
-              <p className="text-caption text-gray5">선택한 날짜에 예정된 일정이 없어요.</p>
+            <div className="bg-surface-soft flex min-h-14 items-center justify-center rounded-xl px-4 text-center">
+              <p className="text-caption text-surface-muted">선택한 날짜에 예정된 일정이 없어요.</p>
             </div>
           )}
         </button>

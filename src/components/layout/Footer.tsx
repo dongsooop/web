@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const contactHref = `mailto:rdyjun00@gmail.com?subject=${encodeURIComponent('동숲 문의')}`;
 
-const FOOTER_LINKS = [
+const links = [
   {
     href: 'https://zircon-football-529.notion.site/Dongsoop-2333ee6f2561800cb85fdc87fbe9b4c2',
     label: '서비스 이용약관',
@@ -28,46 +28,25 @@ const FOOTER_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-gray1 w-full border-t bg-white">
-      <div className="w-full px-4 py-8">
-        <div className="mb-6">
-          <p className="text-body font-semibold text-black">동양미래대숲</p>
-          <p className="text-caption text-gray4 mt-1">
-            본 서비스는 동양미래대학교의 비공식 서비스로 <br />
-            제공 정보는 학교 홈페이지/공식 안내를 기반으로 합니다.
-          </p>
+    <footer className="site-footer">
+      <div className="site-footer-inner">
+        <div className="site-footer-brand">
+          <strong>동숲</strong>
+          <span>우리의 캠퍼스, 더 가깝게.</span>
         </div>
-
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <nav aria-label="Footer">
-            <ul className="text-caption font-regular text-gray4 flex flex-wrap items-center gap-y-2">
-              {FOOTER_LINKS.map((item, index) => (
-                <li key={item.label} className="flex items-center">
-                  {item.external ? (
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="transition-colors hover:underline"
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <Link href={item.href} className="transition-colors hover:underline">
-                      {item.label}
-                    </Link>
-                  )}
-
-                  {index !== FOOTER_LINKS.length - 1 && <span className="text-gray3 mx-3">|</span>}
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <p className="text-caption font-regular text-gray5">
-            © {new Date().getFullYear()} Dongsoop. All rights reserved.
-          </p>
-        </div>
+        <nav aria-label="서비스 정보">
+          {links.map((link) =>
+            link.external ? (
+              <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.label} href={link.href}>
+                {link.label}
+              </Link>
+            ),
+          )}
+        </nav>
       </div>
     </footer>
   );

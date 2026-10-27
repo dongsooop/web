@@ -4,10 +4,14 @@ const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/features/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ['var(--font-pretendard)', 'Arial', 'sans-serif'],
+      },
       colors: {
         black: '#252525',
         white: '#FFFFFF',
@@ -19,6 +23,16 @@ const config: Config = {
         gray5: '#8B8C92',
         gray6: '#545961',
         gray7: '#F3F5F8',
+
+        surface: {
+          canvas: '#FFFFFF',
+          soft: '#F6F7F9',
+          blue: '#EEF5FF',
+          cream: '#FFF6E2',
+          mint: '#EAF7F1',
+          border: '#E6ECF4',
+          muted: '#626975',
+        },
 
         primary: {
           DEFAULT: '#006DFF',

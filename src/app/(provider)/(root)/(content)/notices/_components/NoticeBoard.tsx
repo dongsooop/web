@@ -1,48 +1,80 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Megaphone } from 'lucide-react';
 
-import CommonTag from '@/components/ui/CommonTag';
-import { Divider } from '@/components/ui/Divider';
-import PageHeader from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLoginRequiredDialog } from '@/features/auth/hooks/useLoginRequiredDialog';
 import { useNoticeQuery } from '@/features/notice/hooks/useNoticeQuery';
 import type { NoticeTab, NoticeUiItem } from '@/features/notice/types/ui-model';
 
-const TABS = [
-  { id: 'ALL', label: '전체' },
-  { id: 'OFFICIAL', label: '학교' },
-  { id: 'DEPARTMENT', label: '학과' },
-] as const;
+const tabs: { id: NoticeTab; label: string }[] = [
+  { id: 'ALL', label: '전체 공지' },
+  { id: 'OFFICIAL', label: '학교 공지' },
+  { id: 'DEPARTMENT', label: '학과 공지' },
+];
 
-const MOBILE_COUNT = 5;
-const DESKTOP_COUNT = 7;
-const EXPANDED_LIST_HEIGHT = 'max-h-notice-mobile sm:max-h-notice-desktop';
+const mobileCount = 5;
+const desktopCount = 7;
 
-function NoticeCard({ notice }: { notice: NoticeUiItem }) {
+function NoticeRow({ notice }: { notice: NoticeUiItem }) {
+  const isOfficial = notice.type === 'OFFICIAL';
+
   return (
-    <article className="group flex flex-col gap-2 bg-white sm:px-2">
+    <li className="border-surface-border border-b last:border-b-0">
       <a
         href={notice.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-11 cursor-pointer flex-col gap-4 py-2 transition"
-        aria-label={`${notice.tags.map((tag) => tag.label).join(' ')} ${notice.title}`}
+        className="group focus-visible:ring-primary hover:bg-surface-soft flex min-h-28 items-center gap-4 rounded-lg px-1 py-5 transition-colors focus-visible:ring-2 focus-visible:outline-none sm:px-3"
+        aria-label={`${notice.title}, ${notice.dateLabel}, 새 창에서 열기`}
       >
-        <h3 className="text-body font-semibold break-words text-black underline-offset-2 group-hover:underline">
-          {notice.title}
-        </h3>
-
-        <div className="flex flex-wrap gap-2">
-          {notice.tags.map((tag, idx) => (
-            <CommonTag key={`${tag.label}-${idx}`} label={tag.label} tone={tag.tone} />
-          ))}
+        <span
+          className={`text-caption inline-flex shrink-0 items-center rounded-md px-2 py-1 font-semibold ${
+            isOfficial ? 'bg-surface-blue text-sky-700' : 'bg-gray7 text-surface-muted'
+          }`}
+        >
+          {isOfficial ? '학교' : '학과'}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-caption text-surface-muted font-semibold">
+              {notice.tags.map((tag) => tag.label).join(' · ')}
+            </span>
+          </span>
+          <h3 className="text-bodySm group-hover:text-primary sm:text-body line-clamp-2 font-semibold text-black transition-colors">
+            {notice.title}
+          </h3>
+          <span className="text-caption text-surface-muted flex flex-wrap items-center gap-x-2">
+            <span>{notice.writer}</span>
+            <span aria-hidden="true">·</span>
+            <time dateTime={notice.createdAt}>{notice.dateLabel}</time>
+          </span>
         </div>
+        <ArrowUpRight
+          className="text-gray5 group-hover:text-primary h-4 w-4 shrink-0 transition-colors"
+          aria-hidden="true"
+        />
       </a>
-    </article>
+    </li>
+  );
+}
+
+function NoticeSkeleton() {
+  return (
+    <div className="divide-surface-border divide-y" aria-hidden="true">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div key={index} className="flex min-h-28 items-center gap-4 py-5">
+          <Skeleton className="h-7 w-12 shrink-0 rounded-md" />
+          <div className="min-w-0 flex-1 space-y-3">
+            <Skeleton className="h-3 w-24 rounded" />
+            <Skeleton className="h-5 w-4/5 rounded" />
+            <Skeleton className="h-3 w-40 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -50,7 +82,7 @@ export default function NoticeBoard() {
   const { isLoggedIn } = useAuth();
   const openLoginDialog = useLoginRequiredDialog();
   const [tab, setTab] = useState<NoticeTab>('ALL');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [visiblePage, setVisiblePage] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const currentTab = !isLoggedIn && tab === 'DEPARTMENT' ? 'ALL' : tab;
   const {
@@ -74,115 +106,130 @@ export default function NoticeBoard() {
     return () => media.removeEventListener('change', sync);
   }, []);
 
-  const initialCount = isMobile ? MOBILE_COUNT : DESKTOP_COUNT;
-  const canExpand = !isExpanded && items.length > initialCount;
-  const showMoreButton = canExpand || hasMore;
-  const visibleItems = isExpanded ? items : items.slice(0, initialCount);
+  const initialCount = isMobile ? mobileCount : desktopCount;
+  const visibleCount = visiblePage * initialCount;
+  const showMore = items.length > visibleCount || hasMore;
+  const visibleItems = items.slice(0, visibleCount);
   const loadMoreError = isFetchNextPageError ? displayErrorMessage : null;
 
-  if (isError && items.length === 0) {
-    return (
-      <div className="max-w-content mx-auto flex min-h-[60vh] w-full items-center justify-center px-4 text-center">
-        <p className="text-body text-gray5">{displayErrorMessage}</p>
-      </div>
-    );
-  }
+  const selectTab = (next: NoticeTab) => {
+    if (next === 'DEPARTMENT' && !isLoggedIn) {
+      openLoginDialog();
+      return;
+    }
+
+    setTab(next);
+    setVisiblePage(1);
+  };
+
+  const loadMore = async () => {
+    const nextCount = (visiblePage + 1) * initialCount;
+
+    if (items.length < nextCount && hasMore) {
+      const result = await fetchNextPage();
+      if (result.isError) return;
+    }
+
+    setVisiblePage((page) => page + 1);
+  };
 
   return (
-    <div className="max-w-content mx-auto flex w-full flex-col gap-4">
-      <PageHeader
-        title="공지"
-        showBackButton
-        description="최신 학교 공지와 학과 공지를 빠르게 확인할 수 있어요."
-      />
+    <div className="flex w-full flex-col gap-6">
+      <header className="home-intro">
+        <div>
+          <p className="home-date">CAMPUS UPDATES</p>
+          <h1>
+            학교 소식, 한눈에. <span aria-hidden="true">✳</span>
+          </h1>
+          <p className="home-subtitle">학교와 학과의 새로운 공지를 한곳에서 확인해요.</p>
+        </div>
+        <span className="home-semester">학교 · 학과 공지</span>
+      </header>
 
-      <section className="border-gray2 rounded-xl border bg-white" aria-label="공지 목록">
-        <div className="border-gray2 border-b">
-          <div className="flex" role="tablist" aria-label="공지 분류">
-            {TABS.map((it) => {
-              const active = it.id === currentTab;
-
-              return (
-                <button
-                  key={it.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => {
-                    if (it.id === 'DEPARTMENT' && !isLoggedIn) {
-                      openLoginDialog();
-                      return;
-                    }
-
-                    setTab(it.id);
-                    setIsExpanded(false);
-                  }}
-                  className={[
-                    'text-bodySm flex h-12 min-h-14 w-16 flex-none cursor-pointer items-center justify-center border-b-2 font-semibold transition sm:w-18',
-                    active
-                      ? 'border-primary text-primary'
-                      : 'text-gray5 border-transparent hover:text-black',
-                  ].join(' ')}
-                >
-                  <span className="block px-4">{it.label}</span>
-                </button>
-              );
-            })}
+      <section className="home-card flex flex-col gap-0" aria-labelledby="notice-title">
+        <div className="home-card-head mb-4">
+          <div className="flex items-center gap-2">
+            <span
+              className="bg-surface-blue flex h-9 w-9 items-center justify-center rounded-lg text-sky-700"
+              aria-hidden="true"
+            >
+              <Megaphone className="h-5 w-5" />
+            </span>
+            <h2 id="notice-title">새로운 공지</h2>
           </div>
+          <span className="text-caption text-surface-muted font-semibold">최신순</span>
         </div>
 
         <div
-          className={`px-4 ${
-            isExpanded ? `${EXPANDED_LIST_HEIGHT} overflow-y-auto` : 'overflow-visible'
-          }`}
+          className="border-surface-border flex gap-5 border-b"
+          role="tablist"
+          aria-label="공지 분류"
         >
+          {tabs.map(({ id, label }) => {
+            const active = id === currentTab;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => selectTab(id)}
+                className={`text-bodySm focus-visible:ring-primary relative min-h-12 cursor-pointer px-1 font-semibold transition-colors focus-visible:rounded-md focus-visible:ring-2 focus-visible:outline-none ${
+                  active ? 'text-primary' : 'text-surface-muted hover:text-black'
+                }`}
+              >
+                {label}
+                {active ? (
+                  <span className="bg-primary absolute inset-x-0 bottom-0 h-0.5 rounded-full" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <div>
           {isInitialLoading ? (
-            <Skeleton className="my-4 h-[44rem] rounded-xl sm:h-[46rem]" />
+            <NoticeSkeleton />
+          ) : isError && items.length === 0 ? (
+            <div
+              className="text-bodySm text-surface-muted flex min-h-56 items-center justify-center px-4 text-center"
+              role="alert"
+            >
+              {displayErrorMessage}
+            </div>
+          ) : visibleItems.length > 0 ? (
+            <ul>
+              {visibleItems.map((notice) => (
+                <NoticeRow key={`${notice.type}-${notice.id}`} notice={notice} />
+              ))}
+            </ul>
           ) : (
-            <div className="py-4">
-              {visibleItems.length > 0 ? (
-                <ul>
-                  {visibleItems.map((notice, index) => (
-                    <li key={`${notice.type}-${notice.id}`}>
-                      <NoticeCard notice={notice} />
-                      {index < visibleItems.length - 1 ? <Divider /> : null}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-body text-gray5 flex min-h-56 items-center justify-center px-6 text-center">
-                  <p>선택한 분류의 공지가 아직 없어요.</p>
-                </div>
-              )}
+            <div className="text-bodySm text-surface-muted flex min-h-56 items-center justify-center px-4 text-center">
+              선택한 분류의 공지가 아직 없어요.
             </div>
           )}
         </div>
 
-        <div className="my-6 flex flex-col items-center gap-3">
-          {loadMoreError ? (
-            <p className="text-caption text-warning-100 px-4 text-center" role="alert">
-              공지를 더 불러오지 못했어요. 다시 시도해주세요.
-            </p>
-          ) : null}
-
-          {showMoreButton ? (
-            <button
-              type="button"
-              onClick={() => {
-                setIsExpanded(true);
-
-                if (hasMore) {
-                  void fetchNextPage();
-                }
-              }}
-              disabled={isFetchingNextPage}
-              className="border-gray2 text-bodySm hover:border-primary/20 hover:bg-primary/5 disabled:text-gray5 inline-flex min-h-12 min-w-45 cursor-pointer items-center justify-center gap-2 rounded-xl border bg-white px-6 font-semibold text-black transition disabled:cursor-not-allowed"
-            >
-              {isFetchingNextPage ? '불러오는 중...' : loadMoreError ? '다시 시도' : '더보기'}
-              <ChevronDown className="h-4 w-4" aria-hidden="true" />
-            </button>
-          ) : null}
-        </div>
+        {showMore || loadMoreError ? (
+          <div className="border-surface-border flex flex-col items-center gap-3 border-t pt-6">
+            {loadMoreError ? (
+              <p className="text-caption text-warning-100 text-center" role="alert">
+                공지를 더 불러오지 못했어요. 다시 시도해주세요.
+              </p>
+            ) : null}
+            {showMore ? (
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={isFetchingNextPage}
+                className="border-surface-border text-bodySm hover:border-primary hover:bg-surface-blue focus-visible:ring-primary inline-flex min-h-12 min-w-40 cursor-pointer items-center justify-center gap-2 rounded-xl border bg-white px-6 font-semibold text-black transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isFetchingNextPage ? '불러오는 중...' : loadMoreError ? '다시 시도' : '더보기'}
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </section>
     </div>
   );
