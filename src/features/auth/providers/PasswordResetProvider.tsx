@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, type ReactNode, useContext, useRef } from 'react';
+import { createContext, type ReactNode, useContext, useState } from 'react';
 import type { StoreApi } from 'zustand';
 import { useStore } from 'zustand';
 import {
@@ -15,14 +15,10 @@ type PasswordResetProviderProps = {
 };
 
 export default function PasswordResetProvider({ children }: PasswordResetProviderProps) {
-  const storeRef = useRef<StoreApi<PasswordResetStore> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createPasswordResetStore();
-  }
+  const [store] = useState(createPasswordResetStore);
 
   return (
-    <PasswordResetStoreContext.Provider value={storeRef.current}>
+    <PasswordResetStoreContext.Provider value={store}>
       {children}
     </PasswordResetStoreContext.Provider>
   );

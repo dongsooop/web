@@ -111,7 +111,7 @@ export default function SignUpForm() {
       return `${m}:${s}`;
     }
     return status.isCodeSent ? '재전송' : '인증 요청';
-  }, [status.isCodeVerified, status.isCodeSent, status.remainingSeconds, status.failCount]);
+  }, [status.isCodeVerified, status.isCodeSent, status.remainingSeconds]);
 
   return (
     <div className="flex w-full justify-center bg-white px-4 py-6">

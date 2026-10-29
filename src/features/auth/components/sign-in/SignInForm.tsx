@@ -29,7 +29,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const setError = useAuthStore((state) => state.actions.setError);
 
   const { signIn, signInGoogleSocial, isSubmitting, isSigningGoogle, isSigningKakao } = useAuth();
-  const { socialLogin, setIsKakaoReady, kakao } = useAuthSocial({
+  const { socialLogin, kakao } = useAuthSocial({
     kakaoJsKey,
     signInGoogleSocial,
     isSubmitting,
@@ -40,9 +40,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const errorMessage = error
-    ? getErrorMessage('auth', error, errorContext ?? undefined)
-    : null;
+  const errorMessage = error ? getErrorMessage('auth', error, errorContext ?? undefined) : null;
 
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
@@ -81,15 +79,7 @@ export default function SignInForm({ kakaoJsKey }: SignInFormProps) {
   return (
     <div className="flex min-h-screen w-full justify-center bg-white px-4">
       <section className="max-w-form flex w-full flex-col items-center justify-center gap-4 pt-4">
-        <Script
-          src={kakaoSdkUrl}
-          strategy="afterInteractive"
-          onLoad={() => {
-            kakao.init();
-            setIsKakaoReady(true);
-          }}
-          onError={() => setIsKakaoReady(false)}
-        />
+        <Script src={kakaoSdkUrl} strategy="afterInteractive" onLoad={kakao.init} />
 
         <div className="h-4" />
         <div className="flex items-center">

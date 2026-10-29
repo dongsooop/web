@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useGoogleLink } from './useGoogleLink';
@@ -26,21 +25,6 @@ export function useAuthSocial({
   const router = useRouter();
   const showDialog = useDialogStore((state) => state.showDialog);
   const setError = useAuthStore((state) => state.actions.setError);
-  const [isKakaoReady, setIsKakaoReady] = useState(false);
-
-  useEffect(() => {
-    const sdk = window.Kakao;
-    if (!sdk || !kakaoJsKey) {
-      setIsKakaoReady(false);
-      return;
-    }
-    try {
-      if (!sdk.isInitialized()) sdk.init(kakaoJsKey);
-      setIsKakaoReady(true);
-    } catch {
-      setIsKakaoReady(false);
-    }
-  }, [kakaoJsKey]);
 
   const openSocialErrorDialog = (errorKey: SocialErrorKey) => {
     showDialog({
@@ -87,16 +71,11 @@ export function useAuthSocial({
       google.start();
       return;
     }
-    if (!isKakaoReady) {
-      openSocialErrorDialog('SOCIAL_SDK');
-      return;
-    }
     kakao.start();
   };
 
   return {
     socialLogin,
-    setIsKakaoReady,
     kakao,
   };
 }

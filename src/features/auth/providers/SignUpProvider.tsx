@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, type ReactNode, useContext, useRef } from 'react';
+import { createContext, type ReactNode, useContext, useState } from 'react';
 import type { StoreApi } from 'zustand';
 import { useStore } from 'zustand';
 import { createSignUpStore, type SignUpStore } from '@/features/auth/stores/signUpStore';
@@ -12,15 +12,9 @@ type SignUpProviderProps = {
 };
 
 export default function SignUpProvider({ children }: SignUpProviderProps) {
-  const storeRef = useRef<StoreApi<SignUpStore> | null>(null);
+  const [store] = useState(createSignUpStore);
 
-  if (!storeRef.current) {
-    storeRef.current = createSignUpStore();
-  }
-
-  return (
-    <SignUpStoreContext.Provider value={storeRef.current}>{children}</SignUpStoreContext.Provider>
-  );
+  return <SignUpStoreContext.Provider value={store}>{children}</SignUpStoreContext.Provider>;
 }
 
 export function useSignUpStore<T>(selector: (store: SignUpStore) => T) {
