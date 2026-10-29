@@ -2,13 +2,14 @@ import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { extractAuthContext } from '@/features/auth/server/auth.context';
 import { applyAuthResult, createSessionExpiredResponse } from '@/features/auth/server/auth.route';
 import { ApiError } from '@/lib/api/apiError';
+import type { HomeResponse } from '@/features/home/types/response';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchHome } from './service';
 
-function normalizeNoticeLinks(data: any, schoolUrl: string) {
+function normalizeNoticeLinks(data: HomeResponse, schoolUrl: string) {
   if (data && Array.isArray(data.notices)) {
-    data.notices = data.notices.map((notice: any) => ({
+    data.notices = data.notices.map((notice) => ({
       ...notice,
       link: notice.link.startsWith('http')
         ? notice.link
@@ -48,13 +49,14 @@ export async function GET(request: NextRequest) {
       return createSessionExpiredResponse();
     }
 
-    const data = normalizeNoticeLinks(await result.response.json(), schoolUrl);
+    const home: HomeResponse = await result.response.json();
+    const data = normalizeNoticeLinks(home, schoolUrl);
     const response = NextResponse.json(data, { status: result.response.status });
 
     applyAuthResult(response, result);
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const status =
       error instanceof ApiError && error.status !== HttpStatusCode.NETWORK_ERROR
         ? error.status
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: error.message || 'Network Connection Failed',
+        message: error instanceof Error ? error.message : 'Network Connection Failed',
         status,
       },
       { status },

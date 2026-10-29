@@ -1,15 +1,17 @@
-import { getErrorMessage } from '@/lib/errors/messages';
+import { resolveSocialErrorKey } from '@/features/auth/lib/socialError';
 import { setSocialState } from '../lib/socialState';
+import type { SocialErrorContext, SocialErrorKey } from '@/features/auth/types/error';
 
 const kakaoStateKey = 'kakao_oauth_state';
 const defaultWebOrigin = 'https://www.dongsoop.site';
 
 type UseSocialStartOptions = {
-  onError: (message: string) => void;
+  onError: (errorKey: SocialErrorKey) => void;
   onFinish: () => void;
 };
 
 type UseKakaoLinkOptions = UseSocialStartOptions & {
+  context: SocialErrorContext;
   jsKey: string;
   redirectPath?: string;
   stateKey?: string;
@@ -46,6 +48,7 @@ function isRateLimit(error: unknown) {
 }
 
 export function useKakaoLink({
+  context,
   jsKey,
   onError,
   onFinish,
@@ -78,7 +81,7 @@ export function useKakaoLink({
   const start = () => {
     try {
       if (!ready() || !window.Kakao) {
-        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onError('SOCIAL_SDK');
         onFinish();
         return;
       }
@@ -86,7 +89,7 @@ export function useKakaoLink({
       const nextRedirectUri = resolveRedirectUri(redirectPath);
 
       if (!nextRedirectUri) {
-        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onError('SOCIAL_SDK');
         onFinish();
         return;
       }
@@ -99,11 +102,7 @@ export function useKakaoLink({
         state,
       });
     } catch (error) {
-      onError(
-        isRateLimit(error)
-          ? getErrorMessage('social', error, 'kakaoRateLimit')
-          : getErrorMessage('social', error, 'sdk'),
-      );
+      onError(isRateLimit(error) ? 'SOCIAL_KAKAO_RATE_LIMIT' : resolveSocialErrorKey(error, context));
       onFinish();
     }
   };

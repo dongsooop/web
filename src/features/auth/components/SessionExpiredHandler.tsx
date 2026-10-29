@@ -22,7 +22,7 @@ export default function SessionExpiredHandler() {
       confirm="확인"
       onConfirm={handleConfirm}
       isSingleAction
-      variant="primary"
+      color="primary"
     />
   );
 }

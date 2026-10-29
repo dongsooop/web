@@ -1,9 +1,10 @@
-import SignUpForm from './_components/SignUpForm';
+import SignUpForm from '@/features/auth/components/sign-up/SignUpForm';
+import SignUpProvider from '@/features/auth/providers/SignUpProvider';
 
 export default function SignUpPage() {
   return (
-    <div className="flex w-full justify-center bg-white px-4 py-6">
+    <SignUpProvider>
       <SignUpForm />
-    </div>
+    </SignUpProvider>
   );
 }

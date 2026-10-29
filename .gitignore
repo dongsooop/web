@@ -43,3 +43,6 @@ next-env.d.ts
 # firebase 
 src/utils/request.json
 src/lib/firebase.ts
+
+# local agent skills
+.agents/

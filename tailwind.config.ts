@@ -4,10 +4,14 @@ const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/features/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ['var(--font-pretendard)', 'Arial', 'sans-serif'],
+      },
       colors: {
         black: '#252525',
         white: '#FFFFFF',
@@ -19,6 +23,16 @@ const config: Config = {
         gray5: '#8B8C92',
         gray6: '#545961',
         gray7: '#F3F5F8',
+
+        surface: {
+          canvas: '#FFFFFF',
+          soft: '#F6F7F9',
+          blue: '#EEF5FF',
+          cream: '#FFF6E2',
+          mint: '#EAF7F1',
+          border: '#E6ECF4',
+          muted: '#626975',
+        },
 
         primary: {
           DEFAULT: '#006DFF',
@@ -124,12 +138,11 @@ const config: Config = {
       },
 
       maxWidth: {
-        content: '61.25rem',
-        form: '48.75rem',
-        layout: '150rem',
-        timetable: '65rem',
-        'timetable-content': '58rem',
-        'timetable-grid': '52rem',
+        calendar: '90rem',
+        content: '55rem',
+        sheet: '40rem',
+        form: '30rem',
+        dialog: '24rem',
       },
 
       maxHeight: {
@@ -166,10 +179,6 @@ const config: Config = {
       gridTemplateRows: {
         timetable: 'repeat(14, minmax(0, 3.5rem))',
         'timetable-shell': '2.25rem minmax(0, 1fr)',
-      },
-
-      borderRadius: {
-        timetable: '1.75rem',
       },
 
       fontSize: {

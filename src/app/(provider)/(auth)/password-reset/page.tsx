@@ -1,9 +1,20 @@
-import PasswordResetForm from './_components/PasswordResetForm';
+import PasswordResetForm from '@/features/auth/components/password-reset/PasswordResetForm';
+import PasswordResetProvider from '@/features/auth/providers/PasswordResetProvider';
 
-export default function PasswordResetPage() {
+type PasswordResetPageProps = {
+  searchParams?: Promise<{ from?: string }>;
+};
+
+export default async function PasswordResetPage({ searchParams }: PasswordResetPageProps) {
+  const params = await searchParams;
+
   return (
-    <main className="flex min-h-screen w-full flex-col items-center bg-white px-5 pt-20">
-      <PasswordResetForm />
+    <main className="flex min-h-screen w-full justify-center bg-white p-4 pt-30 sm:px-6">
+      <div className="max-w-form w-full">
+        <PasswordResetProvider>
+          <PasswordResetForm from={params?.from} />
+        </PasswordResetProvider>
+      </div>
     </main>
   );
 }

@@ -1,0 +1,172 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import Card from '@/components/ui/Card';
+import { useScheduleQuery } from '@/features/schedule/hooks/useScheduleQuery';
+import {
+  buildCalendarCells,
+  formatScheduleTimeLabel,
+  getVisibleSchedules,
+  moveMonthState,
+  WEEK_LABELS,
+} from '@/features/schedule/lib/calendar';
+import { formatDateLabel, formatMonthLabel, toDateKey, toMonthKey } from '@/utils/date';
+
+export default function MiniCalendar() {
+  const router = useRouter();
+  const today = useMemo(() => new Date(), []);
+  const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+  const [selected, setSelected] = useState(() => toDateKey(today));
+  const monthKey = toMonthKey(view);
+  const { data, isLoading, isError, displayErrorMessage } = useScheduleQuery(monthKey);
+
+  const year = view.getFullYear();
+  const monthIndex = view.getMonth();
+  const cells = useMemo(() => buildCalendarCells(view), [view]);
+  const monthText = formatMonthLabel(view);
+  const { visibleSchedules, overflowCount } = useMemo(
+    () => getVisibleSchedules(data ?? [], selected),
+    [data, selected],
+  );
+
+  const handleMoveMonth = (delta: number) => {
+    const nextState = moveMonthState(view, selected, delta);
+    setView(nextState.view);
+    setSelected(nextState.selectedDateKey);
+  };
+
+  const openSchedulePage = () => {
+    router.push(`/schedule?month=${monthKey}`);
+  };
+
+  return (
+    <Card className="border-surface-border min-h-0 overflow-hidden rounded-[28px] p-5 sm:p-7">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-black">일정</h2>
+
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => handleMoveMonth(-1)}
+            className="hover:bg-surface-soft focus-visible:ring-primary inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="이전 달"
+          >
+            <ChevronLeft className="text-gray6 h-4 w-4 cursor-pointer" />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleMoveMonth(1)}
+            className="hover:bg-surface-soft focus-visible:ring-primary inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="다음 달"
+          >
+            <ChevronRight className="text-gray6 h-4 w-4 cursor-pointer" />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="text-caption w-6 font-semibold text-black">{monthText}</div>
+
+          <div className="text-gray5 text-caption grid flex-1 grid-cols-7 text-center font-semibold">
+            {WEEK_LABELS.map((w) => (
+              <div key={w} className="py-1">
+                {w}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-1 flex items-start gap-2">
+          <div className="w-6" />
+
+          <div className="grid flex-1 grid-cols-7 gap-y-1 text-center">
+            {cells.map((c) => {
+              if (c.date == null) return <div key={c.key} />;
+
+              const dateObj = new Date(year, monthIndex, c.date);
+              const key = toDateKey(dateObj);
+
+              const isToday = key === toDateKey(today);
+              const isSelected = key === selected;
+
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => setSelected(key)}
+                  className="focus-visible:ring-primary mx-auto inline-flex h-11 cursor-pointer items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
+                  aria-label={`${monthIndex + 1}월 ${c.date}일`}
+                >
+                  <span
+                    className={[
+                      'inline-flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold',
+                      isSelected ? 'bg-primary text-white' : 'text-black',
+                      !isSelected && isToday ? 'ring-primary/40 ring-2' : '',
+                    ].join(' ')}
+                  >
+                    {c.date}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-1 flex min-h-0 flex-col pt-4">
+        <div className="border-gray2 mb-4 h-px w-full shrink-0 border-t" aria-hidden="true" />
+        <div className="shrink-0 px-1">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-caption font-semibold text-black">
+              {formatDateLabel(selected)} 일정
+            </div>
+            {overflowCount > 0 ? (
+              <div className="text-caption text-gray5 shrink-0 font-semibold">+{overflowCount}</div>
+            ) : null}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={openSchedulePage}
+          className="mt-3 block min-h-11 w-full cursor-pointer px-1 text-left"
+          aria-label={`${formatDateLabel(selected)} 일정 화면으로 이동`}
+        >
+          {isError ? (
+            <div className="text-caption text-gray5 flex min-h-11 items-center justify-center text-center">
+              {displayErrorMessage}
+            </div>
+          ) : isLoading ? (
+            <div className="min-h-11" aria-hidden="true" />
+          ) : visibleSchedules.length > 0 ? (
+            <div className="grid h-14 grid-cols-3 gap-2">
+              {visibleSchedules.map((schedule, index) => (
+                <div
+                  key={`${schedule.title}-${schedule.startDateKey}-${schedule.startAt}-${index}`}
+                  className="border-gray2 flex min-w-0 cursor-pointer flex-col justify-center rounded-xl border bg-white px-3 text-left"
+                >
+                  <div className="min-w-0">
+                    <div className="text-caption truncate font-semibold text-black">
+                      {schedule.title}
+                    </div>
+                    <div className="text-caption text-gray5 mt-0.5 truncate">
+                      {formatScheduleTimeLabel(schedule)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-surface-soft flex min-h-14 items-center justify-center rounded-xl px-4 text-center">
+              <p className="text-caption text-surface-muted">선택한 날짜에 예정된 일정이 없어요.</p>
+            </div>
+          )}
+        </button>
+      </div>
+    </Card>
+  );
+}

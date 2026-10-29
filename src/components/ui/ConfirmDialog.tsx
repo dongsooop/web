@@ -12,7 +12,7 @@ interface DialogBaseProps {
   cancel?: string;
   confirm?: string;
   onConfirm: () => void;
-  variant?: 'primary' | 'danger';
+  color?: 'primary' | 'danger';
 }
 
 interface SingleActionDialogProps extends DialogBaseProps {
@@ -36,7 +36,7 @@ export default function ConfirmDialog({
   onConfirm,
   onClose,
   isSingleAction = false,
-  variant = 'primary',
+  color = 'primary',
 }: DialogProps) {
   useEffect(() => {
     if (!open) return;
@@ -65,12 +65,12 @@ export default function ConfirmDialog({
   };
 
   const confirmClass =
-    variant === 'danger'
+    color === 'danger'
       ? 'bg-warning text-white hover:opacity-95'
       : 'bg-primary text-white hover:opacity-95';
 
   const iconConfig =
-    variant === 'danger'
+    color === 'danger'
       ? {
           icon: AlertCircle,
           wrapperClassName: 'bg-warning/10 text-warning-100',
@@ -83,13 +83,13 @@ export default function ConfirmDialog({
   const Icon = iconConfig.icon;
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onClick={handleBackdropClick}
       aria-modal="true"
       role="dialog"
     >
       <div
-        className="animate-in fade-in zoom-in-95 relative w-full max-w-[340px] overflow-hidden rounded-xl bg-white px-6 py-7 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
+        className="animate-in fade-in zoom-in-95 relative mx-4 w-full max-w-sm overflow-hidden rounded-xl bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.14)] duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center">
@@ -101,9 +101,7 @@ export default function ConfirmDialog({
 
           <h2 className="text-heading font-bold text-black">{title}</h2>
 
-          <p className="text-body text-gray5 mt-4 leading-relaxed whitespace-pre-line">
-            {content}
-          </p>
+          <p className="text-body text-gray5 mt-4 leading-relaxed whitespace-pre-line">{content}</p>
         </div>
 
         <div className={`mt-8 flex gap-3 ${isSingleAction ? 'flex-col' : 'flex-row'}`}>

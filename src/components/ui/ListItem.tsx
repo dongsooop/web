@@ -19,7 +19,7 @@ export default function ListItem({
   href,
   title,
   tags,
-  minHeightClassName = 'min-h-[96px]',
+  minHeightClassName = 'min-h-20',
   target,
   rel,
 }: ListItemProps) {

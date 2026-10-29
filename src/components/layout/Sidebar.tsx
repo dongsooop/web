@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, User } from 'lucide-react';
+import { Home, Map, User } from 'lucide-react';
 
 type NavItem = {
   label: string;
@@ -12,6 +12,7 @@ type NavItem = {
 
 export const NAV: NavItem[] = [
   { label: '홈', href: '/', icon: <Home className="h-5 w-5" /> },
+  { label: '캠퍼스', href: '/campus', icon: <Map className="h-5 w-5" /> },
   { label: '마이페이지', href: '/mypage', icon: <User className="h-5 w-5" /> },
 ];
 
@@ -32,8 +33,13 @@ export function isNavActive(pathname: string, href: string) {
       pathname === href ||
       pathname.startsWith('/home') ||
       pathname.startsWith('/notices') ||
-      pathname.startsWith('/eclass') ||
-      pathname.startsWith('/restaurants')
+      pathname.startsWith('/eclass')
+    );
+  }
+
+  if (href === '/campus') {
+    return (
+      pathname === href || pathname.startsWith('/campus/') || pathname.startsWith('/restaurants')
     );
   }
 
@@ -44,9 +50,12 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="border-gray2 hidden min-h-dvh w-18 shrink-0 border-r bg-white lg:flex">
-      <div className="flex w-full flex-col items-center py-4">
-        <nav className="flex w-full flex-col items-center gap-2">
+    <aside className="border-surface-border sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-56 shrink-0 border-r bg-white lg:flex">
+      <div className="flex w-full flex-col px-4 py-8">
+        <p className="text-surface-muted mb-4 px-3 text-xs font-semibold tracking-[0.12em] uppercase">
+          Campus life
+        </p>
+        <nav className="flex w-full flex-col gap-2" aria-label="주요 메뉴">
           {NAV.map((item) => {
             const active = isNavActive(pathname, item.href);
 
@@ -54,25 +63,16 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group relative flex w-full flex-col items-center gap-1 py-2"
+                className={`group focus-visible:ring-primary relative flex min-h-12 w-full items-center gap-3 rounded-2xl px-3 py-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
+                  active ? 'bg-primary/10 text-primary' : 'text-gray6 hover:bg-surface-soft'
+                }`}
+                aria-current={active ? 'page' : undefined}
               >
-                <div
-                  className={`absolute top-2 left-0 h-10 w-1 rounded-r-full ${
-                    active ? 'bg-primary' : 'bg-transparent'
-                  }`}
-                />
-
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
-                    active ? 'bg-primary/10 text-primary' : 'text-gray4 hover:bg-gray1'
-                  }`}
-                >
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl">
                   {item.icon}
                 </div>
 
-                <div className={`text-caption ${active ? 'text-primary' : 'text-gray4'}`}>
-                  {item.label}
-                </div>
+                <div className="text-sm font-semibold">{item.label}</div>
               </Link>
             );
           })}

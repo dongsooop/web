@@ -1,15 +1,16 @@
 import { useGoogleLogin, useGoogleOAuth } from '@react-oauth/google';
-import { getErrorMessage } from '@/lib/errors/messages';
+import { resolveSocialErrorKey } from '@/features/auth/lib/socialError';
 import { setSocialState } from '../lib/socialState';
+import type { SocialErrorContext, SocialErrorKey } from '@/features/auth/types/error';
 
 type UseSocialStartOptions = {
-  onError: (message: string) => void;
+  onError: (errorKey: SocialErrorKey) => void;
   onFinish: () => void;
 };
 
 type UseGoogleLinkOptions = UseSocialStartOptions & {
   onToken: (token: string) => Promise<void>;
-  context: 'login' | 'link' | 'unlink';
+  context: SocialErrorContext;
   redirectPath?: string;
   stateKey?: string;
   stateType?: 'signin' | 'link' | 'unlink';
@@ -78,7 +79,7 @@ export function useGoogleLink({
     const token = tokenResponse.access_token?.trim();
 
     if (!token) {
-      onError(getErrorMessage('social', new Error(), 'sdk'));
+      onError('SOCIAL_SDK');
       onFinish();
       return;
     }
@@ -86,7 +87,7 @@ export function useGoogleLink({
     try {
       await onToken(token);
     } catch (error) {
-      onError(getErrorMessage('social', error, context));
+      onError(resolveSocialErrorKey(error, context));
     } finally {
       onFinish();
     }
@@ -98,7 +99,7 @@ export function useGoogleLink({
 
   const handleError = () => {
     onFinish();
-    onError(getErrorMessage('social', new Error(), 'sdk'));
+    onError('SOCIAL_SDK');
   };
 
   const handleNonOAuthError = (error: { type: string }) => {
@@ -108,7 +109,7 @@ export function useGoogleLink({
       return;
     }
 
-    onError(getErrorMessage('social', new Error(), 'sdk'));
+    onError('SOCIAL_SDK');
   };
 
   const openPopup = useGoogleLogin({
@@ -122,7 +123,7 @@ export function useGoogleLink({
   const start = () => {
     if (isMobileBrowser() && redirectUri) {
       if (!clientId) {
-        onError(getErrorMessage('social', new Error(), 'sdk'));
+        onError('SOCIAL_SDK');
         onFinish();
         return;
       }

@@ -1,0 +1,233 @@
+'use client';
+
+import Link from 'next/link';
+import { Search } from 'lucide-react';
+
+import Button from '@/components/ui/Button';
+import { FieldLegend } from '@/components/ui/FieldTitle';
+import { categoryOptions } from '@/features/restaurant/category';
+import {
+  restaurantTags,
+  type RestaurantCategoryKey,
+  type RestaurantTagKey,
+} from '@/features/restaurant/options';
+import type { RestaurantSearchItem } from '@/features/restaurant/types/ui-model';
+
+type FieldHeadProps = {
+  children: React.ReactNode;
+  hint?: string;
+  required?: boolean;
+};
+
+function FieldHead({ children, hint, required = false }: FieldHeadProps) {
+  return (
+    <FieldLegend
+      required={required}
+      description={hint ? <span className="text-caption font-regular text-gray5">{hint}</span> : null}
+    >
+      {children}
+    </FieldLegend>
+  );
+}
+
+type SelectChipProps = {
+  label: string;
+  selected: boolean;
+  onClickAction: () => void;
+};
+
+function SelectChip({ label, selected, onClickAction }: SelectChipProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClickAction}
+      aria-pressed={selected}
+      className={`text-bodySm inline-flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border px-3 py-2 font-semibold transition ${
+        selected
+          ? 'border-primary bg-primary/5 text-primary'
+          : 'border-gray2 text-gray4 hover:border-primary/20 hover:bg-primary/5 bg-white'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function HorizontalChips({
+  children,
+  ariaLabel,
+}: {
+  children: React.ReactNode;
+  ariaLabel: string;
+}) {
+  return (
+    <div
+      className="scrollbar-hidden mt-3 overflow-x-auto overflow-y-visible"
+      aria-label={ariaLabel}
+    >
+      <div className="flex min-w-max gap-3">{children}</div>
+    </div>
+  );
+}
+
+const tagRows = [
+  restaurantTags.slice(0, Math.ceil(restaurantTags.length / 2)),
+  restaurantTags.slice(Math.ceil(restaurantTags.length / 2)),
+];
+
+type RestaurantCategoryOption = (typeof categoryOptions)[number];
+type WriteCategoryOption = RestaurantCategoryOption & {
+  value: RestaurantCategoryKey;
+};
+
+function isWriteCategoryOption(item: RestaurantCategoryOption): item is WriteCategoryOption {
+  return item.value !== 'ALL';
+}
+
+type RestaurantWriteFormProps = {
+  selectedPlace: RestaurantSearchItem | null;
+  category: RestaurantCategoryKey | null;
+  selectedTags: RestaurantTagKey[];
+  tagCount: number;
+  isSubmitting: boolean;
+  isCheckingDuplicate: boolean;
+  isDuplicate: boolean;
+  displayErrorMessage: string | null;
+  selectCategoryAction: (category: RestaurantCategoryKey) => void;
+  toggleTagAction: (tag: RestaurantTagKey) => void;
+  onSubmitAction: () => void;
+};
+
+export function RestaurantWriteForm({
+  selectedPlace,
+  category,
+  selectedTags,
+  tagCount,
+  isSubmitting,
+  isCheckingDuplicate,
+  isDuplicate,
+  displayErrorMessage,
+  selectCategoryAction,
+  toggleTagAction,
+  onSubmitAction,
+}: RestaurantWriteFormProps) {
+  const isSubmitDisabled = isSubmitting || isCheckingDuplicate || isDuplicate;
+
+  return (
+    <form
+      className="max-w-content mx-auto flex w-full flex-col gap-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmitAction();
+      }}
+    >
+      <div className="border-gray2 rounded-xl border bg-white px-4 py-5 sm:px-6 sm:py-6">
+        <div className="space-y-6 sm:space-y-7">
+          <fieldset className="min-w-0">
+            <FieldHead required hint="학교 주변(1km) 가게만 등록 가능해요.">
+              가게 검색
+            </FieldHead>
+
+            <Link
+              href="/restaurants/write/search"
+              className="border-gray2 mt-3 flex h-11 w-full cursor-pointer items-center gap-2 rounded-2xl border bg-white px-4"
+            >
+              <span
+                className={`text-bodySm flex-1 truncate ${
+                  selectedPlace ? 'text-black' : 'text-gray5'
+                }`}
+              >
+                {selectedPlace ? selectedPlace.name : '가게 이름을 입력해주세요'}
+              </span>
+              <Search className="text-gray5 h-4 w-4 shrink-0" aria-hidden="true" />
+            </Link>
+
+            {selectedPlace?.address ? (
+              <p className="text-caption text-gray5 mt-2">{selectedPlace.address}</p>
+            ) : null}
+
+            {selectedPlace && isDuplicate ? (
+              <p className="text-caption text-warning-100 mt-2" role="alert">
+                이미 등록된 맛집이에요.
+              </p>
+            ) : null}
+          </fieldset>
+
+          <fieldset className="min-w-0">
+            <FieldLegend required>카테고리</FieldLegend>
+
+            <HorizontalChips ariaLabel="맛집 카테고리 선택">
+              {categoryOptions.filter(isWriteCategoryOption).map((item) => (
+                <SelectChip
+                  key={item.value}
+                  label={item.label}
+                  selected={category === item.value}
+                  onClickAction={() => selectCategoryAction(item.value)}
+                />
+              ))}
+            </HorizontalChips>
+          </fieldset>
+
+          <fieldset className="min-w-0">
+            <FieldHead hint="최대 3개까지 선택 가능해요.">태그</FieldHead>
+
+            <div className="mt-3 space-y-3" aria-label="맛집 태그 선택">
+              {tagRows.map((row, index) => (
+                <div key={index} className="scrollbar-hidden overflow-x-auto overflow-y-visible">
+                  <div className="flex min-w-max gap-3">
+                    {row.map((item) => (
+                      <SelectChip
+                        key={item.value}
+                        label={item.label}
+                        selected={selectedTags.includes(item.value)}
+                        onClickAction={() => toggleTagAction(item.value)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-caption text-gray5 mt-4">{tagCount} / 3개 선택</p>
+          </fieldset>
+        </div>
+      </div>
+
+      {displayErrorMessage ? (
+        <p className="text-caption text-warning-100 px-1 whitespace-pre-line" role="alert">
+          {displayErrorMessage}
+        </p>
+      ) : null}
+
+      <div className="hidden items-center justify-center gap-3 sm:flex">
+        <Link
+          href="/restaurants"
+          className="border-gray2 text-bodySm text-gray6 inline-flex min-h-11 min-w-32 cursor-pointer items-center justify-center rounded-xl border bg-white px-4 font-semibold"
+        >
+          취소
+        </Link>
+
+        <Button
+          type="submit"
+          disabled={isSubmitDisabled}
+          isLoading={isSubmitting}
+          className="text-bodySm min-w-36"
+        >
+          추천하기
+        </Button>
+      </div>
+
+      <div className="sm:hidden">
+        <Button
+          type="submit"
+          disabled={isSubmitDisabled}
+          fullWidth
+          isLoading={isSubmitting}
+          className="text-bodySm"
+        >
+          추천하기
+        </Button>
+      </div>
+    </form>
+  );
+}

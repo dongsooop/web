@@ -1,0 +1,302 @@
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Plus,
+} from 'lucide-react';
+
+import {
+  dateColorClass,
+  memberScheduleTone,
+  officialScheduleTone,
+  weekColorClass,
+} from '@/features/schedule/lib/color';
+import {
+  WEEK_LABELS,
+  buildLaneOffsetMap,
+  buildScheduleSegments,
+  formatCalendarDateLabel,
+  getScheduleCountText,
+  type MonthlyCalendarCell,
+} from '@/features/schedule/lib/calendar';
+import type { Schedule } from '@/features/schedule/types/ui-model';
+import { toDateKey } from '@/utils/date';
+import type { TabId } from './ScheduleTabs';
+
+type ScheduleCalendarProps = {
+  cells: MonthlyCalendarCell[];
+  currentMonth: string;
+  onCreateAction: () => void;
+  onMoveMonthAction: (delta: number) => void;
+  onSelectAction: (key: string) => void;
+  onTodayAction: () => void;
+  scheduleMap: Record<string, Schedule[]>;
+  schedules: Schedule[];
+  selected: string;
+  tab: TabId;
+  today: Date;
+};
+
+export default function ScheduleCalendar({
+  cells,
+  currentMonth,
+  onCreateAction,
+  onMoveMonthAction,
+  onSelectAction,
+  onTodayAction,
+  scheduleMap,
+  schedules,
+  selected,
+  tab,
+  today,
+}: ScheduleCalendarProps) {
+  const officialSegments =
+    tab === 'OFFICIAL'
+      ? buildScheduleSegments(
+          cells,
+          schedules.filter((schedule) => schedule.startDateKey !== schedule.endDateKey),
+          officialScheduleTone,
+        )
+      : [];
+  const memberRangeSegments =
+    tab === 'MEMBER'
+      ? buildScheduleSegments(
+          cells,
+          schedules.filter((schedule) => schedule.startDateKey !== schedule.endDateKey),
+          memberScheduleTone,
+        )
+      : [];
+  const dayBox = 'absolute top-1 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:top-4';
+  const memberBarBox = 'absolute left-0.5 right-0.5 top-9 bottom-0 sm:left-1 sm:right-1 sm:top-12';
+  const extraBox =
+    'text-gray5 text-caption pointer-events-none absolute right-2 bottom-1 text-right leading-none font-semibold';
+  const officialLaneOffsetMap = buildLaneOffsetMap(cells, officialSegments);
+  const memberLaneOffsetMap = buildLaneOffsetMap(cells, memberRangeSegments);
+
+  return (
+    <section className="px-3 py-4 sm:px-6 sm:py-6" aria-label={`${currentMonth} 일정 달력`}>
+      <div className="md:hidden">
+        <div className="flex items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(-1)}
+            className="hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="이전 달"
+          >
+            <ChevronsLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+
+          <h2 className="text-body text-center font-bold text-black">{currentMonth}</h2>
+
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(1)}
+            className="hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="다음 달"
+          >
+            <ChevronsRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <div className="hidden flex-col gap-3 pb-4 md:flex lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center justify-center gap-4 lg:w-auto">
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(-1)}
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="이전 달"
+          >
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <h2 className="text-body sm:text-title text-center font-bold text-black">
+            {currentMonth}
+          </h2>
+          <button
+            type="button"
+            onClick={() => onMoveMonthAction(1)}
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-black transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            aria-label="다음 달"
+          >
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
+          {tab === 'MEMBER' ? (
+            <button
+              type="button"
+              onClick={onCreateAction}
+              className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary text-bodySm inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg border bg-white px-4 font-semibold text-sky-700 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              일정 추가
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onTodayAction}
+            className="border-surface-border hover:bg-surface-blue focus-visible:ring-primary text-bodySm text-surface-muted inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg border bg-white px-4 font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          >
+            <CalendarDays className="h-4 w-4" aria-hidden="true" />
+            오늘 날짜로 이동
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2">
+        <div
+          className="text-body grid grid-cols-7 gap-2 pb-2 text-center font-semibold"
+          aria-hidden="true"
+        >
+          {WEEK_LABELS.map((week, index) => (
+            <div key={week} className={weekColorClass(index)}>
+              {week}
+            </div>
+          ))}
+        </div>
+
+        <div className="border-surface-border auto-rows-28 sm:auto-rows-35 relative grid grid-cols-7 overflow-hidden rounded-xl border bg-white [--bar-gap:0.25rem] [--bar-step:1.25rem] sm:[--bar-gap:0.375rem] sm:[--bar-step:1.625rem]">
+          {tab === 'OFFICIAL' || memberRangeSegments.length > 0 ? (
+            <div className="pointer-events-none absolute inset-0 z-10 grid grid-cols-7 grid-rows-6">
+              {(tab === 'OFFICIAL' ? officialSegments : memberRangeSegments).map(
+                (segment, index) => (
+                  <div
+                    key={`${segment.label}-${segment.row}-${segment.startCol}-${segment.endCol}-${index}`}
+                    className="px-0.5 sm:px-1"
+                    style={{
+                      gridColumn: `${segment.startCol + 1} / ${segment.endCol + 2}`,
+                      gridRow: `${segment.row + 1}`,
+                    }}
+                  >
+                    <div
+                      className={[
+                        'text-caption mt-9 flex h-4 items-center rounded-full px-1.5 font-semibold sm:mt-12 sm:h-5 sm:px-2.5',
+                        segment.style,
+                      ].join(' ')}
+                      style={{
+                        transform: `translateY(calc(var(--bar-step) * ${segment.lane}))`,
+                      }}
+                    >
+                      {segment.showText ? <span className="truncate">{segment.label}</span> : null}
+                      {segment.showText && segment.range ? (
+                        <span className="ml-auto hidden truncate pl-2 sm:block">
+                          {segment.range}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                ),
+              )}
+            </div>
+          ) : null}
+
+          {cells.map((cell, index) => {
+            const key = toDateKey(cell.date);
+            const day = cell.date.getDate();
+            const dailySchedules = (scheduleMap[key] ?? []).filter(
+              (schedule) => schedule.startDateKey === schedule.endDateKey,
+            );
+            const occupiedLaneCount =
+              tab === 'OFFICIAL'
+                ? (officialLaneOffsetMap[key] ?? 0)
+                : (memberLaneOffsetMap[key] ?? 0);
+            const visibleCount = Math.max(3 - occupiedLaneCount, 0);
+            const visible = dailySchedules.slice(0, visibleCount);
+            const extra = Math.max(dailySchedules.length - visible.length, 0);
+            const isSelected = key === selected;
+            const isToday = key === toDateKey(today);
+            const textColor = dateColorClass(cell.date, cell.inMonth);
+            const scheduleCount = (scheduleMap[key] ?? []).length;
+            const dateLabel = formatCalendarDateLabel(cell.date);
+
+            return (
+              <button
+                key={cell.key}
+                type="button"
+                onClick={() => onSelectAction(key)}
+                className={[
+                  'border-surface-border hover:bg-surface-soft focus-visible:ring-primary relative z-0 h-28 cursor-pointer border-r border-b text-left transition-colors focus-visible:z-20 focus-visible:ring-2 focus-visible:outline-none sm:h-35',
+                  index % 7 === 6 ? 'border-r-0' : '',
+                  index >= 35 ? 'border-b-0' : '',
+                  isSelected ? 'bg-surface-blue' : '',
+                ].join(' ')}
+                aria-label={`${isSelected ? '선택됨, ' : ''}${dateLabel}, ${getScheduleCountText(scheduleCount)}`}
+                aria-current={isToday ? 'date' : undefined}
+              >
+                <div className={dayBox}>
+                  <span
+                    className={[
+                      'sm:text-caption text-caption inline-flex h-6 w-6 items-center justify-center rounded-full font-semibold',
+                      textColor,
+                      isSelected ? 'bg-primary text-white' : '',
+                      !isSelected && isToday ? 'ring-primary/25 ring-2' : '',
+                    ].join(' ')}
+                  >
+                    {day}
+                  </span>
+                </div>
+
+                {tab === 'MEMBER' ? (
+                  <>
+                    <div
+                      className={[memberBarBox, 'pointer-events-none'].join(' ')}
+                      style={{
+                        transform: `translateY(calc(var(--bar-step) * ${memberLaneOffsetMap[key] ?? 0}))`,
+                      }}
+                    >
+                      <div className="flex flex-col gap-[var(--bar-gap)]">
+                        {visible.map((schedule, barIndex) => (
+                          <div
+                            key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
+                            className={[
+                              'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-medium sm:h-5 sm:px-2.5 sm:font-semibold',
+                              cell.inMonth
+                                ? memberScheduleTone(schedule)
+                                : 'bg-gray7 text-schedule-muted',
+                            ].join(' ')}
+                          >
+                            <span className="truncate">{schedule.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {extra > 0 ? <div className={extraBox}>+{extra}</div> : null}
+                  </>
+                ) : tab === 'OFFICIAL' ? (
+                  <>
+                    <div
+                      className={[memberBarBox, 'pointer-events-none'].join(' ')}
+                      style={{
+                        transform: `translateY(calc(var(--bar-step) * ${officialLaneOffsetMap[key] ?? 0}))`,
+                      }}
+                    >
+                      <div className="flex flex-col gap-[var(--bar-gap)]">
+                        {visible.map((schedule, barIndex) => (
+                          <div
+                            key={`${schedule.title}-${schedule.startAt}-${barIndex}`}
+                            className={[
+                              'text-caption flex h-4 items-center rounded-full px-1.5 leading-3 font-semibold sm:h-5 sm:px-2.5',
+                              cell.inMonth
+                                ? officialScheduleTone(schedule)
+                                : 'bg-gray7 text-schedule-muted',
+                            ].join(' ')}
+                          >
+                            <span className="truncate">{schedule.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {extra > 0 ? <div className={extraBox}>+{extra}</div> : null}
+                  </>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

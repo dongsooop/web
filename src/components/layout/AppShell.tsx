@@ -1,15 +1,10 @@
-import Sidebar from '@/components/layout/Sidebar';
+import BottomNav from '@/components/layout/BottomNav';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-gray7 min-h-dvh">
-      <div className="mx-auto flex w-full">
-        <Sidebar />
-
-        <main className="flex min-w-0 flex-1 flex-col">
-          <div className="p-6">{children}</div>
-        </main>
-      </div>
+    <div className="app-shell">
+      <div className="app-shell-content">{children}</div>
+      <BottomNav />
     </div>
   );
 }

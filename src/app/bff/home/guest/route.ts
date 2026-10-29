@@ -1,12 +1,13 @@
 import { HttpStatusCode } from '@/constants/httpStatusCode';
 import { ApiError } from '@/lib/api/apiError';
+import type { HomeResponse } from '@/features/home/types/response';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchGuestHome } from '../service';
 
-function normalizeNoticeLinks(data: any, schoolUrl: string) {
+function normalizeNoticeLinks(data: HomeResponse, schoolUrl: string) {
   if (data && Array.isArray(data.notices)) {
-    data.notices = data.notices.map((notice: any) => ({
+    data.notices = data.notices.map((notice) => ({
       ...notice,
       link: notice.link.startsWith('http')
         ? notice.link
@@ -34,10 +35,11 @@ export async function GET(request: NextRequest) {
       deviceToken: request.cookies.get('device_token')?.value,
     });
 
-    const data = normalizeNoticeLinks(await result.json(), schoolUrl);
+    const home: HomeResponse = await result.json();
+    const data = normalizeNoticeLinks(home, schoolUrl);
 
     return NextResponse.json(data, { status: result.status });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const status =
       error instanceof ApiError && error.status !== HttpStatusCode.NETWORK_ERROR
         ? error.status
@@ -45,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: error.message || 'Network Connection Failed',
+        message: error instanceof Error ? error.message : 'Network Connection Failed',
         status,
       },
       { status },

@@ -1,5 +1,3 @@
-'use client';
-
 import { useMemo, useReducer } from 'react';
 
 import { toDateKey } from '@/utils/date';
