@@ -46,7 +46,7 @@ export default function ManagementLinkCard({
   const className =
     'group hover:bg-surface-soft focus-visible:ring-primary flex min-h-20 w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-3 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none';
 
-  if (href) {
+  if (href && !disabled) {
     return (
       <Link href={href} className={className}>
         {content}
