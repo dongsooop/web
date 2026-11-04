@@ -24,10 +24,7 @@ import { useToastStore } from '@/store/useToastStore';
 
 import ManagementLinkCard from './ManagementLinkCard';
 
-type LoggedInCardProps = {
-  user?: User;
-  loading?: boolean;
-};
+type LoggedInCardProps = { loading: true; user?: never } | { loading?: false; user: User };
 
 export default function LoggedInCard({ user, loading = false }: LoggedInCardProps) {
   const router = useRouter();

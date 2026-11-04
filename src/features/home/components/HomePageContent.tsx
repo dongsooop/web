@@ -12,7 +12,7 @@ import {
   ArrowUpRight,
   Clock3,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useHomeData } from '@/features/home/hooks/useHomeData';
 import type { HomeUiModel } from '@/features/home/types/ui-model';
@@ -33,6 +33,14 @@ const quickLinks = [
 
 const days = ['월', '화', '수', '목', '금', '토', '일'];
 const dayIndex = () => (new Date().getDay() + 6) % 7;
+const subscribeToHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
+// SSR and the first browser render use the same date-independent labels.
+function useHydrated() {
+  return useSyncExternalStore(subscribeToHydration, clientSnapshot, serverSnapshot);
+}
 
 function Assignments({
   eclass,
@@ -158,17 +166,26 @@ function Lunch({
   loading: boolean;
   error: string | null;
 }) {
-  const [index, setIndex] = useState(dayIndex);
-  const title = index === dayIndex() ? '오늘의 학식' : `${days[index]}요일 학식`;
+  const hydrated = useHydrated();
+  const todayIndex = hydrated ? dayIndex() : 0;
+  const [selectedIndex, setIndex] = useState<number | null>(null);
+  const index = selectedIndex ?? todayIndex;
+  const title = !hydrated || index === todayIndex ? '오늘의 학식' : `${days[index]}요일 학식`;
   return (
     <section className="home-card home-lunch" aria-labelledby="lunch-title">
       <div className="home-card-head">
         <h2 id="lunch-title">{title}</h2>
         <div className="home-lunch-controls">
-          <button aria-label="이전 식단" onClick={() => setIndex((i) => (i + 6) % 7)}>
+          <button
+            aria-label="이전 식단"
+            onClick={() => setIndex((i) => ((i ?? todayIndex) + 6) % 7)}
+          >
             <ChevronLeft size={18} />
           </button>
-          <button aria-label="다음 식단" onClick={() => setIndex((i) => (i + 1) % 7)}>
+          <button
+            aria-label="다음 식단"
+            onClick={() => setIndex((i) => ((i ?? todayIndex) + 1) % 7)}
+          >
             <ChevronRight size={18} />
           </button>
         </div>
@@ -181,7 +198,7 @@ function Lunch({
       </div>
       <div className="home-lunch-copy">
         <span className="home-eyebrow">
-          {index === dayIndex() ? '오늘의 메뉴' : `${days[index]}요일 메뉴`}
+          {!hydrated || index === todayIndex ? '오늘의 메뉴' : `${days[index]}요일 메뉴`}
         </span>
         <DataRegion loading={loading} error={error}>
           <strong>{menus[index] || '식단 정보가 없습니다.'}</strong>
@@ -254,13 +271,16 @@ export default function HomePageContent() {
   const { user, isReady } = useAuth();
   const homeLoading = !isHomeError && (!isReady || isInitialLoading || isHomeLoading || !home);
   const homeError = isHomeError ? (homeErrorMessage ?? '홈 정보를 불러오지 못했어요.') : null;
-  const today = new Date();
-  const date = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  }).format(today);
-  const semester = today.getMonth() < 6 ? '1학기' : '2학기';
+  const hydrated = useHydrated();
+  const today = hydrated ? new Date() : null;
+  const date = today
+    ? new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      }).format(today)
+    : 'CAMPUS TODAY';
+  const semester = today && today.getMonth() < 6 ? '1학기' : '2학기';
   return (
     <div className="home-dashboard">
       <div className="home-intro">
@@ -281,7 +301,7 @@ export default function HomePageContent() {
           </div>
         </div>
         <span className="home-semester">
-          {today.getFullYear()} · {semester}
+          {today ? `${today.getFullYear()} · ${semester}` : '이번 학기'}
         </span>
       </div>
       <nav className="home-quick-links" aria-label="빠른 메뉴">
