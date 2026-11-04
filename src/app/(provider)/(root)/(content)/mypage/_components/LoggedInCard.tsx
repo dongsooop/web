@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { SkeletonText } from '@/components/ui/Skeleton';
 import { useRouter } from 'next/navigation';
 import {
   CalendarDays,
@@ -23,18 +24,17 @@ import { useToastStore } from '@/store/useToastStore';
 
 import ManagementLinkCard from './ManagementLinkCard';
 
-type LoggedInCardProps = {
-  user: User;
-};
+type LoggedInCardProps = { loading: true; user?: never } | { loading?: false; user: User };
 
-export default function LoggedInCard({ user }: LoggedInCardProps) {
+export default function LoggedInCard({ user, loading = false }: LoggedInCardProps) {
   const router = useRouter();
-  const departmentLabel = getDepartmentDisplayName(user.departmentType);
+  const departmentLabel = user ? getDepartmentDisplayName(user.departmentType) : '';
   const { deleteAccount, logout, isLoggingOut } = useAuth();
   const showDialog = useDialogStore((state) => state.showDialog);
   const showToast = useToastStore((state) => state.showToast);
 
   const handleDelete = async () => {
+    if (loading || !user) return;
     try {
       await deleteAccount();
       showToast('회원 탈퇴가 완료되었어요.', 'success');
@@ -45,6 +45,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   };
 
   const logoutAccount = async () => {
+    if (loading || !user) return;
     try {
       await logout();
       router.refresh();
@@ -54,6 +55,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
   };
 
   const handleOpenDialog = () => {
+    if (loading || !user) return;
     showDialog({
       title: '동숲 회원 탈퇴',
       content:
@@ -92,11 +94,19 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             />
           </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-heading font-bold text-black">{user.nickname}</p>
-            <p className="bg-surface-blue text-caption mt-2 inline-flex max-w-full items-center rounded-md px-2.5 py-1 font-semibold text-sky-700">
-              <span className="truncate">{departmentLabel}</span>
-            </p>
+          <div
+            className="min-w-0 flex-1"
+            aria-busy={loading}
+            aria-label={loading ? '프로필 불러오는 중' : undefined}
+          >
+            <div className="text-heading font-bold text-black">
+              {loading ? <SkeletonText className="h-7 w-24" /> : user?.nickname}
+            </div>
+            <div className="bg-surface-blue text-caption mt-2 inline-flex max-w-full items-center rounded-md px-2.5 py-1 font-semibold text-sky-700">
+              <div className="truncate">
+                {loading ? <SkeletonText className="w-32" /> : departmentLabel}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -118,6 +128,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           <ul className="border-surface-border mt-5 border-t">
             <li className="border-surface-border border-b last:border-b-0">
               <ManagementLinkCard
+                disabled={loading}
                 href="/timetable"
                 icon={Table2}
                 title="시간표 관리"
@@ -126,6 +137,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             </li>
             <li className="border-surface-border border-b last:border-b-0">
               <ManagementLinkCard
+                disabled={loading}
                 href="/schedule"
                 icon={CalendarDays}
                 title="일정 관리"
@@ -151,6 +163,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
           <ul className="border-surface-border mt-5 border-t">
             <li className="border-surface-border border-b last:border-b-0">
               <ManagementLinkCard
+                disabled={loading}
                 href="/mypage/social"
                 icon={Link2}
                 title="소셜 계정 연동"
@@ -159,6 +172,7 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
             </li>
             <li className="border-surface-border border-b last:border-b-0">
               <ManagementLinkCard
+                disabled={loading}
                 href="/password-reset?from=mypage"
                 icon={KeyRound}
                 title="비밀번호 변경"
@@ -171,11 +185,12 @@ export default function LoggedInCard({ user }: LoggedInCardProps) {
                 title={isLoggingOut ? '로그아웃 중...' : '로그아웃'}
                 description="현재 계정에서 로그아웃해요."
                 onClick={logoutAccount}
-                disabled={isLoggingOut}
+                disabled={loading || isLoggingOut}
               />
             </li>
             <li className="border-surface-border border-b last:border-b-0">
               <ManagementLinkCard
+                disabled={loading}
                 icon={UserX}
                 title="회원 탈퇴"
                 description="서비스 이용을 중단하고 계정을 탈퇴할 수 있어요."

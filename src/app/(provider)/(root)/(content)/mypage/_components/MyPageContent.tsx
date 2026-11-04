@@ -4,7 +4,6 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import LoggedInCard from './LoggedInCard';
 import LoggedOutCard from './LoggedOutCard';
-import MyPageSkeleton from './MyPageSkeleton';
 
 export default function MyPageContent() {
   const { isLoggedIn, isReady, user } = useAuth();
@@ -23,7 +22,7 @@ export default function MyPageContent() {
       </header>
 
       {!isReady ? (
-        <MyPageSkeleton />
+        <LoggedInCard loading />
       ) : isLoggedIn && user ? (
         <LoggedInCard user={user} />
       ) : (
